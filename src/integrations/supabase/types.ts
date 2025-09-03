@@ -14,7 +14,224 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      affiliates: {
+        Row: {
+          affiliate_code: string
+          commission_rate: number | null
+          created_at: string
+          id: string
+          referrals_count: number | null
+          total_earnings: number | null
+          user_id: string
+        }
+        Insert: {
+          affiliate_code: string
+          commission_rate?: number | null
+          created_at?: string
+          id?: string
+          referrals_count?: number | null
+          total_earnings?: number | null
+          user_id: string
+        }
+        Update: {
+          affiliate_code?: string
+          commission_rate?: number | null
+          created_at?: string
+          id?: string
+          referrals_count?: number | null
+          total_earnings?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      business_data: {
+        Row: {
+          annual_revenue: number | null
+          business_name: string
+          business_type: string | null
+          calculated_tax: number | null
+          country: string
+          created_at: string
+          expenses: Json | null
+          id: string
+          profit_loss: number | null
+          tax_rate: number | null
+          tax_year: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          annual_revenue?: number | null
+          business_name: string
+          business_type?: string | null
+          calculated_tax?: number | null
+          country: string
+          created_at?: string
+          expenses?: Json | null
+          id?: string
+          profit_loss?: number | null
+          tax_rate?: number | null
+          tax_year: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          annual_revenue?: number | null
+          business_name?: string
+          business_type?: string | null
+          calculated_tax?: number | null
+          country?: string
+          created_at?: string
+          expenses?: Json | null
+          id?: string
+          profit_loss?: number | null
+          tax_rate?: number | null
+          tax_year?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      financial_advice: {
+        Row: {
+          advice_content: string
+          advice_type: string | null
+          ai_confidence: number | null
+          country: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          advice_content: string
+          advice_type?: string | null
+          ai_confidence?: number | null
+          country: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          advice_content?: string
+          advice_type?: string | null
+          ai_confidence?: number | null
+          country?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      personal_expenses: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          date: string
+          description: string | null
+          id: string
+          is_recurring: boolean | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string
+          date?: string
+          description?: string | null
+          id?: string
+          is_recurring?: boolean | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          date?: string
+          description?: string | null
+          id?: string
+          is_recurring?: boolean | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          account_type: string | null
+          country: string | null
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+          subscription_end: string | null
+          subscription_tier: string | null
+          trial_end: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_type?: string | null
+          country?: string | null
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id?: string
+          subscription_end?: string | null
+          subscription_tier?: string | null
+          trial_end?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_type?: string | null
+          country?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+          subscription_end?: string | null
+          subscription_tier?: string | null
+          trial_end?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          affiliate_id: string
+          commission_earned: number | null
+          created_at: string
+          id: string
+          referred_user_id: string
+          subscription_tier: string | null
+        }
+        Insert: {
+          affiliate_id: string
+          commission_earned?: number | null
+          created_at?: string
+          id?: string
+          referred_user_id: string
+          subscription_tier?: string | null
+        }
+        Update: {
+          affiliate_id?: string
+          commission_earned?: number | null
+          created_at?: string
+          id?: string
+          referred_user_id?: string
+          subscription_tier?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
