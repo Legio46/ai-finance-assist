@@ -8,7 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { Calculator, TrendingUp, TrendingDown, Building2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from "@/hooks/use-toast";
+import { calculateTax } from "@/utils/taxCalculations";
 
 const BusinessDashboard = () => {
   const { user } = useAuth();
@@ -18,17 +19,17 @@ const BusinessDashboard = () => {
   const [formData, setFormData] = useState({
     business_name: '',
     business_type: '',
-    country: 'Slovakia',
+    country: 'slovakia',
     annual_revenue: '',
     tax_year: new Date().getFullYear(),
   });
 
   const countries = [
-    { value: 'Slovakia', label: 'Slovakia', taxRate: 21 },
-    { value: 'USA', label: 'United States', taxRate: 21 },
-    { value: 'UK', label: 'United Kingdom', taxRate: 19 },
-    { value: 'Germany', label: 'Germany', taxRate: 30 },
-    { value: 'France', label: 'France', taxRate: 25 },
+    { value: 'slovakia', label: 'Slovakia' },
+    { value: 'usa', label: 'United States' },
+    { value: 'uk', label: 'United Kingdom' },
+    { value: 'germany', label: 'Germany' },
+    { value: 'france', label: 'France' },
   ];
 
   const businessTypes = [
@@ -64,7 +65,7 @@ const BusinessDashboard = () => {
     }
   };
 
-  const calculateTax = async () => {
+  const handleCalculateTax = async () => {
     if (!formData.business_name || !formData.annual_revenue) {
       toast({
         title: "Missing Information",
@@ -77,12 +78,9 @@ const BusinessDashboard = () => {
     setLoading(true);
 
     try {
-      const country = countries.find(c => c.value === formData.country);
-      const taxRate = country?.taxRate || 21;
-      const revenue = parseFloat(formData.annual_revenue);
-      const calculatedTax = (revenue * taxRate) / 100;
-      const profitLoss = revenue - calculatedTax;
-
+      // Calculate tax using the tax calculation utility
+      const taxResult = calculateTax(parseFloat(formData.annual_revenue), formData.country);
+      
       const { error } = await supabase
         .from('business_data')
         .insert([{
@@ -90,25 +88,25 @@ const BusinessDashboard = () => {
           business_name: formData.business_name,
           business_type: formData.business_type,
           country: formData.country,
-          annual_revenue: revenue,
+          annual_revenue: parseFloat(formData.annual_revenue),
           tax_year: formData.tax_year,
-          tax_rate: taxRate,
-          calculated_tax: calculatedTax,
-          profit_loss: profitLoss,
+          tax_rate: taxResult.taxRate,
+          calculated_tax: taxResult.taxAmount,
+          profit_loss: taxResult.netIncome,
         }]);
 
       if (error) throw error;
 
       toast({
         title: "Tax Calculated",
-        description: `Estimated tax: $${calculatedTax.toLocaleString()}`,
+        description: `Estimated tax: $${taxResult.taxAmount.toLocaleString()} (${taxResult.taxRate.toFixed(1)}%)`,
       });
 
       // Reset form
       setFormData({
         business_name: '',
         business_type: '',
-        country: 'Slovakia',
+        country: 'slovakia',
         annual_revenue: '',
         tax_year: new Date().getFullYear(),
       });
@@ -222,7 +220,7 @@ const BusinessDashboard = () => {
                 <SelectContent>
                   {countries.map((country) => (
                     <SelectItem key={country.value} value={country.value}>
-                      {country.label} ({country.taxRate}% tax rate)
+                      {country.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -252,7 +250,7 @@ const BusinessDashboard = () => {
           </div>
 
           <Button 
-            onClick={calculateTax} 
+            onClick={handleCalculateTax} 
             disabled={loading}
             className="w-full bg-gradient-primary hover:opacity-90"
           >

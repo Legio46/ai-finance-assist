@@ -3,8 +3,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Check } from "lucide-react";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Pricing = () => {
+  const { toast } = useToast();
   const personalFeatures = [
     "Personal expense tracking",
     "Monthly spending analysis",
@@ -59,9 +62,26 @@ const Pricing = () => {
                   </li>
                 ))}
               </ul>
-              <Button asChild className="w-full">
-                <Link to="/auth">Start Free Trial</Link>
-              </Button>
+          <Button 
+            onClick={() => {
+              supabase.functions.invoke('create-checkout', {
+                body: { plan: 'personal' }
+              }).then(({ data, error }) => {
+                if (error) {
+                  toast({
+                    title: "Error",
+                    description: "Failed to create checkout session",
+                    variant: "destructive",
+                  });
+                } else if (data?.url) {
+                  window.open(data.url, '_blank');
+                }
+              });
+            }}
+            className="w-full"
+          >
+            Start Free Trial
+          </Button>
             </CardContent>
           </Card>
 
@@ -88,9 +108,26 @@ const Pricing = () => {
                   </li>
                 ))}
               </ul>
-              <Button asChild className="w-full">
-                <Link to="/auth">Start Free Trial</Link>
-              </Button>
+          <Button 
+            onClick={() => {
+              supabase.functions.invoke('create-checkout', {
+                body: { plan: 'business' }
+              }).then(({ data, error }) => {
+                if (error) {
+                  toast({
+                    title: "Error",
+                    description: "Failed to create checkout session",
+                    variant: "destructive",
+                  });
+                } else if (data?.url) {
+                  window.open(data.url, '_blank');
+                }
+              });
+            }}
+            className="w-full"
+          >
+            Start Free Trial
+          </Button>
             </CardContent>
           </Card>
         </div>
