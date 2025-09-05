@@ -10,6 +10,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 
+import CreditCardManager from '@/components/CreditCardManager';
+
 const PersonalDashboard = () => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -286,6 +288,9 @@ const PersonalDashboard = () => {
           </CardContent>
         )}
       </Card>
+
+      {/* Credit Card Management */}
+      <CreditCardManager cardType="personal" />
 
       {/* Category Breakdown */}
       {topCategories.length > 0 && (

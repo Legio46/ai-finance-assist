@@ -9,6 +9,7 @@ import { Calculator, TrendingUp, TrendingDown, Building2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/hooks/use-toast";
+import CreditCardManager from '@/components/CreditCardManager';
 import { calculateTax } from "@/utils/taxCalculations";
 
 const BusinessDashboard = () => {
@@ -258,6 +259,9 @@ const BusinessDashboard = () => {
           </Button>
         </CardContent>
       </Card>
+
+      {/* Credit Card Management */}
+      <CreditCardManager cardType="business" />
 
       {/* Business History */}
       {businessData.length > 0 && (

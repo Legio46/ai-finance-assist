@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import SecuritySettings from '@/components/SecuritySettings';
 import { Badge } from '@/components/ui/badge';
 import { 
   BarChart3, 
@@ -13,7 +14,8 @@ import {
   CreditCard, 
   Building2,
   User,
-  Crown
+  Crown,
+  Settings
 } from 'lucide-react';
 import BusinessDashboard from '@/components/BusinessDashboard';
 import PersonalDashboard from '@/components/PersonalDashboard';
@@ -84,7 +86,7 @@ const Dashboard = () => {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="personal">
               <User className="w-4 h-4 mr-2" />
@@ -95,6 +97,10 @@ const Dashboard = () => {
               Business
             </TabsTrigger>
             <TabsTrigger value="advisor">AI Advisor</TabsTrigger>
+            <TabsTrigger value="security">
+              <Settings className="w-4 h-4 mr-2" />
+              Security
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -219,6 +225,10 @@ const Dashboard = () => {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="security">
+            <SecuritySettings />
           </TabsContent>
         </Tabs>
       </div>
