@@ -122,6 +122,36 @@ export type Database = {
         }
         Relationships: []
       }
+      "Legio table": {
+        Row: {
+          created_at: string
+          id: number
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+        }
+        Update: {
+          created_at?: string
+          id?: number
+        }
+        Relationships: []
+      }
+      "Legios table": {
+        Row: {
+          created_at: string
+          id: number
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+        }
+        Update: {
+          created_at?: string
+          id?: number
+        }
+        Relationships: []
+      }
       personal_expenses: {
         Row: {
           amount: number
@@ -164,8 +194,10 @@ export type Database = {
           full_name: string | null
           id: string
           subscription_end: string | null
+          subscription_status: string | null
           subscription_tier: string | null
           trial_end: string | null
+          trial_ends_at: string | null
           updated_at: string
           user_id: string
         }
@@ -177,8 +209,10 @@ export type Database = {
           full_name?: string | null
           id?: string
           subscription_end?: string | null
+          subscription_status?: string | null
           subscription_tier?: string | null
           trial_end?: string | null
+          trial_ends_at?: string | null
           updated_at?: string
           user_id: string
         }
@@ -190,8 +224,10 @@ export type Database = {
           full_name?: string | null
           id?: string
           subscription_end?: string | null
+          subscription_status?: string | null
           subscription_tier?: string | null
           trial_end?: string | null
+          trial_ends_at?: string | null
           updated_at?: string
           user_id?: string
         }
