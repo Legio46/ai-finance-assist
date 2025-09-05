@@ -17,7 +17,7 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 220 13% 9%;
 
-    --primary: 142 71% 45%;
+    --primary: 354 66% 40%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 220 15% 95%;
@@ -26,7 +26,7 @@ All colors MUST be HSL.
     --muted: 220 15% 95%;
     --muted-foreground: 220 9% 46%;
 
-    --accent: 142 71% 45%;
+    --accent: 354 66% 40%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -34,7 +34,7 @@ All colors MUST be HSL.
 
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 142 71% 45%;
+    --ring: 354 66% 40%;
 
     --radius: 0.75rem;
 
@@ -47,18 +47,18 @@ All colors MUST be HSL.
     --info-foreground: 0 0% 100%;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(142 71% 45%), hsl(142 71% 35%));
-    --gradient-financial: linear-gradient(135deg, hsl(142 71% 45%), hsl(217 91% 60%));
-    --gradient-success: linear-gradient(135deg, hsl(120 100% 25%), hsl(142 71% 45%));
+    --gradient-primary: linear-gradient(135deg, hsl(354 66% 40%), hsl(354 66% 30%));
+    --gradient-financial: linear-gradient(135deg, hsl(354 66% 40%), hsl(217 91% 60%));
+    --gradient-success: linear-gradient(135deg, hsl(120 100% 25%), hsl(354 66% 40%));
 
     --sidebar-background: 220 15% 97%;
     --sidebar-foreground: 220 13% 9%;
-    --sidebar-primary: 142 71% 45%;
+    --sidebar-primary: 354 66% 40%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 220 15% 95%;
     --sidebar-accent-foreground: 220 13% 9%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 142 71% 45%;
+    --sidebar-ring: 354 66% 40%;
   }
 
   .dark {
@@ -71,7 +71,7 @@ All colors MUST be HSL.
     --popover: 220 27% 12%;
     --popover-foreground: 220 9% 90%;
 
-    --primary: 142 71% 45%;
+    --primary: 354 66% 40%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 220 27% 16%;
@@ -80,7 +80,7 @@ All colors MUST be HSL.
     --muted: 220 27% 16%;
     --muted-foreground: 220 9% 60%;
 
-    --accent: 142 71% 45%;
+    --accent: 354 66% 40%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -88,7 +88,7 @@ All colors MUST be HSL.
 
     --border: 220 27% 16%;
     --input: 220 27% 16%;
-    --ring: 142 71% 45%;
+    --ring: 354 66% 40%;
 
     /* Financial theme colors */
     --success: 120 100% 35%;
@@ -99,18 +99,18 @@ All colors MUST be HSL.
     --info-foreground: 0 0% 100%;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(142 71% 45%), hsl(142 71% 35%));
-    --gradient-financial: linear-gradient(135deg, hsl(142 71% 45%), hsl(217 91% 60%));
-    --gradient-success: linear-gradient(135deg, hsl(120 100% 35%), hsl(142 71% 45%));
+    --gradient-primary: linear-gradient(135deg, hsl(354 66% 40%), hsl(354 66% 30%));
+    --gradient-financial: linear-gradient(135deg, hsl(354 66% 40%), hsl(217 91% 60%));
+    --gradient-success: linear-gradient(135deg, hsl(120 100% 35%), hsl(354 66% 40%));
 
     --sidebar-background: 220 27% 12%;
     --sidebar-foreground: 220 9% 90%;
-    --sidebar-primary: 142 71% 45%;
+    --sidebar-primary: 354 66% 40%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 220 27% 16%;
     --sidebar-accent-foreground: 220 9% 90%;
     --sidebar-border: 220 27% 16%;
-    --sidebar-ring: 142 71% 45%;
+    --sidebar-ring: 354 66% 40%;
   }
 }
 

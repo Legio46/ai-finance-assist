@@ -8,7 +8,7 @@ interface AuthContextType {
   session: Session | null;
   profile: any | null;
   loading: boolean;
-  signUp: (email: string, password: string, fullName: string) => Promise<{ error?: any }>;
+  signUp: (email: string, password: string, fullName: string, accountType?: string) => Promise<{ error?: any }>;
   signIn: (email: string, password: string) => Promise<{ error?: any }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
@@ -89,34 +89,51 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, fullName: string) => {
+  const signUp = async (email: string, password: string, fullName: string, accountType: string = 'personal') => {
     try {
       const redirectUrl = `${window.location.origin}/`;
       
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           emailRedirectTo: redirectUrl,
           data: {
             full_name: fullName,
+            account_type: accountType,
           }
         }
       });
 
       if (error) {
-        toast({
-          title: "Sign Up Error",
-          description: error.message,
-          variant: "destructive",
-        });
+        if (error.message.includes('User already registered')) {
+          toast({
+            title: "Account exists",
+            description: "This email is already registered. Please try signing in instead.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Sign Up Error",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
         return { error };
       }
 
-      toast({
-        title: "Check your email",
-        description: "We've sent you a confirmation link.",
-      });
+      // Check if email confirmation is required
+      if (data.user && !data.session) {
+        toast({
+          title: "Check your email",
+          description: "We've sent you a confirmation link. Please check your email and click the link to activate your account.",
+        });
+      } else {
+        toast({
+          title: "Account created!",
+          description: "Welcome to Legio Financial!",
+        });
+      }
 
       return {};
     } catch (error: any) {
@@ -131,17 +148,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
-        toast({
-          title: "Sign In Error",
-          description: error.message,
-          variant: "destructive",
-        });
+        if (error.message.includes('Invalid login credentials')) {
+          toast({
+            title: "Sign In Error",
+            description: "Invalid email or password. Please check your credentials and try again.",
+            variant: "destructive",
+          });
+        } else if (error.message.includes('Email not confirmed')) {
+          toast({
+            title: "Email not confirmed",
+            description: "Please check your email and click the confirmation link before signing in.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Sign In Error",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
         return { error };
       }
 

@@ -22,6 +22,7 @@ const Auth = () => {
     password: '',
     fullName: '',
     confirmPassword: '',
+    accountType: 'personal', // New field
   });
 
   // Redirect if already authenticated
@@ -45,7 +46,7 @@ const Auth = () => {
     }
 
     setIsLoading(true);
-    await signUp(signUpData.email, signUpData.password, signUpData.fullName);
+    await signUp(signUpData.email, signUpData.password, signUpData.fullName, signUpData.accountType);
     setIsLoading(false);
   };
 
@@ -132,6 +133,19 @@ const Auth = () => {
                       onChange={(e) => setSignUpData({ ...signUpData, fullName: e.target.value })}
                       required
                     />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="account-type">Account Type</Label>
+                    <select
+                      id="account-type"
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      value={signUpData.accountType}
+                      onChange={(e) => setSignUpData({ ...signUpData, accountType: e.target.value })}
+                      required
+                    >
+                      <option value="personal">Personal</option>
+                      <option value="business">Business</option>
+                    </select>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="signup-email">Email</Label>
