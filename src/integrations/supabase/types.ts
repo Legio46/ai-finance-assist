@@ -92,6 +92,95 @@ export type Database = {
         }
         Relationships: []
       }
+      credit_card_transactions: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          credit_card_id: string
+          description: string
+          id: string
+          transaction_date: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string
+          credit_card_id: string
+          description: string
+          id?: string
+          transaction_date?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          credit_card_id?: string
+          description?: string
+          id?: string
+          transaction_date?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_card_transactions_credit_card_id_fkey"
+            columns: ["credit_card_id"]
+            isOneToOne: false
+            referencedRelation: "credit_cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      credit_cards: {
+        Row: {
+          apr: number | null
+          bank_name: string | null
+          card_name: string
+          card_type: string
+          created_at: string
+          credit_limit: number | null
+          current_balance: number | null
+          due_date: string | null
+          id: string
+          is_active: boolean | null
+          last_four_digits: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          apr?: number | null
+          bank_name?: string | null
+          card_name: string
+          card_type: string
+          created_at?: string
+          credit_limit?: number | null
+          current_balance?: number | null
+          due_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_four_digits: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          apr?: number | null
+          bank_name?: string | null
+          card_name?: string
+          card_type?: string
+          created_at?: string
+          credit_limit?: number | null
+          current_balance?: number | null
+          due_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_four_digits?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       financial_advice: {
         Row: {
           advice_content: string
@@ -193,11 +282,14 @@ export type Database = {
           email: string
           full_name: string | null
           id: string
+          phone_number: string | null
+          phone_verified: boolean | null
           subscription_end: string | null
           subscription_status: string | null
           subscription_tier: string | null
           trial_end: string | null
           trial_ends_at: string | null
+          two_factor_enabled: boolean | null
           updated_at: string
           user_id: string
         }
@@ -208,11 +300,14 @@ export type Database = {
           email: string
           full_name?: string | null
           id?: string
+          phone_number?: string | null
+          phone_verified?: boolean | null
           subscription_end?: string | null
           subscription_status?: string | null
           subscription_tier?: string | null
           trial_end?: string | null
           trial_ends_at?: string | null
+          two_factor_enabled?: boolean | null
           updated_at?: string
           user_id: string
         }
@@ -223,11 +318,14 @@ export type Database = {
           email?: string
           full_name?: string | null
           id?: string
+          phone_number?: string | null
+          phone_verified?: boolean | null
           subscription_end?: string | null
           subscription_status?: string | null
           subscription_tier?: string | null
           trial_end?: string | null
           trial_ends_at?: string | null
+          two_factor_enabled?: boolean | null
           updated_at?: string
           user_id?: string
         }
