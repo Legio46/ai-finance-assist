@@ -5,9 +5,11 @@ import { Check } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 const Pricing = () => {
   const { toast } = useToast();
+  const [isYearly, setIsYearly] = useState(false);
   const personalFeatures = [
     "Personal expense tracking",
     "Monthly spending analysis",
@@ -38,6 +40,33 @@ const Pricing = () => {
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Choose the plan that fits your needs. Start with a 7-day free trial, no credit card required.
           </p>
+          
+          {/* Yearly/Monthly Toggle */}
+          <div className="flex items-center justify-center gap-4 mt-8">
+            <span className={`text-sm ${!isYearly ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
+              Monthly
+            </span>
+            <button
+              onClick={() => setIsYearly(!isYearly)}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+                isYearly ? 'bg-primary' : 'bg-input'
+              }`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-background transition-transform ${
+                  isYearly ? 'translate-x-6' : 'translate-x-1'
+                }`}
+              />
+            </button>
+            <span className={`text-sm ${isYearly ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
+              Yearly
+            </span>
+            {isYearly && (
+              <Badge variant="secondary" className="ml-2">
+                Save 10%
+              </Badge>
+            )}
+          </div>
         </div>
 
         {/* Pricing Cards */}
@@ -48,8 +77,20 @@ const Pricing = () => {
               <CardTitle className="text-2xl">Personal</CardTitle>
               <CardDescription>Perfect for individuals managing personal finances</CardDescription>
               <div className="mt-4">
-                <span className="text-4xl font-bold">$29.99</span>
-                <span className="text-muted-foreground">/month</span>
+                {isYearly ? (
+                  <>
+                    <span className="text-4xl font-bold">$323.89</span>
+                    <span className="text-muted-foreground">/year</span>
+                    <div className="text-sm text-muted-foreground">
+                      <span className="line-through">$359.88</span> Save $35.99
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-4xl font-bold">$29.99</span>
+                    <span className="text-muted-foreground">/month</span>
+                  </>
+                )}
               </div>
               <Badge variant="secondary" className="w-fit mx-auto mt-2">7-day free trial</Badge>
             </CardHeader>
@@ -94,8 +135,20 @@ const Pricing = () => {
               <CardTitle className="text-2xl">Business</CardTitle>
               <CardDescription>For entrepreneurs and businesses of all sizes</CardDescription>
               <div className="mt-4">
-                <span className="text-4xl font-bold">$49.99</span>
-                <span className="text-muted-foreground">/month</span>
+                {isYearly ? (
+                  <>
+                    <span className="text-4xl font-bold">$539.89</span>
+                    <span className="text-muted-foreground">/year</span>
+                    <div className="text-sm text-muted-foreground">
+                      <span className="line-through">$599.88</span> Save $59.99
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-4xl font-bold">$49.99</span>
+                    <span className="text-muted-foreground">/month</span>
+                  </>
+                )}
               </div>
               <Badge variant="secondary" className="w-fit mx-auto mt-2">7-day free trial</Badge>
             </CardHeader>
