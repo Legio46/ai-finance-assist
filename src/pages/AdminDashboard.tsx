@@ -40,7 +40,7 @@ const AdminDashboard = () => {
   const [notifications, setNotifications] = useState([]);
 
   // Check if user is admin (you can adjust this logic)
-  const isAdmin = user?.email === 'admin@legiox46.com'; // Replace with your admin email
+  const isAdmin = user?.email === 'legiox46@gmail.com'; // Your admin email
 
   // Mock data for revenue chart
   const revenueData = [

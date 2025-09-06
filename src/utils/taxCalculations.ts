@@ -23,9 +23,7 @@ export const taxRates: CountryTaxRates = {
   slovakia: {
     name: "Slovakia",
     brackets: [
-      { min: 0, max: 3936, rate: 0 },
-      { min: 3936, max: 22167, rate: 19 },
-      { min: 22167, max: null, rate: 25 }
+      { min: 0, max: null, rate: 24 }
     ],
     socialSecurity: 13.4,
     healthInsurance: 14
@@ -33,31 +31,19 @@ export const taxRates: CountryTaxRates = {
   usa: {
     name: "United States",
     brackets: [
-      { min: 0, max: 11000, rate: 10 },
-      { min: 11000, max: 44725, rate: 12 },
-      { min: 44725, max: 95375, rate: 22 },
-      { min: 95375, max: 182050, rate: 24 },
-      { min: 182050, max: 231250, rate: 32 },
-      { min: 231250, max: 578125, rate: 35 },
-      { min: 578125, max: null, rate: 37 }
+      { min: 0, max: null, rate: 25.57 }
     ]
   },
   uk: {
     name: "United Kingdom",
     brackets: [
-      { min: 0, max: 12570, rate: 0 },
-      { min: 12570, max: 50270, rate: 20 },
-      { min: 50270, max: 125140, rate: 40 },
-      { min: 125140, max: null, rate: 45 }
+      { min: 0, max: null, rate: 25 }
     ]
   },
   germany: {
     name: "Germany",
     brackets: [
-      { min: 0, max: 10908, rate: 0 },
-      { min: 10908, max: 62810, rate: 14 },
-      { min: 62810, max: 277826, rate: 42 },
-      { min: 277826, max: null, rate: 45 }
+      { min: 0, max: null, rate: 30.06 }
     ],
     socialSecurity: 18.6,
     healthInsurance: 14.6
@@ -65,11 +51,7 @@ export const taxRates: CountryTaxRates = {
   france: {
     name: "France",
     brackets: [
-      { min: 0, max: 10777, rate: 0 },
-      { min: 10777, max: 27478, rate: 11 },
-      { min: 27478, max: 78570, rate: 30 },
-      { min: 78570, max: 168994, rate: 41 },
-      { min: 168994, max: null, rate: 45 }
+      { min: 0, max: null, rate: 25.82 }
     ],
     socialSecurity: 22
   }
