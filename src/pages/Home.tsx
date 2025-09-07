@@ -2,8 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Calculator, TrendingUp, DollarSign, Shield, Users, Globe } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Home = () => {
+  const { t } = useLanguage();
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20">
       {/* Hero Section */}
@@ -17,17 +20,17 @@ const Home = () => {
         </p>
         <div className="flex gap-4 justify-center flex-wrap">
           <Button asChild size="lg" className="text-lg px-8">
-            <Link to="/auth">Start Free Trial</Link>
+            <Link to="/auth">{t('startFreeTrial')}</Link>
           </Button>
           <Button asChild variant="outline" size="lg" className="text-lg px-8">
-            <Link to="/pricing">View Pricing</Link>
+            <Link to="/pricing">{t('viewPricing')}</Link>
           </Button>
         </div>
       </section>
 
       {/* Features Section */}
       <section className="container mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold text-center mb-12">Powerful Features for Everyone</h2>
+        <h2 className="text-3xl font-bold text-center mb-12">{t('powerfulFeatures')}</h2>
         <div className="grid md:grid-cols-3 gap-8">
           <Card className="text-center">
             <CardHeader>

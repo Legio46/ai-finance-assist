@@ -107,10 +107,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (error) {
+        console.error('SignUp error details:', error);
         if (error.message.includes('User already registered')) {
           toast({
             title: "Account exists",
             description: "This email is already registered. Please try signing in instead.",
+            variant: "destructive",
+          });
+        } else if (error.message.includes('signup_disabled')) {
+          toast({
+            title: "Account Creation",
+            description: "Please contact support to create an account.",
             variant: "destructive",
           });
         } else {

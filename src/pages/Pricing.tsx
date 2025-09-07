@@ -6,9 +6,11 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Pricing = () => {
   const { toast } = useToast();
+  const { t, formatCurrency } = useLanguage();
   const [isYearly, setIsYearly] = useState(false);
   const personalFeatures = [
     "Personal expense tracking",
@@ -74,25 +76,25 @@ const Pricing = () => {
           {/* Personal Plan */}
           <Card className="relative">
             <CardHeader className="text-center">
-              <CardTitle className="text-2xl">Personal</CardTitle>
+              <CardTitle className="text-2xl">{t('personal')}</CardTitle>
               <CardDescription>Perfect for individuals managing personal finances</CardDescription>
               <div className="mt-4">
                 {isYearly ? (
                   <>
-                    <span className="text-4xl font-bold">$323.89</span>
-                    <span className="text-muted-foreground">/year</span>
+                    <span className="text-4xl font-bold">{formatCurrency(323.89)}</span>
+                    <span className="text-muted-foreground">/{t('yearly')}</span>
                     <div className="text-sm text-muted-foreground">
-                      <span className="line-through">$359.88</span> Save $35.99
+                      <span className="line-through">{formatCurrency(359.88)}</span> Save {formatCurrency(35.99)}
                     </div>
                   </>
                 ) : (
                   <>
-                    <span className="text-4xl font-bold">$29.99</span>
-                    <span className="text-muted-foreground">/month</span>
+                    <span className="text-4xl font-bold">{formatCurrency(29.99)}</span>
+                    <span className="text-muted-foreground">/{t('monthly')}</span>
                   </>
                 )}
               </div>
-              <Badge variant="secondary" className="w-fit mx-auto mt-2">7-day free trial</Badge>
+              <Badge variant="secondary" className="w-fit mx-auto mt-2">7-day {t('free')} trial</Badge>
             </CardHeader>
             <CardContent>
               <ul className="space-y-3 mb-6">
@@ -132,25 +134,25 @@ const Pricing = () => {
               <Badge className="bg-primary text-primary-foreground">Most Popular</Badge>
             </div>
             <CardHeader className="text-center">
-              <CardTitle className="text-2xl">Business</CardTitle>
+              <CardTitle className="text-2xl">{t('business')}</CardTitle>
               <CardDescription>For entrepreneurs and businesses of all sizes</CardDescription>
               <div className="mt-4">
                 {isYearly ? (
                   <>
-                    <span className="text-4xl font-bold">$539.89</span>
-                    <span className="text-muted-foreground">/year</span>
+                    <span className="text-4xl font-bold">{formatCurrency(539.89)}</span>
+                    <span className="text-muted-foreground">/{t('yearly')}</span>
                     <div className="text-sm text-muted-foreground">
-                      <span className="line-through">$599.88</span> Save $59.99
+                      <span className="line-through">{formatCurrency(599.88)}</span> Save {formatCurrency(59.99)}
                     </div>
                   </>
                 ) : (
                   <>
-                    <span className="text-4xl font-bold">$49.99</span>
-                    <span className="text-muted-foreground">/month</span>
+                    <span className="text-4xl font-bold">{formatCurrency(49.99)}</span>
+                    <span className="text-muted-foreground">/{t('monthly')}</span>
                   </>
                 )}
               </div>
-              <Badge variant="secondary" className="w-fit mx-auto mt-2">7-day free trial</Badge>
+              <Badge variant="secondary" className="w-fit mx-auto mt-2">7-day {t('free')} trial</Badge>
             </CardHeader>
             <CardContent>
               <ul className="space-y-3 mb-6">

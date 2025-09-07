@@ -15,6 +15,7 @@ import TermsOfService from "./pages/TermsOfService";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import CreateAccount from "./pages/CreateAccount";
 import NotFound from "./pages/NotFound";
 import Affiliate from "./pages/Affiliate";
 
@@ -37,6 +38,7 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/create-account" element={<CreateAccount />} />
               <Route path="/affiliate" element={<Affiliate />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
