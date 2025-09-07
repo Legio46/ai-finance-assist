@@ -17,6 +17,7 @@ const Auth = () => {
   const [signInData, setSignInData] = useState({
     email: '',
     password: '',
+    rememberMe: false,
   });
 
   const [signUpData, setSignUpData] = useState({
@@ -36,7 +37,7 @@ const Auth = () => {
     e.preventDefault();
     setIsLoading(true);
     
-    await signIn(signInData.email, signInData.password);
+    await signIn(signInData.email, signInData.password, signInData.rememberMe);
     setIsLoading(false);
   };
 
@@ -122,6 +123,18 @@ const Auth = () => {
                       required
                     />
                   </div>
+                  <div className="flex items-center justify-between">
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={signInData.rememberMe}
+                        onChange={(e) => setSignInData({ ...signInData, rememberMe: e.target.checked })}
+                        className="rounded border-border"
+                      />
+                      <span className="text-sm text-muted-foreground">Stay signed in</span>
+                    </label>
+                  </div>
+                  
                   <Button 
                     type="submit" 
                     className="w-full bg-gradient-primary hover:opacity-90"

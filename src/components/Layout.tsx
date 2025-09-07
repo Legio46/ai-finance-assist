@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageSelector from "@/components/LanguageSelector";
+import logo from "@/assets/logo.png";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
@@ -15,7 +16,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <nav className="flex justify-between items-center">
             <Link to="/" className="flex items-center gap-2 text-2xl font-bold text-primary">
               <img 
-                src="https://yt3.googleusercontent.com/JrEbriLrQ3IVhPqDzm2qh5_oZ8pNe5iI8rvQHBhv1JGxUgr-ZbXA5gZmSyUDrEn1WIRRLDKjew=s900-c-k-c0x00ffffff-no-rj" 
+                src={logo} 
                 alt="Legio Financial Logo" 
                 className="w-8 h-8 rounded-lg object-cover"
               />

@@ -95,8 +95,32 @@ export const useLanguage = () => {
 };
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState('en');
-  const [currency, setCurrency] = useState('USD');
+  const [language, setLanguage] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('language') || 'en';
+    }
+    return 'en';
+  });
+  const [currency, setCurrency] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('currency') || 'USD';
+    }
+    return 'USD';
+  });
+
+  const handleSetLanguage = (lang: string) => {
+    setLanguage(lang);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('language', lang);
+    }
+  };
+
+  const handleSetCurrency = (curr: string) => {
+    setCurrency(curr);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('currency', curr);
+    }
+  };
 
   const t = (key: string): string => {
     return translations[language]?.[key] || translations.en[key] || key;
@@ -106,8 +130,8 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     <LanguageContext.Provider value={{
       language,
       currency,
-      setLanguage,
-      setCurrency,
+      setLanguage: handleSetLanguage,
+      setCurrency: handleSetCurrency,
       t,
     }}>
       {children}
