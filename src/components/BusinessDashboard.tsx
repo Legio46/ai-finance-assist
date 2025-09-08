@@ -10,7 +10,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/hooks/use-toast";
 import CreditCardManager from '@/components/CreditCardManager';
+import CreditCardTransactions from '@/components/CreditCardTransactions';
 import { calculateTax } from "@/utils/taxCalculations";
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const BusinessDashboard = () => {
   const { user } = useAuth();
@@ -303,6 +305,9 @@ const BusinessDashboard = () => {
           </CardContent>
         </Card>
       )}
+      
+      {/* Credit Card Transactions Section */}
+      <CreditCardTransactions cardType="business" />
     </div>
   );
 };

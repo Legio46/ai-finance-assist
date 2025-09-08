@@ -17,10 +17,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             <Link to="/" className="flex items-center gap-2 text-2xl font-bold text-primary">
               <img 
                 src={logo} 
-                alt="Legio Financial Logo" 
+                alt="Legio Logo" 
                 className="w-8 h-8 rounded-lg object-cover"
               />
-              Legio Financial
+              Legio
             </Link>
             
             <div className="hidden md:flex items-center space-x-8">
@@ -79,7 +79,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-5 gap-8">
             <div>
-              <h3 className="font-bold text-lg mb-4 text-primary">Legio Financial</h3>
+              <h3 className="font-bold text-lg mb-4 text-primary">Legio</h3>
               <p className="text-muted-foreground text-sm mb-4">
                 Empowering individuals and businesses with intelligent financial management tools.
               </p>
@@ -148,7 +148,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           </div>
           
           <div className="border-t border-border mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; {new Date().getFullYear()} Legio Financial. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} Legio. All rights reserved.</p>
           </div>
         </div>
       </footer>

@@ -51,7 +51,7 @@ const Dashboard = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              FinanceAI
+              Legio
             </h1>
             <Badge variant={subscriptionStatus === 'free' ? 'secondary' : 'default'} className="capitalize">
               {subscriptionStatus === 'free' && isTrialActive ? 'Trial' : subscriptionStatus}
@@ -62,6 +62,11 @@ const Dashboard = () => {
             <span className="text-sm text-muted-foreground">
               Welcome, {profile?.full_name || user?.email}
             </span>
+            {user?.email === 'legiox46@gmail.com' && (
+              <Button variant="ghost" onClick={() => window.location.href = '/admin'}>
+                Admin Panel
+              </Button>
+            )}
             <Button variant="outline" onClick={signOut}>
               Sign out
             </Button>

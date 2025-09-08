@@ -8,16 +8,19 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, CreditCard, TrendingUp, TrendingDown, PieChart } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/components/ui/use-toast';
-
+import { useToast } from "@/hooks/use-toast";
 import CreditCardManager from '@/components/CreditCardManager';
+import CreditCardTransactions from '@/components/CreditCardTransactions';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const PersonalDashboard = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [expenses, setExpenses] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
+  const { formatCurrency } = useLanguage();
+
   const [formData, setFormData] = useState({
     category: '',
     amount: '',
@@ -27,17 +30,14 @@ const PersonalDashboard = () => {
   });
 
   const expenseCategories = [
-    'Housing/Rent',
-    'Groceries',
+    'Food & Dining',
     'Transportation',
-    'Utilities',
-    'Entertainment',
-    'Healthcare',
     'Shopping',
-    'Dining Out',
+    'Entertainment',
+    'Bills & Utilities',
+    'Healthcare',
+    'Travel',
     'Education',
-    'Insurance',
-    'Savings',
     'Other'
   ];
 
@@ -48,83 +48,95 @@ const PersonalDashboard = () => {
   }, [user]);
 
   const fetchExpenses = async () => {
+    if (!user) return;
+
     try {
       const { data, error } = await supabase
         .from('personal_expenses')
         .select('*')
-        .eq('user_id', user?.id)
-        .order('date', { ascending: false })
-        .limit(50);
+        .eq('user_id', user.id)
+        .order('date', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching expenses:', error);
+        return;
+      }
+
       setExpenses(data || []);
     } catch (error) {
-      console.error('Error fetching expenses:', error);
-    }
-  };
-
-  const addExpense = async () => {
-    if (!formData.category || !formData.amount) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in category and amount.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const { error } = await supabase
-        .from('personal_expenses')
-        .insert([{
-          user_id: user?.id,
-          category: formData.category,
-          amount: parseFloat(formData.amount),
-          description: formData.description,
-          date: formData.date,
-          is_recurring: formData.is_recurring,
-        }]);
-
-      if (error) throw error;
-
-      toast({
-        title: "Expense Added",
-        description: `Added $${formData.amount} for ${formData.category}`,
-      });
-
-      // Reset form
-      setFormData({
-        category: '',
-        amount: '',
-        description: '',
-        date: new Date().toISOString().split('T')[0],
-        is_recurring: false,
-      });
-
-      setShowAddForm(false);
-      fetchExpenses();
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to add expense. Please try again.",
-        variant: "destructive",
-      });
+      console.error('Error:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Calculate statistics
-  const currentMonth = new Date().getMonth();
-  const currentYear = new Date().getFullYear();
+  const addExpense = async (e) => {
+    e.preventDefault();
+    if (!user) return;
+
+    if (formData.amount && formData.category) {
+      try {
+        const { error } = await supabase
+          .from('personal_expenses')
+          .insert([
+            {
+              user_id: user.id,
+              category: formData.category,
+              amount: parseFloat(formData.amount),
+              description: formData.description,
+              date: formData.date,
+              is_recurring: formData.is_recurring,
+            }
+          ]);
+
+        if (error) {
+          console.error('Error adding expense:', error);
+          toast({
+            title: "Error",
+            description: "Failed to add expense",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        toast({
+          title: "Expense Added",
+          description: "Your expense has been recorded successfully.",
+        });
+
+        setFormData({
+          category: '',
+          amount: '',
+          description: '',
+          date: new Date().toISOString().split('T')[0],
+          is_recurring: false,
+        });
+        setShowAddForm(false);
+        fetchExpenses();
+      } catch (error) {
+        console.error('Error adding expense:', error);
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  // Calculate current month total
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth();
+  const currentYear = currentDate.getFullYear();
   
   const currentMonthExpenses = expenses.filter(expense => {
     const expenseDate = new Date(expense.date);
     return expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear;
   });
+  
+  const currentMonthTotal = currentMonthExpenses.reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
 
+  // Calculate last month total for comparison
   const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
   const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
   
@@ -132,20 +144,32 @@ const PersonalDashboard = () => {
     const expenseDate = new Date(expense.date);
     return expenseDate.getMonth() === lastMonth && expenseDate.getFullYear() === lastMonthYear;
   });
+  
+  const lastMonthTotal = lastMonthExpenses.reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
+  const monthlyChange = lastMonthTotal > 0 ? ((currentMonthTotal - lastMonthTotal) / lastMonthTotal) * 100 : 0;
 
-  const currentMonthTotal = currentMonthExpenses.reduce((sum, expense) => sum + (expense.amount || 0), 0);
-  const lastMonthTotal = lastMonthExpenses.reduce((sum, expense) => sum + (expense.amount || 0), 0);
-  const monthlyChange = lastMonthTotal > 0 ? (((currentMonthTotal || 0) - (lastMonthTotal || 0)) / (lastMonthTotal || 1)) * 100 : 0;
-
-  // Category breakdown
+  // Calculate category breakdown
   const categoryTotals = currentMonthExpenses.reduce((acc, expense) => {
-    acc[expense.category] = (acc[expense.category] || 0) + (expense.amount || 0);
+    acc[expense.category] = (acc[expense.category] || 0) + parseFloat(expense.amount);
     return acc;
-  }, {} as Record<string, number>);
+  }, {});
 
   const topCategories = Object.entries(categoryTotals)
     .sort(([,a], [,b]) => Number(b) - Number(a))
     .slice(0, 5);
+
+  if (loading) {
+    return (
+      <div className="text-center py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+        <p className="mt-2 text-muted-foreground">Loading personal dashboard...</p>
+      </div>
+    );
+  }
+
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const currentDay = currentDate.getDate();
+  const averageDaily = currentDay > 0 ? Number(currentMonthTotal) / Number(currentDay) : 0;
 
   return (
     <div className="space-y-6">
@@ -154,15 +178,17 @@ const PersonalDashboard = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">This Month</CardTitle>
-            <CreditCard className="h-4 w-4 text-muted-foreground" />
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${currentMonthTotal.toLocaleString()}</div>
+            <div className="text-2xl font-bold">{formatCurrency(currentMonthTotal)}</div>
             <p className="text-xs text-muted-foreground">
-              {monthlyChange >= 0 ? (
+              {monthlyChange > 0 ? (
                 <span className="text-destructive">+{monthlyChange.toFixed(1)}%</span>
-              ) : (
+              ) : monthlyChange < 0 ? (
                 <span className="text-success">{monthlyChange.toFixed(1)}%</span>
+              ) : (
+                <span>No change</span>
               )} from last month
             </p>
           </CardContent>
@@ -170,14 +196,14 @@ const PersonalDashboard = () => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Daily</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Daily Average</CardTitle>
+            <TrendingDown className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              ${(currentMonthTotal / new Date().getDate()).toFixed(0)}
-            </div>
-            <p className="text-xs text-muted-foreground">Daily spending rate</p>
+            <div className="text-2xl font-bold">{formatCurrency(averageDaily)}</div>
+            <p className="text-xs text-muted-foreground">
+              Based on current month
+            </p>
           </CardContent>
         </Card>
 
@@ -188,10 +214,10 @@ const PersonalDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {topCategories.length > 0 ? `$${topCategories[0][1].toLocaleString()}` : '$0'}
+              {topCategories.length > 0 ? topCategories[0][0] : 'None'}
             </div>
             <p className="text-xs text-muted-foreground">
-              {topCategories.length > 0 ? topCategories[0][0] : 'No expenses yet'}
+              {topCategories.length > 0 ? formatCurrency(Number(topCategories[0][1])) : 'No expenses yet'}
             </p>
           </CardContent>
         </Card>
@@ -202,10 +228,8 @@ const PersonalDashboard = () => {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Track Expenses</CardTitle>
-              <CardDescription>
-                Add and monitor your personal expenses with AI insights
-              </CardDescription>
+              <CardTitle>Personal Expenses</CardTitle>
+              <CardDescription>Track your personal spending and get insights</CardDescription>
             </div>
             <Button 
               onClick={() => setShowAddForm(!showAddForm)}
@@ -216,102 +240,87 @@ const PersonalDashboard = () => {
             </Button>
           </div>
         </CardHeader>
-        
         {showAddForm && (
-          <CardContent className="space-y-4 border-t">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="category">Category</Label>
-                <Select 
-                  value={formData.category} 
-                  onValueChange={(value) => setFormData({ ...formData, category: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {expenseCategories.map((category) => (
-                      <SelectItem key={category} value={category}>{category}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+          <CardContent className="border-t pt-6">
+            <form onSubmit={addExpense} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="category">Category</Label>
+                  <Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {expenseCategories.map((category) => (
+                        <SelectItem key={category} value={category}>{category}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="amount">Amount</Label>
+                  <Input
+                    id="amount"
+                    type="number"
+                    step="0.01"
+                    value={formData.amount}
+                    onChange={(e) => setFormData({...formData, amount: e.target.value})}
+                    required
+                  />
+                </div>
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="amount">Amount ($)</Label>
-                <Input
-                  id="amount"
-                  type="number"
-                  step="0.01"
-                  placeholder="0.00"
-                  value={formData.amount}
-                  onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="description">Description (Optional)</Label>
+              <div>
+                <Label htmlFor="description">Description</Label>
                 <Input
                   id="description"
-                  placeholder="What was this for?"
                   value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  placeholder="Optional description"
                 />
               </div>
-
-              <div className="space-y-2">
+              <div>
                 <Label htmlFor="date">Date</Label>
                 <Input
                   id="date"
                   type="date"
                   value={formData.date}
-                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                  onChange={(e) => setFormData({...formData, date: e.target.value})}
+                  required
                 />
               </div>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <Button 
-                onClick={addExpense} 
-                disabled={loading}
-                className="bg-gradient-primary hover:opacity-90"
-              >
-                {loading ? 'Adding...' : 'Add Expense'}
+              <Button type="submit" className="w-full">
+                Add Expense
               </Button>
-              <Button 
-                variant="outline" 
-                onClick={() => setShowAddForm(false)}
-              >
-                Cancel
-              </Button>
-            </div>
+            </form>
           </CardContent>
         )}
       </Card>
 
-      {/* Credit Card Management */}
       <CreditCardManager cardType="personal" />
+
+      {/* Credit Card Transactions Section */}
+      <CreditCardTransactions cardType="personal" />
 
       {/* Category Breakdown */}
       {topCategories.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>This Month's Breakdown</CardTitle>
-            <CardDescription>Your spending by category</CardDescription>
+            <CardTitle>Spending Breakdown</CardTitle>
+            <CardDescription>Your top spending categories this month</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {topCategories.map(([category, amount]) => (
                 <div key={category} className="flex items-center justify-between">
+                  <span className="text-sm font-medium">{category}</span>
                   <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 rounded-full bg-primary"></div>
-                    <span className="font-medium">{category}</span>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-semibold">${amount.toLocaleString()}</div>
-                     <div className="text-sm text-muted-foreground">
-                       {currentMonthTotal > 0 ? ((Number(amount) / currentMonthTotal) * 100).toFixed(1) : '0'}%
-                     </div>
+                    <div className="w-24 bg-secondary rounded-full h-2">
+                      <div 
+                        className="bg-primary h-2 rounded-full" 
+                        style={{ width: `${(Number(amount) / currentMonthTotal) * 100}%` }}
+                      ></div>
+                    </div>
+                    <span className="text-sm font-bold">{formatCurrency(Number(amount))}</span>
                   </div>
                 </div>
               ))}
@@ -328,24 +337,19 @@ const PersonalDashboard = () => {
             <CardDescription>Your latest spending activity</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {expenses.slice(0, 10).map((expense) => (
-                <div key={expense.id} className="flex items-center justify-between p-3 border rounded-lg">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2">
-                      <Badge variant="outline">{expense.category}</Badge>
-                      {expense.is_recurring && (
-                        <Badge variant="secondary">Recurring</Badge>
-                      )}
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {expense.description || 'No description'} • {new Date(expense.date).toLocaleDateString()}
-                    </p>
+                <div key={expense.id} className="flex justify-between items-center py-2 border-b border-border last:border-0">
+                  <div>
+                    <div className="font-medium">{expense.category}</div>
+                    <div className="text-sm text-muted-foreground">{expense.description || 'No description'}</div>
+                    <div className="text-xs text-muted-foreground">{new Date(expense.date).toLocaleDateString()}</div>
                   </div>
                   <div className="text-right">
-                    <div className="font-semibold text-destructive">
-                      -${expense.amount.toLocaleString()}
-                    </div>
+                    <div className="font-bold">{formatCurrency(expense.amount)}</div>
+                    {expense.is_recurring && (
+                      <Badge variant="secondary" className="text-xs">Recurring</Badge>
+                    )}
                   </div>
                 </div>
               ))}
