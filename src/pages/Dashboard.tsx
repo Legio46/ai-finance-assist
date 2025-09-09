@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -63,8 +63,11 @@ const Dashboard = () => {
               Welcome, {profile?.full_name || user?.email}
             </span>
             {user?.email === 'legiox46@gmail.com' && (
-              <Button variant="ghost" onClick={() => window.location.href = '/admin'}>
-                Admin Panel
+              <Button variant="ghost" asChild>
+                <Link to="/admin">
+                  <Crown className="w-4 h-4 mr-2" />
+                  Admin Panel
+                </Link>
               </Button>
             )}
             <Button variant="outline" onClick={signOut}>
