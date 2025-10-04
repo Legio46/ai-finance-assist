@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Shield, Phone, Mail, Key } from 'lucide-react';
 
@@ -16,6 +17,9 @@ const SecuritySettings = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
   const [isVerifyingPhone, setIsVerifyingPhone] = useState(false);
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   useEffect(() => {
     if (profile?.phone_number) {
@@ -147,24 +151,51 @@ const SecuritySettings = () => {
     }
   };
 
-  const handleChangePassword = async () => {
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: "Error",
+        description: "Passwords don't match",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast({
+        title: "Error",
+        description: "Password must be at least 6 characters",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(user?.email || '', {
-        redirectTo: `${window.location.origin}/auth`,
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
       });
 
       if (error) throw error;
 
       toast({
-        title: "Password reset email sent",
-        description: "Check your email for a link to reset your password.",
+        title: "Success",
+        description: "Your password has been updated successfully.",
       });
+      
+      setShowPasswordDialog(false);
+      setNewPassword('');
+      setConfirmPassword('');
     } catch (error: any) {
       toast({
         title: "Error",
         description: error.message,
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -330,9 +361,48 @@ const SecuritySettings = () => {
                 Update your password to keep your account secure
               </p>
             </div>
-            <Button onClick={handleChangePassword} variant="outline">
-              Change Password
-            </Button>
+            <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
+              <DialogTrigger asChild>
+                <Button variant="outline">
+                  Change Password
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Change Password</DialogTitle>
+                  <DialogDescription>
+                    Enter your new password below. Make sure it's at least 6 characters long.
+                  </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleChangePassword} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="new-password">New Password</Label>
+                    <Input
+                      id="new-password"
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="Enter new password"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="confirm-password">Confirm Password</Label>
+                    <Input
+                      id="confirm-password"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Confirm new password"
+                      required
+                    />
+                  </div>
+                  <Button type="submit" className="w-full" disabled={loading}>
+                    {loading ? 'Updating...' : 'Update Password'}
+                  </Button>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
         </CardContent>
       </Card>

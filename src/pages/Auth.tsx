@@ -37,11 +37,21 @@ const Auth = () => {
 
   // Check for password recovery mode
   useEffect(() => {
-    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    const type = hashParams.get('type');
-    if (type === 'recovery') {
-      setIsRecoveryMode(true);
-    }
+    const checkRecoveryMode = () => {
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const type = hashParams.get('type');
+      const accessToken = hashParams.get('access_token');
+      
+      if (type === 'recovery' && accessToken) {
+        setIsRecoveryMode(true);
+      }
+    };
+    
+    checkRecoveryMode();
+    
+    // Listen for hash changes
+    window.addEventListener('hashchange', checkRecoveryMode);
+    return () => window.removeEventListener('hashchange', checkRecoveryMode);
   }, []);
 
   // Redirect if already authenticated
