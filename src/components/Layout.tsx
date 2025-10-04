@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageSelector from "@/components/LanguageSelector";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import logo from "@/assets/logo.png";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
@@ -58,7 +59,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               </Link>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
               <LanguageSelector />
               <Button asChild>
                 <Link to="/auth">{t('getStarted')}</Link>

@@ -12,7 +12,7 @@ const Home = () => {
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-16 text-center">
         <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-          Legio Financial
+          Legio
         </h1>
         <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
           The complete AI-powered financial platform for entrepreneurs and individuals. 

@@ -149,15 +149,39 @@ const SecuritySettings = () => {
 
   const handleChangePassword = async () => {
     try {
-      const { error } = await supabase.auth.updateUser({
-        email: user?.email
+      const { error } = await supabase.auth.resetPasswordForEmail(user?.email || '', {
+        redirectTo: `${window.location.origin}/auth`,
       });
 
       if (error) throw error;
 
       toast({
         title: "Password reset email sent",
-        description: "Check your email for instructions to reset your password.",
+        description: "Check your email for a link to reset your password.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleChangeEmail = async () => {
+    const newEmail = prompt("Enter your new email address:");
+    if (!newEmail) return;
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        email: newEmail
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Verification email sent",
+        description: "Please check your new email address to confirm the change.",
       });
     } catch (error: any) {
       toast({
@@ -280,9 +304,14 @@ const SecuritySettings = () => {
               <p className="font-medium">Current Email</p>
               <p className="text-sm text-muted-foreground">{user?.email}</p>
             </div>
-            <div className="flex items-center gap-2 text-green-600">
-              <Shield className="h-4 w-4" />
-              <span className="text-sm">Verified</span>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 text-green-600 mr-2">
+                <Shield className="h-4 w-4" />
+                <span className="text-sm">Verified</span>
+              </div>
+              <Button onClick={handleChangeEmail} variant="outline" size="sm">
+                Change Email
+              </Button>
             </div>
           </div>
         </CardContent>

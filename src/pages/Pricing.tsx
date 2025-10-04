@@ -75,21 +75,30 @@ const Pricing = () => {
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-16">
           {/* Personal Plan */}
           <Card className="relative">
+            <div className="absolute -top-2 right-4">
+              <Badge className="bg-destructive text-destructive-foreground">SALE 50% OFF</Badge>
+            </div>
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">{t('personal')}</CardTitle>
               <CardDescription>Perfect for individuals managing personal finances</CardDescription>
               <div className="mt-4">
                 {isYearly ? (
                   <>
-                    <span className="text-4xl font-bold">{formatCurrency(323.89)}</span>
+                    <span className="text-4xl font-bold">{formatCurrency(161.89)}</span>
                     <span className="text-muted-foreground">/{t('yearly')}</span>
                     <div className="text-sm text-muted-foreground">
-                      <span className="line-through">{formatCurrency(359.88)}</span> Save {formatCurrency(35.99)}
+                      <span className="line-through">{formatCurrency(179.88)}</span> Save 10%
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      Regular price: <span className="line-through">{formatCurrency(323.78)}</span>
                     </div>
                   </>
                 ) : (
                   <>
-                    <span className="text-4xl font-bold">{formatCurrency(29.99)}</span>
+                    <div className="flex items-center justify-center gap-2">
+                      <span className="text-2xl text-muted-foreground line-through">{formatCurrency(29.99)}</span>
+                      <span className="text-4xl font-bold">{formatCurrency(14.99)}</span>
+                    </div>
                     <span className="text-muted-foreground">/{t('monthly')}</span>
                   </>
                 )}
@@ -130,24 +139,31 @@ const Pricing = () => {
 
           {/* Business Plan */}
           <Card className="relative border-primary">
-            <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
+            <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 flex gap-2">
               <Badge className="bg-primary text-primary-foreground">Most Popular</Badge>
+              <Badge className="bg-destructive text-destructive-foreground">SALE 40% OFF</Badge>
             </div>
-            <CardHeader className="text-center">
+            <CardHeader className="text-center pt-8">
               <CardTitle className="text-2xl">{t('business')}</CardTitle>
               <CardDescription>For entrepreneurs and businesses of all sizes</CardDescription>
               <div className="mt-4">
                 {isYearly ? (
                   <>
-                    <span className="text-4xl font-bold">{formatCurrency(539.89)}</span>
+                    <span className="text-4xl font-bold">{formatCurrency(323.89)}</span>
                     <span className="text-muted-foreground">/{t('yearly')}</span>
                     <div className="text-sm text-muted-foreground">
-                      <span className="line-through">{formatCurrency(599.88)}</span> Save {formatCurrency(59.99)}
+                      <span className="line-through">{formatCurrency(359.88)}</span> Save 10%
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      Regular price: <span className="line-through">{formatCurrency(539.78)}</span>
                     </div>
                   </>
                 ) : (
                   <>
-                    <span className="text-4xl font-bold">{formatCurrency(49.99)}</span>
+                    <div className="flex items-center justify-center gap-2">
+                      <span className="text-2xl text-muted-foreground line-through">{formatCurrency(49.99)}</span>
+                      <span className="text-4xl font-bold">{formatCurrency(29.99)}</span>
+                    </div>
                     <span className="text-muted-foreground">/{t('monthly')}</span>
                   </>
                 )}
