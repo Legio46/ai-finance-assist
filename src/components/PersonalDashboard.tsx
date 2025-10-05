@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Plus, CreditCard, TrendingUp, TrendingDown, PieChart } from 'lucide-react';
+import { Plus, CreditCard, TrendingUp, TrendingDown, PieChart, Camera, Upload, X, Eye } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/hooks/use-toast";
@@ -20,6 +20,9 @@ const PersonalDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const { formatCurrency } = useLanguage();
+  const [receiptFile, setReceiptFile] = useState<File | null>(null);
+  const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
+  const [uploadingReceipt, setUploadingReceipt] = useState(false);
 
   const [formData, setFormData] = useState({
     category: '',
@@ -70,13 +73,56 @@ const PersonalDashboard = () => {
     }
   };
 
+  const handleReceiptCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setReceiptFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setReceiptPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeReceipt = () => {
+    setReceiptFile(null);
+    setReceiptPreview(null);
+  };
+
+  const uploadReceipt = async (expenseId: string) => {
+    if (!receiptFile || !user) return null;
+
+    try {
+      const fileExt = receiptFile.name.split('.').pop();
+      const fileName = `${user.id}/${expenseId}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('receipts')
+        .upload(fileName, receiptFile);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('receipts')
+        .getPublicUrl(fileName);
+
+      return publicUrl;
+    } catch (error) {
+      console.error('Error uploading receipt:', error);
+      return null;
+    }
+  };
+
   const addExpense = async (e) => {
     e.preventDefault();
     if (!user) return;
 
     if (formData.amount && formData.category) {
+      setUploadingReceipt(true);
       try {
-        const { error } = await supabase
+        // First insert the expense
+        const { data: newExpense, error } = await supabase
           .from('personal_expenses')
           .insert([
             {
@@ -87,7 +133,9 @@ const PersonalDashboard = () => {
               date: formData.date,
               is_recurring: formData.is_recurring,
             }
-          ]);
+          ])
+          .select()
+          .single();
 
         if (error) {
           console.error('Error adding expense:', error);
@@ -99,9 +147,20 @@ const PersonalDashboard = () => {
           return;
         }
 
+        // If there's a receipt, upload it and update the expense
+        if (receiptFile && newExpense) {
+          const receiptUrl = await uploadReceipt(newExpense.id);
+          if (receiptUrl) {
+            await supabase
+              .from('personal_expenses')
+              .update({ receipt_image_url: receiptUrl })
+              .eq('id', newExpense.id);
+          }
+        }
+
         toast({
           title: "Expense Added",
-          description: "Your expense has been recorded successfully.",
+          description: receiptFile ? "Expense and receipt saved successfully." : "Your expense has been recorded successfully.",
         });
 
         setFormData({
@@ -111,6 +170,7 @@ const PersonalDashboard = () => {
           date: new Date().toISOString().split('T')[0],
           is_recurring: false,
         });
+        removeReceipt();
         setShowAddForm(false);
         fetchExpenses();
       } catch (error) {
@@ -120,6 +180,8 @@ const PersonalDashboard = () => {
           description: "An unexpected error occurred",
           variant: "destructive",
         });
+      } finally {
+        setUploadingReceipt(false);
       }
     }
   };
@@ -288,8 +350,63 @@ const PersonalDashboard = () => {
                   required
                 />
               </div>
-              <Button type="submit" className="w-full">
-                Add Expense
+              
+              {/* Receipt Upload */}
+              <div>
+                <Label>Receipt Image (Optional)</Label>
+                <div className="flex gap-2 mt-2">
+                  <label htmlFor="camera-input" className="flex-1">
+                    <div className="flex items-center justify-center gap-2 px-4 py-2 border border-input rounded-md cursor-pointer hover:bg-accent transition-colors">
+                      <Camera className="w-4 h-4" />
+                      <span className="text-sm">Camera</span>
+                    </div>
+                    <input
+                      id="camera-input"
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      onChange={handleReceiptCapture}
+                      className="hidden"
+                    />
+                  </label>
+                  
+                  <label htmlFor="file-input" className="flex-1">
+                    <div className="flex items-center justify-center gap-2 px-4 py-2 border border-input rounded-md cursor-pointer hover:bg-accent transition-colors">
+                      <Upload className="w-4 h-4" />
+                      <span className="text-sm">Upload</span>
+                    </div>
+                    <input
+                      id="file-input"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleReceiptCapture}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+                
+                {receiptPreview && (
+                  <div className="mt-2 relative">
+                    <img 
+                      src={receiptPreview} 
+                      alt="Receipt preview" 
+                      className="w-full h-32 object-cover rounded-md border border-input"
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      className="absolute top-2 right-2"
+                      onClick={removeReceipt}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              <Button type="submit" className="w-full" disabled={uploadingReceipt}>
+                {uploadingReceipt ? "Saving..." : "Add Expense"}
               </Button>
             </form>
           </CardContent>
@@ -339,11 +456,26 @@ const PersonalDashboard = () => {
           <CardContent>
             <div className="space-y-4">
               {expenses.slice(0, 10).map((expense) => (
-                <div key={expense.id} className="flex justify-between items-center py-2 border-b border-border last:border-0">
-                  <div>
-                    <div className="font-medium">{expense.category}</div>
-                    <div className="text-sm text-muted-foreground">{expense.description || 'No description'}</div>
-                    <div className="text-xs text-muted-foreground">{new Date(expense.date).toLocaleDateString()}</div>
+                <div key={expense.id} className="flex justify-between items-center gap-4 py-2 border-b border-border last:border-0">
+                  <div className="flex items-center gap-3 flex-1">
+                    {expense.receipt_image_url && (
+                      <div className="relative group">
+                        <img 
+                          src={expense.receipt_image_url} 
+                          alt="Receipt" 
+                          className="w-12 h-12 object-cover rounded border border-input cursor-pointer"
+                          onClick={() => window.open(expense.receipt_image_url, '_blank')}
+                        />
+                        <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded flex items-center justify-center">
+                          <Eye className="w-4 h-4 text-white" />
+                        </div>
+                      </div>
+                    )}
+                    <div>
+                      <div className="font-medium">{expense.category}</div>
+                      <div className="text-sm text-muted-foreground">{expense.description || 'No description'}</div>
+                      <div className="text-xs text-muted-foreground">{new Date(expense.date).toLocaleDateString()}</div>
+                    </div>
                   </div>
                   <div className="text-right">
                     <div className="font-bold">{formatCurrency(expense.amount)}</div>
