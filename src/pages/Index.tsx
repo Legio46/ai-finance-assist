@@ -14,8 +14,11 @@ import {
   ArrowRight,
   BarChart3
 } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Index = () => {
+  const { t } = useLanguage();
+  
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -30,11 +33,11 @@ const Index = () => {
           
           <div className="flex items-center space-x-4">
             <Link to="/auth">
-              <Button variant="outline">Sign In</Button>
+              <Button variant="outline">{t('signIn')}</Button>
             </Link>
             <Link to="/auth">
               <Button className="bg-gradient-primary hover:opacity-90">
-                Start Free Trial
+                {t('startFreeTrial')}
               </Button>
             </Link>
           </div>
@@ -45,25 +48,21 @@ const Index = () => {
       <section className="py-20 bg-gradient-to-br from-background via-muted/20 to-background">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            Your AI-Powered
-            <span className="block bg-gradient-financial bg-clip-text text-transparent">
-              Financial Assistant
-            </span>
+            {t('aiPoweredFinancial')}
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-            Revolutionize your financial management with AI. Calculate taxes, track expenses, 
-            get investment advice, and optimize your finances across multiple countries.
+            {t('heroDescription')}
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
             <Link to="/auth">
               <Button size="lg" className="bg-gradient-primary hover:opacity-90 text-lg px-8 py-6">
-                Start 7-Day Free Trial
+                {t('start7DayTrial')}
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </Link>
             <p className="text-sm text-muted-foreground">
-              No credit card required • Cancel anytime
+              {t('noCreditCard')}
             </p>
           </div>
 
@@ -72,11 +71,11 @@ const Index = () => {
             <Card className="text-center border-0 bg-card/50 backdrop-blur">
               <CardHeader>
                 <Calculator className="w-12 h-12 mx-auto mb-4 text-primary" />
-                <CardTitle>Smart Tax Calculator</CardTitle>
+                <CardTitle>{t('smartTaxCalculator')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  AI-powered tax calculations for Slovakia, USA, UK, Germany, and France
+                  {t('smartTaxDesc')}
                 </p>
               </CardContent>
             </Card>
@@ -84,11 +83,11 @@ const Index = () => {
             <Card className="text-center border-0 bg-card/50 backdrop-blur">
               <CardHeader>
                 <BarChart3 className="w-12 h-12 mx-auto mb-4 text-primary" />
-                <CardTitle>Expense Tracking</CardTitle>
+                <CardTitle>{t('expenseTracking')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Track personal and business expenses with intelligent insights
+                  {t('expenseTrackingDesc')}
                 </p>
               </CardContent>
             </Card>
@@ -96,11 +95,11 @@ const Index = () => {
             <Card className="text-center border-0 bg-card/50 backdrop-blur">
               <CardHeader>
                 <TrendingUp className="w-12 h-12 mx-auto mb-4 text-primary" />
-                <CardTitle>AI Financial Advisor</CardTitle>
+                <CardTitle>{t('aiFinancialAdvisor')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Get personalized advice on investments, mortgages, and savings
+                  {t('aiFinancialAdvisorDesc')}
                 </p>
               </CardContent>
             </Card>
@@ -112,9 +111,9 @@ const Index = () => {
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Simple, Transparent Pricing</h2>
+            <h2 className="text-4xl font-bold mb-4">{t('simpleTransparentPricing')}</h2>
             <p className="text-xl text-muted-foreground">
-              Choose the plan that fits your financial needs
+              {t('choosePlanDesc')}
             </p>
           </div>
 
@@ -122,37 +121,37 @@ const Index = () => {
             {/* Personal Plan */}
             <Card className="relative border-2">
               <CardHeader className="text-center pb-8">
-                <CardTitle className="text-2xl">Personal</CardTitle>
-                <CardDescription>Perfect for individuals</CardDescription>
+                <CardTitle className="text-2xl">{t('personal')}</CardTitle>
+                <CardDescription>{t('perfectForIndividuals')}</CardDescription>
                 <div className="mt-4">
                   <span className="text-4xl font-bold">$29.99</span>
-                  <span className="text-muted-foreground">/month</span>
+                  <span className="text-muted-foreground">/{t('monthly')}</span>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center space-x-2">
                   <Check className="w-5 h-5 text-success" />
-                  <span>Personal expense tracking</span>
+                  <span>{t('personalExpenseTracking')}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Check className="w-5 h-5 text-success" />
-                  <span>AI spending insights</span>
+                  <span>{t('aiSpendingInsights')}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Check className="w-5 h-5 text-success" />
-                  <span>Basic tax calculations</span>
+                  <span>{t('basicTaxCalculations')}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Check className="w-5 h-5 text-success" />
-                  <span>Savings recommendations</span>
+                  <span>{t('savingsRecommendations')}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Check className="w-5 h-5 text-success" />
-                  <span>Financial graphs & reports</span>
+                  <span>{t('financialGraphsReports')}</span>
                 </div>
                 <Link to="/auth" className="block">
                   <Button className="w-full mt-8 bg-gradient-primary hover:opacity-90">
-                    Start Free Trial
+                    {t('startFreeTrial')}
                   </Button>
                 </Link>
               </CardContent>
@@ -162,45 +161,45 @@ const Index = () => {
             <Card className="relative border-2 border-primary">
               <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                 <Badge className="bg-gradient-primary text-white px-4 py-1">
-                  Most Popular
+                  {t('mostPopular')}
                 </Badge>
               </div>
               <CardHeader className="text-center pb-8">
-                <CardTitle className="text-2xl">Business</CardTitle>
-                <CardDescription>For entrepreneurs & businesses</CardDescription>
+                <CardTitle className="text-2xl">{t('business')}</CardTitle>
+                <CardDescription>{t('forEntrepreneurs')}</CardDescription>
                 <div className="mt-4">
                   <span className="text-4xl font-bold">$49.99</span>
-                  <span className="text-muted-foreground">/month</span>
+                  <span className="text-muted-foreground">/{t('monthly')}</span>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center space-x-2">
                   <Check className="w-5 h-5 text-success" />
-                  <span>Everything in Personal</span>
+                  <span>{t('everythingInPersonal')}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Check className="w-5 h-5 text-success" />
-                  <span>Multi-country tax calculations</span>
+                  <span>{t('multiCountryTax')}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Check className="w-5 h-5 text-success" />
-                  <span>Business expense tracking</span>
+                  <span>{t('businessExpenseTracking')}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Check className="w-5 h-5 text-success" />
-                  <span>Profit/loss analysis</span>
+                  <span>{t('profitLossAnalysis')}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Check className="w-5 h-5 text-success" />
-                  <span>AI financial advisor</span>
+                  <span>{t('aiFinancialAdvisor')}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Check className="w-5 h-5 text-success" />
-                  <span>Advanced analytics</span>
+                  <span>{t('advancedAnalytics')}</span>
                 </div>
                 <Link to="/auth" className="block">
                   <Button className="w-full mt-8 bg-gradient-primary hover:opacity-90">
-                    Start Free Trial
+                    {t('startFreeTrial')}
                   </Button>
                 </Link>
               </CardContent>
@@ -210,7 +209,7 @@ const Index = () => {
           <div className="text-center mt-12">
             <p className="text-muted-foreground">
               <Shield className="inline w-4 h-4 mr-1" />
-              7-day free trial • No setup fees • Cancel anytime
+              {t('trialInfo')}
             </p>
           </div>
         </div>
@@ -225,18 +224,18 @@ const Index = () => {
             </h3>
           </div>
           <p className="text-muted-foreground mb-6">
-            Empowering your financial future with artificial intelligence
+            {t('empoweringFuture')}
           </p>
           <div className="flex justify-center space-x-6">
             <Link to="/auth" className="text-muted-foreground hover:text-primary">
-              Get Started
+              {t('getStarted')}
             </Link>
-            <a href="#" className="text-muted-foreground hover:text-primary">
-              Privacy Policy
-            </a>
-            <a href="#" className="text-muted-foreground hover:text-primary">
-              Terms of Service
-            </a>
+            <Link to="/privacy" className="text-muted-foreground hover:text-primary">
+              {t('privacyPolicy')}
+            </Link>
+            <Link to="/terms" className="text-muted-foreground hover:text-primary">
+              {t('termsOfService')}
+            </Link>
           </div>
         </div>
       </footer>

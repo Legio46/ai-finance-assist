@@ -6,9 +6,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Mail, Phone, MapPin } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Contact = () => {
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -27,8 +29,8 @@ const Contact = () => {
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
 
       toast({
-        title: "Message sent!",
-        description: "Thank you for contacting us. We'll get back to you soon.",
+        title: t('messageSent'),
+        description: t('thankYouContact'),
       });
 
       // Reset form
@@ -41,7 +43,7 @@ const Contact = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to send message. Please try again.",
+        description: t('errorSending'),
         variant: "destructive",
       });
     } finally {
@@ -62,9 +64,9 @@ const Contact = () => {
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold mb-6">Contact Us</h1>
+          <h1 className="text-4xl font-bold mb-6">{t('contactUs')}</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Have questions or need support? We're here to help. Send us a message and we'll get back to you as soon as possible.
+            {t('contactHero')}
           </p>
         </div>
 
@@ -75,13 +77,13 @@ const Contact = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Mail className="h-5 w-5 text-primary" />
-                  Email Us
+                  {t('emailUs')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">support@legio.financial</p>
                 <p className="text-sm text-muted-foreground mt-2">
-                  We typically respond within 24 hours
+                  {t('emailResponse')}
                 </p>
               </CardContent>
             </Card>
@@ -90,13 +92,13 @@ const Contact = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Phone className="h-5 w-5 text-primary" />
-                  Call Us
+                  {t('callUs')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">+1 (555) 123-4567</p>
                 <p className="text-sm text-muted-foreground mt-2">
-                  Monday - Friday, 9AM - 6PM EST
+                  {t('callHours')}
                 </p>
               </CardContent>
             </Card>
@@ -105,7 +107,7 @@ const Contact = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <MapPin className="h-5 w-5 text-primary" />
-                  Visit Us
+                  {t('visitUs')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -122,33 +124,33 @@ const Contact = () => {
           <div className="lg:col-span-2">
             <Card>
               <CardHeader>
-                <CardTitle>Send us a Message</CardTitle>
+                <CardTitle>{t('sendMessage')}</CardTitle>
                 <CardDescription>
-                  Fill out the form below and we'll get back to you as soon as possible.
+                  {t('formDescription')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="name">Full Name *</Label>
+                      <Label htmlFor="name">{t('fullName')} *</Label>
                       <Input
                         id="name"
                         name="name"
                         type="text"
-                        placeholder="Enter your full name"
+                        placeholder={t('fullName')}
                         value={formData.name}
                         onChange={handleInputChange}
                         required
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="email">Email Address *</Label>
+                      <Label htmlFor="email">{t('emailAddress')} *</Label>
                       <Input
                         id="email"
                         name="email"
                         type="email"
-                        placeholder="Enter your email"
+                        placeholder={t('emailAddress')}
                         value={formData.email}
                         onChange={handleInputChange}
                         required
@@ -157,23 +159,23 @@ const Contact = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number</Label>
+                    <Label htmlFor="phone">{t('phoneNumber')}</Label>
                     <Input
                       id="phone"
                       name="phone"
                       type="tel"
-                      placeholder="Enter your phone number"
+                      placeholder={t('phoneNumber')}
                       value={formData.phone}
                       onChange={handleInputChange}
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="description">Message *</Label>
+                    <Label htmlFor="description">{t('message')} *</Label>
                     <Textarea
                       id="description"
                       name="description"
-                      placeholder="Tell us how we can help you..."
+                      placeholder={t('message')}
                       className="min-h-[120px]"
                       value={formData.description}
                       onChange={handleInputChange}
@@ -186,7 +188,7 @@ const Contact = () => {
                     className="w-full"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? 'Sending...' : 'Send Message'}
+                    {isSubmitting ? t('sendingMessage') : t('sendMessage')}
                   </Button>
                 </form>
               </CardContent>

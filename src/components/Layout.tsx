@@ -83,7 +83,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             <div>
               <h3 className="font-bold text-lg mb-4 text-primary">Legio</h3>
               <p className="text-muted-foreground text-sm mb-4">
-                Empowering individuals and businesses with intelligent financial management tools.
+                {t('empoweringText')}
               </p>
               {/* Social Media Icons */}
               <div className="flex space-x-4">
@@ -116,41 +116,41 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             </div>
             
             <div>
-              <h4 className="font-semibold mb-4">Product</h4>
+              <h4 className="font-semibold mb-4">{t('productTitle')}</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link to="/pricing" className="text-muted-foreground hover:text-primary">Pricing</Link></li>
-                <li><Link to="/about" className="text-muted-foreground hover:text-primary">About</Link></li>
-                <li><Link to="/auth" className="text-muted-foreground hover:text-primary">Get Started</Link></li>
+                <li><Link to="/pricing" className="text-muted-foreground hover:text-primary">{t('pricing')}</Link></li>
+                <li><Link to="/about" className="text-muted-foreground hover:text-primary">{t('about')}</Link></li>
+                <li><Link to="/auth" className="text-muted-foreground hover:text-primary">{t('getStarted')}</Link></li>
               </ul>
             </div>
             
             <div>
-              <h4 className="font-semibold mb-4">Support</h4>
+              <h4 className="font-semibold mb-4">{t('supportTitle')}</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="mailto:support@legio.financial" className="text-muted-foreground hover:text-primary">Contact</a></li>
-                <li><a href="mailto:help@legio.financial" className="text-muted-foreground hover:text-primary">Help Center</a></li>
+                <li><Link to="/contact" className="text-muted-foreground hover:text-primary">{t('contact')}</Link></li>
+                <li><a href="mailto:help@legio.financial" className="text-muted-foreground hover:text-primary">{t('helpCenter')}</a></li>
               </ul>
             </div>
             
             <div>
-              <h4 className="font-semibold mb-4">Legal</h4>
+              <h4 className="font-semibold mb-4">{t('legalTitle')}</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link to="/privacy" className="text-muted-foreground hover:text-primary">Privacy Policy</Link></li>
-                <li><Link to="/terms" className="text-muted-foreground hover:text-primary">Terms of Service</Link></li>
+                <li><Link to="/privacy" className="text-muted-foreground hover:text-primary">{t('privacyPolicy')}</Link></li>
+                <li><Link to="/terms" className="text-muted-foreground hover:text-primary">{t('termsOfService')}</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4">Partnership</h4>
+              <h4 className="font-semibold mb-4">{t('partnershipTitle')}</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link to="/affiliate" className="text-muted-foreground hover:text-primary">Affiliate Program</Link></li>
-                <li><a href="mailto:partnerships@legio.financial" className="text-muted-foreground hover:text-primary">Partner with Us</a></li>
+                <li><Link to="/affiliate" className="text-muted-foreground hover:text-primary">{t('affiliateProgram')}</Link></li>
+                <li><a href="mailto:partnerships@legio.financial" className="text-muted-foreground hover:text-primary">{t('partnerWithUs')}</a></li>
               </ul>
             </div>
           </div>
           
           <div className="border-t border-border mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; {new Date().getFullYear()} Legio. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} Legio. {t('allRightsReserved')}.</p>
           </div>
         </div>
       </footer>

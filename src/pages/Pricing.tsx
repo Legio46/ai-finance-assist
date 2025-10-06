@@ -46,7 +46,7 @@ const Pricing = () => {
           {/* Yearly/Monthly Toggle */}
           <div className="flex items-center justify-center gap-4 mt-8">
             <span className={`text-sm ${!isYearly ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
-              Monthly
+              {t('monthly')}
             </span>
             <button
               onClick={() => setIsYearly(!isYearly)}
@@ -61,11 +61,11 @@ const Pricing = () => {
               />
             </button>
             <span className={`text-sm ${isYearly ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
-              Yearly
+              {t('yearly')}
             </span>
             {isYearly && (
               <Badge variant="secondary" className="ml-2">
-                Save 10%
+                {t('savePercent')}
               </Badge>
             )}
           </div>
@@ -76,21 +76,21 @@ const Pricing = () => {
           {/* Personal Plan */}
           <Card className="relative">
             <div className="absolute -top-2 right-4">
-              <Badge className="bg-destructive text-destructive-foreground">SALE 50% OFF</Badge>
+              <Badge className="bg-destructive text-destructive-foreground">{t('sale50Off')}</Badge>
             </div>
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">{t('personal')}</CardTitle>
-              <CardDescription>Perfect for individuals managing personal finances</CardDescription>
+              <CardDescription>{t('perfectForIndividuals')}</CardDescription>
               <div className="mt-4">
                 {isYearly ? (
                   <>
                     <span className="text-4xl font-bold">{formatCurrency(161.89)}</span>
                     <span className="text-muted-foreground">/{t('yearly')}</span>
                     <div className="text-sm text-muted-foreground">
-                      <span className="line-through">{formatCurrency(179.88)}</span> Save 10%
+                      <span className="line-through">{formatCurrency(179.88)}</span> {t('savePercent')}
                     </div>
                     <div className="text-xs text-muted-foreground mt-1">
-                      Regular price: <span className="line-through">{formatCurrency(323.78)}</span>
+                      {t('regularPrice')} <span className="line-through">{formatCurrency(323.78)}</span>
                     </div>
                   </>
                 ) : (
@@ -103,7 +103,7 @@ const Pricing = () => {
                   </>
                 )}
               </div>
-              <Badge variant="secondary" className="w-fit mx-auto mt-2">7-day {t('free')} trial</Badge>
+              <Badge variant="secondary" className="w-fit mx-auto mt-2">{t('dayFreeTrial')}</Badge>
             </CardHeader>
             <CardContent>
               <ul className="space-y-3 mb-6">
@@ -140,22 +140,22 @@ const Pricing = () => {
           {/* Business Plan */}
           <Card className="relative border-primary">
             <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 flex gap-2">
-              <Badge className="bg-primary text-primary-foreground">Most Popular</Badge>
-              <Badge className="bg-destructive text-destructive-foreground">SALE 40% OFF</Badge>
+              <Badge className="bg-primary text-primary-foreground">{t('mostPopular')}</Badge>
+              <Badge className="bg-destructive text-destructive-foreground">{t('sale40Off')}</Badge>
             </div>
             <CardHeader className="text-center pt-8">
               <CardTitle className="text-2xl">{t('business')}</CardTitle>
-              <CardDescription>For entrepreneurs and businesses of all sizes</CardDescription>
+              <CardDescription>{t('forEntrepreneurs')}</CardDescription>
               <div className="mt-4">
                 {isYearly ? (
                   <>
                     <span className="text-4xl font-bold">{formatCurrency(323.89)}</span>
                     <span className="text-muted-foreground">/{t('yearly')}</span>
                     <div className="text-sm text-muted-foreground">
-                      <span className="line-through">{formatCurrency(359.88)}</span> Save 10%
+                      <span className="line-through">{formatCurrency(359.88)}</span> {t('savePercent')}
                     </div>
                     <div className="text-xs text-muted-foreground mt-1">
-                      Regular price: <span className="line-through">{formatCurrency(539.78)}</span>
+                      {t('regularPrice')} <span className="line-through">{formatCurrency(539.78)}</span>
                     </div>
                   </>
                 ) : (
@@ -168,7 +168,7 @@ const Pricing = () => {
                   </>
                 )}
               </div>
-              <Badge variant="secondary" className="w-fit mx-auto mt-2">7-day {t('free')} trial</Badge>
+              <Badge variant="secondary" className="w-fit mx-auto mt-2">{t('dayFreeTrial')}</Badge>
             </CardHeader>
             <CardContent>
               <ul className="space-y-3 mb-6">
@@ -205,52 +205,48 @@ const Pricing = () => {
 
         {/* FAQ Section */}
         <section className="max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">{t('faqTitle')}</h2>
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">How does the free trial work?</CardTitle>
+                <CardTitle className="text-lg">{t('faqTrialQ')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  You get full access to all features for 7 days, no credit card required. 
-                  After the trial, you can choose to subscribe to continue using the service.
+                  {t('faqTrialA')}
                 </p>
               </CardContent>
             </Card>
             
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Can I change plans anytime?</CardTitle>
+                <CardTitle className="text-lg">{t('faqChangeQ')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Yes! You can upgrade, downgrade, or cancel your subscription at any time. 
-                  Changes take effect at the next billing cycle.
+                  {t('faqChangeA')}
                 </p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Which countries are supported for tax calculations?</CardTitle>
+                <CardTitle className="text-lg">{t('faqCountriesQ')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  We currently support tax calculations for Slovakia, USA, UK, Germany, and France. 
-                  More countries are being added regularly.
+                  {t('faqCountriesA')}
                 </p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Is my financial data secure?</CardTitle>
+                <CardTitle className="text-lg">{t('faqSecurityQ')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Absolutely. We use bank-level encryption and security measures to protect your data. 
-                  Your information is never shared with third parties without your consent.
+                  {t('faqSecurityA')}
                 </p>
               </CardContent>
             </Card>
