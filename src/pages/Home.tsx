@@ -12,11 +12,10 @@ const Home = () => {
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-16 text-center">
         <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-          Legio
+          {t('heroTitle')}
         </h1>
         <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-          The complete AI-powered financial platform for entrepreneurs and individuals. 
-          Manage taxes, track expenses, and get expert financial advice all in one place.
+          {t('heroSubtitle')}
         </p>
         <div className="flex gap-4 justify-center flex-wrap">
           <Button asChild size="lg" className="text-lg px-8">
@@ -35,27 +34,27 @@ const Home = () => {
           <Card className="text-center">
             <CardHeader>
               <Calculator className="w-12 h-12 mx-auto text-primary mb-4" />
-              <CardTitle>Smart Tax Calculator</CardTitle>
+              <CardTitle>{t('smartTaxCalculator')}</CardTitle>
               <CardDescription>
-                Calculate taxes for Slovakia, USA, UK, Germany, and France with precision
+                {t('taxCalculatorDesc')}
               </CardDescription>
             </CardHeader>
           </Card>
           <Card className="text-center">
             <CardHeader>
               <TrendingUp className="w-12 h-12 mx-auto text-primary mb-4" />
-              <CardTitle>Expense Tracking</CardTitle>
+              <CardTitle>{t('expenseTracking')}</CardTitle>
               <CardDescription>
-                Track personal and business expenses with intelligent categorization
+                {t('expenseTrackingDesc')}
               </CardDescription>
             </CardHeader>
           </Card>
           <Card className="text-center">
             <CardHeader>
               <DollarSign className="w-12 h-12 mx-auto text-primary mb-4" />
-              <CardTitle>Financial Advisor</CardTitle>
+              <CardTitle>{t('financialAdvisor')}</CardTitle>
               <CardDescription>
-                Get personalized advice on investments, mortgages, and savings
+                {t('financialAdvisorDesc')}
               </CardDescription>
             </CardHeader>
           </Card>
@@ -65,22 +64,22 @@ const Home = () => {
       {/* Benefits Section */}
       <section className="bg-secondary/10 py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Why Choose Legio?</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">{t('whyChooseLegio')}</h2>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
               <Shield className="w-12 h-12 mx-auto text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Bank-Level Security</h3>
-              <p className="text-muted-foreground">Your data is protected with enterprise-grade encryption</p>
+              <h3 className="text-xl font-semibold mb-2">{t('bankLevelSecurity')}</h3>
+              <p className="text-muted-foreground">{t('bankLevelSecurityDesc')}</p>
             </div>
             <div className="text-center">
               <Users className="w-12 h-12 mx-auto text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Personal & Business</h3>
-              <p className="text-muted-foreground">One platform for all your financial needs</p>
+              <h3 className="text-xl font-semibold mb-2">{t('personalAndBusiness')}</h3>
+              <p className="text-muted-foreground">{t('personalAndBusinessDesc')}</p>
             </div>
             <div className="text-center">
               <Globe className="w-12 h-12 mx-auto text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Multi-Country Support</h3>
-              <p className="text-muted-foreground">Tax calculations for 5 major countries</p>
+              <h3 className="text-xl font-semibold mb-2">{t('multiCountrySupport')}</h3>
+              <p className="text-muted-foreground">{t('multiCountrySupportDesc')}</p>
             </div>
           </div>
         </div>
@@ -88,12 +87,12 @@ const Home = () => {
 
       {/* CTA Section */}
       <section className="container mx-auto px-4 py-16 text-center">
-        <h2 className="text-3xl font-bold mb-6">Ready to Take Control of Your Finances?</h2>
+        <h2 className="text-3xl font-bold mb-6">{t('readyToTakeControl')}</h2>
         <p className="text-xl text-muted-foreground mb-8">
-          Join thousands of users who trust Legio with their financial management
+          {t('joinThousands')}
         </p>
         <Button asChild size="lg" className="text-lg px-8">
-          <Link to="/auth">Start Your Free Trial Today</Link>
+          <Link to="/auth">{t('startFreeTrialToday')}</Link>
         </Button>
       </section>
     </div>
