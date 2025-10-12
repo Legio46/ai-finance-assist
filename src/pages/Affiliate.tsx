@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Copy, Users, DollarSign, TrendingUp } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface AffiliateData {
   id: string;
@@ -20,6 +21,7 @@ interface AffiliateData {
 const Affiliate = () => {
   const { user, loading } = useAuth();
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [affiliateData, setAffiliateData] = useState<AffiliateData | null>(null);
   const [isJoining, setIsJoining] = useState(false);
 
@@ -140,9 +142,9 @@ const Affiliate = () => {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Affiliate Program</h1>
+          <h1 className="text-3xl font-bold mb-2">{t('affiliateTitle')}</h1>
           <p className="text-muted-foreground">
-            Earn money by referring new users to Legio Financial
+            {t('affiliateDescription')}
           </p>
         </div>
 

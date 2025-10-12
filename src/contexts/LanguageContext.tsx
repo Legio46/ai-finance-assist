@@ -171,6 +171,42 @@ const translations: Record<string, Record<string, string>> = {
     privacyPolicy: 'Privacy Policy',
     termsOfService: 'Terms of Service',
     affiliateProgram: 'Affiliate Program',
+    
+    // FAQ
+    faqTitle: 'Frequently Asked Questions',
+    faqTrialQ: 'Is there really a free trial?',
+    faqTrialA: 'Yes! All new users get a 7-day free trial with full access to all features. No credit card required.',
+    faqChangeQ: 'Can I change or cancel my plan?',
+    faqChangeA: 'Absolutely. You can upgrade, downgrade, or cancel your subscription at any time from your account settings.',
+    faqCountriesQ: 'Which countries are supported?',
+    faqCountriesA: 'We currently support tax calculations and financial management for Slovakia, USA, UK, Germany, and France, with more countries coming soon.',
+    faqSecurityQ: 'How secure is my financial data?',
+    faqSecurityA: 'We use bank-grade encryption and security measures to protect your data. Your information is encrypted at rest and in transit, and we never share your data with third parties.',
+    
+    // Pricing
+    monthly: 'Monthly',
+    yearly: 'Yearly',
+    savePercent: 'Save 10%',
+    sale50Off: '50% OFF',
+    sale40Off: '40% OFF',
+    mostPopular: 'Most Popular',
+    perfectForIndividuals: 'Perfect for individuals managing personal finances',
+    forEntrepreneurs: 'For entrepreneurs and business owners',
+    dayFreeTrial: '7-day Free Trial',
+    regularPrice: 'Regular Price',
+    
+    // Admin Dashboard
+    aboutTitle: 'About Legio Financial',
+    affiliateTitle: 'Affiliate Program',
+    affiliateDescription: 'Earn money by referring new users to Legio Financial',
+    adminDashboard: 'Admin Dashboard',
+    userManagement: 'User Management',
+    securityEvents: 'Security Events',
+    activityLogs: 'Activity Logs',
+    totalRevenue: 'Total Revenue',
+    activeUsers: 'Active Users',
+    sales: 'Sales',
+    activeNow: 'Active Now',
   },
   sk: {
     // Navigation
@@ -309,6 +345,42 @@ const translations: Record<string, Record<string, string>> = {
     privacyPolicy: 'Zásady ochrany osobných údajov',
     termsOfService: 'Podmienky služby',
     affiliateProgram: 'Affiliate program',
+    
+    // FAQ
+    faqTitle: 'Často kladené otázky',
+    faqTrialQ: 'Je skutočne bezplatná skúšobná verzia?',
+    faqTrialA: 'Áno! Všetci noví používatelia dostanú 7-dňovú bezplatnú skúšobnú verziu s plným prístupom ku všetkým funkciám. Kreditná karta nie je potrebná.',
+    faqChangeQ: 'Môžem zmeniť alebo zrušiť svoj plán?',
+    faqChangeA: 'Samozrejme. Môžete kedykoľvek upgradovať, downgradovať alebo zrušiť svoje predplatné v nastaveniach účtu.',
+    faqCountriesQ: 'Ktoré krajiny sú podporované?',
+    faqCountriesA: 'Momentálne podporujeme daňové výpočty a finančné riadenie pre Slovensko, USA, UK, Nemecko a Francúzsko, ďalšie krajiny čoskoro pribudnú.',
+    faqSecurityQ: 'Ako bezpečné sú moje finančné údaje?',
+    faqSecurityA: 'Používame bankové šifrovanie a bezpečnostné opatrenia na ochranu vašich údajov. Vaše informácie sú šifrované v pokoji aj pri prenose a nikdy ich nezdieľame s tretími stranami.',
+    
+    // Pricing
+    monthly: 'Mesačne',
+    yearly: 'Ročne',
+    savePercent: 'Ušetrite 10%',
+    sale50Off: '50% ZĽAVA',
+    sale40Off: '40% ZĽAVA',
+    mostPopular: 'Najpopulárnejší',
+    perfectForIndividuals: 'Perfektné pre jednotlivcov spravujúcich osobné financie',
+    forEntrepreneurs: 'Pre podnikateľov a majiteľov firiem',
+    dayFreeTrial: '7-dňová bezplatná skúšobná verzia',
+    regularPrice: 'Bežná cena',
+    
+    // Admin Dashboard
+    aboutTitle: 'O Legio Financial',
+    affiliateTitle: 'Partnerský program',
+    affiliateDescription: 'Zarábajte odporúčaním nových používateľov do Legio Financial',
+    adminDashboard: 'Administrátorský panel',
+    userManagement: 'Správa používateľov',
+    securityEvents: 'Bezpečnostné udalosti',
+    activityLogs: 'Záznamy aktivít',
+    totalRevenue: 'Celkové príjmy',
+    activeUsers: 'Aktívni používatelia',
+    sales: 'Predaje',
+    activeNow: 'Práve aktívni',
   },
   de: {
     // Navigation
@@ -447,6 +519,42 @@ const translations: Record<string, Record<string, string>> = {
     privacyPolicy: 'Datenschutzrichtlinie',
     termsOfService: 'Nutzungsbedingungen',
     affiliateProgram: 'Partnerprogramm',
+    
+    // FAQ
+    faqTitle: 'Häufig gestellte Fragen',
+    faqTrialQ: 'Gibt es wirklich eine kostenlose Testversion?',
+    faqTrialA: 'Ja! Alle neuen Benutzer erhalten eine 7-tägige kostenlose Testversion mit vollem Zugriff auf alle Funktionen. Keine Kreditkarte erforderlich.',
+    faqChangeQ: 'Kann ich meinen Plan ändern oder kündigen?',
+    faqChangeA: 'Auf jeden Fall. Sie können Ihr Abonnement jederzeit in Ihren Kontoeinstellungen upgraden, downgraden oder kündigen.',
+    faqCountriesQ: 'Welche Länder werden unterstützt?',
+    faqCountriesA: 'Wir unterstützen derzeit Steuerberechnungen und Finanzverwaltung für die Slowakei, USA, Großbritannien, Deutschland und Frankreich. Weitere Länder folgen in Kürze.',
+    faqSecurityQ: 'Wie sicher sind meine Finanzdaten?',
+    faqSecurityA: 'Wir verwenden Verschlüsselung und Sicherheitsmaßnahmen auf Bankniveau, um Ihre Daten zu schützen. Ihre Informationen werden im Ruhezustand und während der Übertragung verschlüsselt, und wir teilen Ihre Daten niemals mit Dritten.',
+    
+    // Pricing
+    monthly: 'Monatlich',
+    yearly: 'Jährlich',
+    savePercent: 'Sparen Sie 10%',
+    sale50Off: '50% RABATT',
+    sale40Off: '40% RABATT',
+    mostPopular: 'Am beliebtesten',
+    perfectForIndividuals: 'Perfekt für Einzelpersonen, die ihre persönlichen Finanzen verwalten',
+    forEntrepreneurs: 'Für Unternehmer und Geschäftsinhaber',
+    dayFreeTrial: '7-tägige kostenlose Testversion',
+    regularPrice: 'Regulärer Preis',
+    
+    // Admin
+    aboutTitle: 'Über Legio Financial',
+    affiliateTitle: 'Partnerprogramm',
+    affiliateDescription: 'Verdienen Sie Geld, indem Sie neue Benutzer an Legio Financial empfehlen',
+    adminDashboard: 'Admin-Dashboard',
+    userManagement: 'Benutzerverwaltung',
+    securityEvents: 'Sicherheitsereignisse',
+    activityLogs: 'Aktivitätsprotokolle',
+    totalRevenue: 'Gesamtumsatz',
+    activeUsers: 'Aktive Benutzer',
+    sales: 'Verkäufe',
+    activeNow: 'Jetzt aktiv',
   },
   fr: {
     // Navigation
@@ -585,6 +693,42 @@ const translations: Record<string, Record<string, string>> = {
     privacyPolicy: 'Politique de confidentialité',
     termsOfService: "Conditions d'utilisation",
     affiliateProgram: "Programme d'affiliation",
+    
+    // FAQ
+    faqTitle: 'Foire aux questions',
+    faqTrialQ: 'Y a-t-il vraiment un essai gratuit?',
+    faqTrialA: 'Oui! Tous les nouveaux utilisateurs bénéficient d\'un essai gratuit de 7 jours avec un accès complet à toutes les fonctionnalités. Aucune carte de crédit requise.',
+    faqChangeQ: 'Puis-je modifier ou annuler mon forfait?',
+    faqChangeA: 'Absolument. Vous pouvez mettre à niveau, rétrograder ou annuler votre abonnement à tout moment depuis les paramètres de votre compte.',
+    faqCountriesQ: 'Quels pays sont pris en charge?',
+    faqCountriesA: 'Nous prenons actuellement en charge les calculs fiscaux et la gestion financière pour la Slovaquie, les États-Unis, le Royaume-Uni, l\'Allemagne et la France, avec d\'autres pays à venir bientôt.',
+    faqSecurityQ: 'Dans quelle mesure mes données financières sont-elles sécurisées?',
+    faqSecurityA: 'Nous utilisons le chiffrement et des mesures de sécurité de niveau bancaire pour protéger vos données. Vos informations sont chiffrées au repos et en transit, et nous ne partageons jamais vos données avec des tiers.',
+    
+    // Pricing
+    monthly: 'Mensuel',
+    yearly: 'Annuel',
+    savePercent: 'Économisez 10%',
+    sale50Off: '50% DE RÉDUCTION',
+    sale40Off: '40% DE RÉDUCTION',
+    mostPopular: 'Le plus populaire',
+    perfectForIndividuals: 'Parfait pour les particuliers gérant leurs finances personnelles',
+    forEntrepreneurs: 'Pour les entrepreneurs et les chefs d\'entreprise',
+    dayFreeTrial: 'Essai gratuit de 7 jours',
+    regularPrice: 'Prix régulier',
+    
+    // Admin
+    aboutTitle: 'À propos de Legio Financial',
+    affiliateTitle: 'Programme d\'affiliation',
+    affiliateDescription: 'Gagnez de l\'argent en parrainant de nouveaux utilisateurs vers Legio Financial',
+    adminDashboard: 'Tableau de bord administrateur',
+    userManagement: 'Gestion des utilisateurs',
+    securityEvents: 'Événements de sécurité',
+    activityLogs: 'Journaux d\'activité',
+    totalRevenue: 'Revenu total',
+    activeUsers: 'Utilisateurs actifs',
+    sales: 'Ventes',
+    activeNow: 'Actifs maintenant',
   },
 };
 

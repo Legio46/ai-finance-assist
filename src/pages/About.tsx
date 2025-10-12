@@ -1,16 +1,18 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Target, Users, Lightbulb, Award } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const About = () => {
+  const { t } = useLanguage();
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20 py-16">
       <div className="container mx-auto px-4">
         {/* Hero Section */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold mb-6">About Legio Financial</h1>
+          <h1 className="text-4xl font-bold mb-6">{t('aboutTitle')}</h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            We're on a mission to democratize financial management and make expert-level 
-            financial advice accessible to everyone, from individual users to large enterprises.
+            {t('aboutMission')}
           </p>
         </div>
 
@@ -33,7 +35,7 @@ const About = () => {
 
         {/* Values Section */}
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-12">Our Values</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">{t('aboutValues')}</h2>
           <div className="grid md:grid-cols-3 gap-8">
             <Card className="text-center">
               <CardHeader>
@@ -78,7 +80,7 @@ const About = () => {
         <section className="mb-16">
           <Card className="max-w-4xl mx-auto">
             <CardHeader className="text-center">
-              <CardTitle className="text-2xl">Our Story</CardTitle>
+              <CardTitle className="text-2xl">{t('aboutStory')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="prose prose-lg max-w-none text-muted-foreground">
