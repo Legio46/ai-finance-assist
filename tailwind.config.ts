@@ -77,8 +77,16 @@ export default {
 			},
 			backgroundImage: {
 				'gradient-primary': 'var(--gradient-primary)',
-				'gradient-financial': 'var(--gradient-financial)',
-				'gradient-success': 'var(--gradient-success)'
+				'gradient-secondary': 'var(--gradient-secondary)',
+				'gradient-success': 'var(--gradient-success)',
+				'gradient-hero': 'var(--gradient-hero)',
+				'gradient-card': 'var(--gradient-card)'
+			},
+			boxShadow: {
+				'glow-primary': 'var(--glow-primary)',
+				'primary': 'var(--shadow-primary)',
+				'accent': 'var(--shadow-accent)',
+				'success': 'var(--shadow-success)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
