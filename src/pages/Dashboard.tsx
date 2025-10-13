@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAdminCheck } from '@/hooks/useAdminCheck';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -23,6 +24,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 const Dashboard = () => {
   const { user, profile, loading, signOut } = useAuth();
+  const { isAdmin } = useAdminCheck();
   const [activeTab, setActiveTab] = useState('overview');
 
   // Redirect if not authenticated
@@ -62,7 +64,7 @@ const Dashboard = () => {
             <span className="text-sm text-muted-foreground">
               Welcome, {profile?.full_name || user?.email}
             </span>
-            {user?.email === 'legiox46@gmail.com' && (
+            {isAdmin && (
               <Button variant="ghost" asChild>
                 <Link to="/admin">
                   <Crown className="w-4 h-4 mr-2" />

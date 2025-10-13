@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAdminCheck } from '@/hooks/useAdminCheck';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -48,7 +49,8 @@ import {
 } from 'recharts';
 
 const AdminDashboard = () => {
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
+  const { isAdmin, loading: adminLoading } = useAdminCheck();
   const { toast } = useToast();
   const { t } = useLanguage();
   const [users, setUsers] = useState([]);
@@ -66,9 +68,6 @@ const AdminDashboard = () => {
     subscription_status: '',
     account_type: ''
   });
-
-  // Check if user is admin
-  const isAdmin = user?.email === 'legiox46@gmail.com' || profile?.email === 'legiox46@gmail.com';
 
   // Mock data for revenue chart
   const revenueData = [
@@ -309,6 +308,18 @@ const AdminDashboard = () => {
     if (filterType === 'all') return matchesSearch;
     return matchesSearch && user.account_type === filterType;
   });
+
+  // Show loading while checking admin status
+  if (adminLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-2 text-muted-foreground">Checking permissions...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Redirect if not admin
   if (!isAdmin) {
