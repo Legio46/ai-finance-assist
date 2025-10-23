@@ -56,19 +56,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
-        
+
         if (session?.user) {
-          // Refresh profile after authentication
-          setTimeout(() => {
-            refreshProfile();
-          }, 100);
+          (async () => {
+            try {
+              await refreshProfile();
+            } catch (error) {
+              console.error('Error refreshing profile:', error);
+            }
+          })();
         } else {
           setProfile(null);
         }
-        
+
         setLoading(false);
       }
     );
@@ -77,13 +80,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      
+
       if (session?.user) {
-        setTimeout(() => {
-          refreshProfile();
-        }, 100);
+        (async () => {
+          try {
+            await refreshProfile();
+          } catch (error) {
+            console.error('Error refreshing profile:', error);
+          }
+        })();
       }
-      
+
       setLoading(false);
     });
 

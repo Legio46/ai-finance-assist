@@ -1,63 +1,117 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import Stripe from "https://esm.sh/stripe@14.21.0";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "npm:@supabase/supabase-js@2.57.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
 };
 
-serve(async (req) => {
+Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, {
+      status: 200,
+      headers: corsHeaders,
+    });
   }
 
-  const supabaseClient = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_ANON_KEY") ?? ""
-  );
-
   try {
-    const { plan } = await req.json();
-    
-    const authHeader = req.headers.get("Authorization")!;
-    const token = authHeader.replace("Bearer ", "");
-    const { data } = await supabaseClient.auth.getUser(token);
-    const user = data.user;
-    if (!user?.email) throw new Error("User not authenticated or email not available");
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+    const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
 
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { 
-      apiVersion: "2023-10-16" 
-    });
-
-    // Check if customer exists
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-    let customerId;
-    if (customers.data.length > 0) {
-      customerId = customers.data[0].id;
+    if (!supabaseUrl || !supabaseAnonKey) {
+      throw new Error("Missing Supabase configuration");
     }
 
-    // Define pricing based on plan
+    if (!stripeSecretKey) {
+      throw new Error("Missing Stripe configuration");
+    }
+
+    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: "No authorization header provided" }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: userData, error: userError } = await supabaseClient.auth.getUser(token);
+    
+    if (userError || !userData.user?.email) {
+      return new Response(
+        JSON.stringify({ error: "Authentication failed" }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    const user = userData.user;
+
+    let requestBody;
+    try {
+      requestBody = await req.json();
+    } catch {
+      return new Response(
+        JSON.stringify({ error: "Invalid request body" }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    const { plan } = requestBody;
+
+    if (!plan || !['personal', 'business'].includes(plan)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid plan selected" }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    const stripe = await import("npm:stripe@14.21.0");
+    const stripeClient = new stripe.default(stripeSecretKey, {
+      apiVersion: "2023-10-16",
+    });
+
+    const customers = await stripeClient.customers.list({ 
+      email: user.email, 
+      limit: 1 
+    });
+    
+    const customerId = customers.data.length > 0 ? customers.data[0].id : undefined;
+
     const prices = {
-      personal: { amount: 2999, name: "Personal Plan" }, // $29.99
-      business: { amount: 4999, name: "Business Plan" }  // $49.99
+      personal: { amount: 2999, name: "Personal Plan" },
+      business: { amount: 4999, name: "Business Plan" },
     };
 
     const selectedPrice = prices[plan as keyof typeof prices];
-    if (!selectedPrice) {
-      throw new Error("Invalid plan selected");
-    }
 
-    const session = await stripe.checkout.sessions.create({
+    const origin = req.headers.get("origin") || "http://localhost:3000";
+
+    const session = await stripeClient.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
       line_items: [
         {
           price_data: {
             currency: "usd",
-            product_data: { 
+            product_data: {
               name: selectedPrice.name,
-              description: `Legio Financial ${selectedPrice.name} - 7-day free trial included`
+              description: `Legio Financial ${selectedPrice.name} - 7-day free trial included`,
             },
             unit_amount: selectedPrice.amount,
             recurring: { interval: "month" },
@@ -69,19 +123,27 @@ serve(async (req) => {
       subscription_data: {
         trial_period_days: 7,
       },
-      success_url: `${req.headers.get("origin")}/dashboard?success=true`,
-      cancel_url: `${req.headers.get("origin")}/pricing?canceled=true`,
+      success_url: `${origin}/dashboard?success=true`,
+      cancel_url: `${origin}/pricing?canceled=true`,
     });
 
-    return new Response(JSON.stringify({ url: session.url }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 200,
-    });
+    return new Response(
+      JSON.stringify({ url: session.url }),
+      {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
+    );
   } catch (error) {
-    console.error('Checkout error:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
-    });
+    console.error("Checkout error:", error);
+    return new Response(
+      JSON.stringify({ 
+        error: error instanceof Error ? error.message : "Internal server error" 
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
+    );
   }
 });
