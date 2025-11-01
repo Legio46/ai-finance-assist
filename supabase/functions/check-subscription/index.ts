@@ -121,9 +121,9 @@ Deno.serve(async (req: Request) => {
       const price = await stripeClient.prices.retrieve(priceId);
       const amount = price.unit_amount || 0;
 
-      if (amount === 2999) {
+      if (amount === 1499) {
         subscriptionTier = "personal";
-      } else if (amount === 4999) {
+      } else if (amount === 2999) {
         subscriptionTier = "business";
       }
     }

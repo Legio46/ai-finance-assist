@@ -94,8 +94,8 @@ Deno.serve(async (req: Request) => {
     const customerId = customers.data.length > 0 ? customers.data[0].id : undefined;
 
     const prices = {
-      personal: { amount: 2999, name: "Personal Plan" },
-      business: { amount: 4999, name: "Business Plan" },
+      personal: { amount: 1499, name: "Personal Plan" },
+      business: { amount: 2999, name: "Business Plan" },
     };
 
     const selectedPrice = prices[plan as keyof typeof prices];
