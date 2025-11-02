@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import BusinessDashboard from '@/components/BusinessDashboard';
 import PersonalDashboard from '@/components/PersonalDashboard';
+import AIAdvisor from '@/components/AIAdvisor';
 import { supabase } from '@/integrations/supabase/client';
 
 const Dashboard = () => {
@@ -215,26 +216,12 @@ const Dashboard = () => {
           </TabsContent>
 
           <TabsContent value="advisor">
-            <Card>
-              <CardHeader>
-                <CardTitle>AI Financial Advisor</CardTitle>
-                <CardDescription>
-                  Get personalized financial advice powered by AI
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <BarChart3 className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">AI Advisor Coming Soon</h3>
-                  <p className="text-muted-foreground mb-6">
-                    Get personalized advice on investments, mortgages, and financial planning
-                  </p>
-                  <Button disabled>
-                    Enable AI Advisor
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            <AIAdvisor 
+              userContext={{
+                accountType: profile?.account_type,
+                country: profile?.country
+              }}
+            />
           </TabsContent>
 
           <TabsContent value="security">
