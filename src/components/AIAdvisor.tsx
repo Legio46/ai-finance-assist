@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2, Send, Bot, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -21,10 +22,22 @@ interface AIAdvisorProps {
 }
 
 const AIAdvisor: React.FC<AIAdvisorProps> = ({ userContext }) => {
+  const { language, t } = useLanguage();
+  
+  const getGreeting = () => {
+    const greetings = {
+      en: 'Hello! I\'m your AI Financial Advisor. I can help you with tax optimization, expense management, financial planning, and business strategies. How can I assist you today?',
+      sk: 'Ahoj! Som váš AI finančný poradca. Môžem vám pomôcť s daňovou optimalizáciou, správou výdavkov, finančným plánovaním a obchodnými stratégiami. Ako vám môžem pomôcť?',
+      de: 'Hallo! Ich bin Ihr KI-Finanzberater. Ich kann Ihnen bei Steueroptimierung, Ausgabenverwaltung, Finanzplanung und Geschäftsstrategien helfen. Wie kann ich Ihnen heute helfen?',
+      fr: 'Bonjour! Je suis votre conseiller financier IA. Je peux vous aider avec l\'optimisation fiscale, la gestion des dépenses, la planification financière et les stratégies commerciales. Comment puis-je vous aider aujourd\'hui?'
+    };
+    return greetings[language as keyof typeof greetings] || greetings.en;
+  };
+
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: 'Hello! I\'m your AI Financial Advisor. I can help you with tax optimization, expense management, financial planning, and business strategies. How can I assist you today?'
+      content: getGreeting()
     }
   ]);
   const [input, setInput] = useState('');
@@ -50,7 +63,8 @@ const AIAdvisor: React.FC<AIAdvisorProps> = ({ userContext }) => {
         },
         body: JSON.stringify({ 
           message: userMessage,
-          context: userContext 
+          context: userContext,
+          language: language
         }),
       });
 
@@ -156,12 +170,37 @@ const AIAdvisor: React.FC<AIAdvisorProps> = ({ userContext }) => {
     }
   };
 
-  const suggestedQuestions = [
-    "How can I optimize my corporate taxes?",
-    "What expenses are tax-deductible?",
-    "Help me plan my business finances",
-    "Compare tax rates across countries"
-  ];
+  const getSuggestedQuestions = () => {
+    const suggestions = {
+      en: [
+        "How can I optimize my corporate taxes?",
+        "What expenses are tax-deductible?",
+        "Help me plan my business finances",
+        "Compare tax rates across countries"
+      ],
+      sk: [
+        "Ako môžem optimalizovať svoje firemné dane?",
+        "Ktoré výdavky sú daňovo odpočítateľné?",
+        "Pomôžte mi naplánovať moje obchodné financie",
+        "Porovnajte daňové sadzby v rôznych krajinách"
+      ],
+      de: [
+        "Wie kann ich meine Unternehmenssteuern optimieren?",
+        "Welche Ausgaben sind steuerlich absetzbar?",
+        "Helfen Sie mir, meine Unternehmensfinanzen zu planen",
+        "Vergleichen Sie Steuersätze in verschiedenen Ländern"
+      ],
+      fr: [
+        "Comment puis-je optimiser mes impôts d'entreprise?",
+        "Quelles dépenses sont déductibles d'impôts?",
+        "Aidez-moi à planifier mes finances professionnelles",
+        "Comparez les taux d'imposition entre les pays"
+      ]
+    };
+    return suggestions[language as keyof typeof suggestions] || suggestions.en;
+  };
+
+  const suggestedQuestions = getSuggestedQuestions();
 
   return (
     <Card className="h-[600px] flex flex-col">

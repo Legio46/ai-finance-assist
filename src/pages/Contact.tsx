@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Mail, Phone, MapPin } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const Contact = () => {
@@ -80,41 +80,10 @@ const Contact = () => {
                   {t('emailUs')}
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">support@legio.financial</p>
-                <p className="text-sm text-muted-foreground mt-2">
+              <CardContent className="space-y-2">
+                <p className="text-muted-foreground font-medium">support@legio.financial</p>
+                <p className="text-sm text-muted-foreground">
                   {t('emailResponse')}
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Phone className="h-5 w-5 text-primary" />
-                  {t('callUs')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">+1 (555) 123-4567</p>
-                <p className="text-sm text-muted-foreground mt-2">
-                  {t('callHours')}
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MapPin className="h-5 w-5 text-primary" />
-                  {t('visitUs')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  123 Financial Street<br />
-                  Suite 100<br />
-                  New York, NY 10001
                 </p>
               </CardContent>
             </Card>

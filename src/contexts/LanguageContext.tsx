@@ -207,6 +207,21 @@ const translations: Record<string, Record<string, string>> = {
     activeUsers: 'Active Users',
     sales: 'Sales',
     activeNow: 'Active Now',
+    
+    // Contact Page
+    contactUs: 'Contact Us',
+    contactHero: 'Have questions? We\'re here to help. Get in touch with our team.',
+    emailUs: 'Email Us',
+    emailResponse: 'We\'ll respond within 24 hours',
+    sendMessage: 'Send us a Message',
+    formDescription: 'Fill out the form below and we\'ll get back to you as soon as possible.',
+    emailAddress: 'Email Address',
+    phoneNumber: 'Phone Number',
+    message: 'Message',
+    messageSent: 'Message Sent!',
+    thankYouContact: 'Thank you for contacting us. We\'ll get back to you soon.',
+    errorSending: 'There was an error sending your message. Please try again.',
+    sendingMessage: 'Sending...',
   },
   sk: {
     // Navigation
@@ -381,6 +396,21 @@ const translations: Record<string, Record<string, string>> = {
     activeUsers: 'Aktívni používatelia',
     sales: 'Predaje',
     activeNow: 'Práve aktívni',
+    
+    // Contact Page
+    contactUs: 'Kontaktujte nás',
+    contactHero: 'Máte otázky? Sme tu, aby sme pomohli. Spojte sa s naším tímom.',
+    emailUs: 'Napíšte nám',
+    emailResponse: 'Odpovieme do 24 hodín',
+    sendMessage: 'Pošlite nám správu',
+    formDescription: 'Vyplňte formulár nižšie a my sa vám ozveme čo najskôr.',
+    emailAddress: 'E-mailová adresa',
+    phoneNumber: 'Telefónne číslo',
+    message: 'Správa',
+    messageSent: 'Správa odoslaná!',
+    thankYouContact: 'Ďakujeme, že ste nás kontaktovali. Čoskoro sa vám ozveme.',
+    errorSending: 'Pri odosielaní správy sa vyskytla chyba. Skúste to prosím znova.',
+    sendingMessage: 'Odosielanie...',
   },
   de: {
     // Navigation
@@ -555,6 +585,21 @@ const translations: Record<string, Record<string, string>> = {
     activeUsers: 'Aktive Benutzer',
     sales: 'Verkäufe',
     activeNow: 'Jetzt aktiv',
+    
+    // Contact Page
+    contactUs: 'Kontaktieren Sie uns',
+    contactHero: 'Haben Sie Fragen? Wir sind hier, um zu helfen. Kontaktieren Sie unser Team.',
+    emailUs: 'E-Mail senden',
+    emailResponse: 'Wir antworten innerhalb von 24 Stunden',
+    sendMessage: 'Senden Sie uns eine Nachricht',
+    formDescription: 'Füllen Sie das untenstehende Formular aus und wir werden uns so schnell wie möglich bei Ihnen melden.',
+    emailAddress: 'E-Mail-Adresse',
+    phoneNumber: 'Telefonnummer',
+    message: 'Nachricht',
+    messageSent: 'Nachricht gesendet!',
+    thankYouContact: 'Vielen Dank für Ihre Kontaktaufnahme. Wir werden uns bald bei Ihnen melden.',
+    errorSending: 'Beim Senden Ihrer Nachricht ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.',
+    sendingMessage: 'Senden...',
   },
   fr: {
     // Navigation
@@ -729,6 +774,21 @@ const translations: Record<string, Record<string, string>> = {
     activeUsers: 'Utilisateurs actifs',
     sales: 'Ventes',
     activeNow: 'Actifs maintenant',
+    
+    // Contact Page
+    contactUs: 'Contactez-nous',
+    contactHero: 'Vous avez des questions? Nous sommes là pour vous aider. Contactez notre équipe.',
+    emailUs: 'Envoyez-nous un e-mail',
+    emailResponse: 'Nous répondrons dans les 24 heures',
+    sendMessage: 'Envoyez-nous un message',
+    formDescription: 'Remplissez le formulaire ci-dessous et nous vous répondrons dès que possible.',
+    emailAddress: 'Adresse e-mail',
+    phoneNumber: 'Numéro de téléphone',
+    message: 'Message',
+    messageSent: 'Message envoyé!',
+    thankYouContact: 'Merci de nous avoir contactés. Nous vous répondrons bientôt.',
+    errorSending: 'Une erreur s\'est produite lors de l\'envoi de votre message. Veuillez réessayer.',
+    sendingMessage: 'Envoi...',
   },
 };
 
