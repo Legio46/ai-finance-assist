@@ -52,14 +52,16 @@ const AIAdvisor: React.FC<AIAdvisorProps> = ({ userContext }) => {
   }, [messages]);
 
   const streamChat = async (userMessage: string) => {
-    const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-advisor`;
+    const SUPABASE_URL = "https://ehohaixttjnvoylviuda.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVob2hhaXh0dGpudm95bHZpdWRhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY4ODMwNTksImV4cCI6MjA3MjQ1OTA1OX0.248-a4KDBGcGhYYYTq2ipHIrH2hxKAYh_T_CWN9zkws";
+    const CHAT_URL = `${SUPABASE_URL}/functions/v1/ai-advisor`;
     
     try {
       const resp = await fetch(CHAT_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          Authorization: `Bearer ${SUPABASE_KEY}`,
         },
         body: JSON.stringify({ 
           message: userMessage,
