@@ -12,25 +12,26 @@ const Pricing = () => {
   const { toast } = useToast();
   const { t, formatCurrency } = useLanguage();
   const [isYearly, setIsYearly] = useState(false);
+  
   const personalFeatures = [
-    "Personal expense tracking",
-    "Monthly spending analysis",
-    "Savings recommendations",
-    "Basic financial insights",
-    "Mobile app access",
-    "Email support"
+    t('personalExpenseTracking'),
+    t('monthlySpendingAnalysis'),
+    t('savingsRecommendations'),
+    t('basicFinancialInsights'),
+    t('mobileAppAccess'),
+    t('emailSupport')
   ];
 
   const businessFeatures = [
-    "Everything in Personal",
-    "Multi-country tax calculations",
-    "Business expense management",
-    "Year-over-year analysis",
-    "Financial advisor AI",
-    "Investment recommendations",
-    "Priority support",
-    "Advanced analytics",
-    "Team collaboration"
+    t('everythingInPersonal'),
+    t('multiCountryTaxCalc'),
+    t('businessExpenseManagement'),
+    t('yearOverYearAnalysis'),
+    t('financialAdvisorAI'),
+    t('investmentRecommendations'),
+    t('prioritySupport'),
+    t('advancedAnalytics'),
+    t('teamCollaboration')
   ];
 
   return (
@@ -38,9 +39,9 @@ const Pricing = () => {
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold mb-6">Simple, Transparent Pricing</h1>
+          <h1 className="text-4xl font-bold mb-6">{t('simpleTransparentPricing')}</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Choose the plan that fits your needs. Start with a 7-day free trial, no credit card required.
+            {t('chooseThePlan')}
           </p>
           
           {/* Yearly/Monthly Toggle */}
@@ -132,7 +133,7 @@ const Pricing = () => {
             }}
             className="w-full"
           >
-            Start Free Trial
+            {t('startFreeTrial')}
           </Button>
             </CardContent>
           </Card>
@@ -197,7 +198,7 @@ const Pricing = () => {
             }}
             className="w-full"
           >
-            Start Free Trial
+            {t('startFreeTrial')}
           </Button>
             </CardContent>
           </Card>

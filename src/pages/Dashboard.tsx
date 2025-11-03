@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAdminCheck } from '@/hooks/useAdminCheck';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -26,6 +27,7 @@ import { supabase } from '@/integrations/supabase/client';
 const Dashboard = () => {
   const { user, profile, loading, signOut } = useAuth();
   const { isAdmin } = useAdminCheck();
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState('overview');
 
   // Redirect if not authenticated
@@ -98,19 +100,19 @@ const Dashboard = () => {
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="overview">{t('overview')}</TabsTrigger>
             <TabsTrigger value="personal">
               <User className="w-4 h-4 mr-2" />
-              Personal
+              {t('personal')}
             </TabsTrigger>
             <TabsTrigger value="business">
               <Building2 className="w-4 h-4 mr-2" />
-              Business
+              {t('business')}
             </TabsTrigger>
-            <TabsTrigger value="advisor">AI Advisor</TabsTrigger>
+            <TabsTrigger value="advisor">{t('aiAdvisor')}</TabsTrigger>
             <TabsTrigger value="security">
               <Settings className="w-4 h-4 mr-2" />
-              Security
+              {t('security')}
             </TabsTrigger>
           </TabsList>
 
@@ -172,9 +174,9 @@ const Dashboard = () => {
             {/* Quick Actions */}
             <Card>
               <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
+                <CardTitle>{t('quickActions')}</CardTitle>
                 <CardDescription>
-                  Get started with your financial management
+                  {t('quickActionsDesc')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -184,7 +186,7 @@ const Dashboard = () => {
                     className="h-20 flex-col bg-gradient-primary hover:opacity-90"
                   >
                     <User className="w-6 h-6 mb-2" />
-                    Track Personal Expenses
+                    {t('trackPersonalExpenses')}
                   </Button>
                   <Button 
                     onClick={() => setActiveTab('business')} 
@@ -192,7 +194,7 @@ const Dashboard = () => {
                     className="h-20 flex-col"
                   >
                     <Building2 className="w-6 h-6 mb-2" />
-                    Manage Business Taxes
+                    {t('manageBusinessTaxes')}
                   </Button>
                   <Button 
                     onClick={() => setActiveTab('advisor')} 
@@ -200,7 +202,7 @@ const Dashboard = () => {
                     className="h-20 flex-col"
                   >
                     <BarChart3 className="w-6 h-6 mb-2" />
-                    Get AI Advice
+                    {t('getAIAdvice')}
                   </Button>
                 </div>
               </CardContent>

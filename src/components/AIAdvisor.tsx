@@ -207,10 +207,10 @@ const AIAdvisor: React.FC<AIAdvisorProps> = ({ userContext }) => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Bot className="w-5 h-5 text-primary" />
-          AI Financial Advisor
+          {t('aiAdvisorTitle')}
         </CardTitle>
         <CardDescription>
-          Get personalized tax and financial advice powered by AI
+          {t('aiAdvisorDesc')}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col p-0">
@@ -257,7 +257,7 @@ const AIAdvisor: React.FC<AIAdvisorProps> = ({ userContext }) => {
 
         {messages.length === 1 && (
           <div className="px-6 pb-4">
-            <p className="text-sm text-muted-foreground mb-2">Try asking:</p>
+            <p className="text-sm text-muted-foreground mb-2">{t('tryAsking')}</p>
             <div className="flex flex-wrap gap-2">
               {suggestedQuestions.map((question, idx) => (
                 <Button
@@ -282,7 +282,7 @@ const AIAdvisor: React.FC<AIAdvisorProps> = ({ userContext }) => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Ask about taxes, expenses, or financial planning..."
+              placeholder={t('aiAdvisorPlaceholder')}
               disabled={isLoading}
               className="flex-1"
             />

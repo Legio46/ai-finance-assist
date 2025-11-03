@@ -222,6 +222,29 @@ const translations: Record<string, Record<string, string>> = {
     thankYouContact: 'Thank you for contacting us. We\'ll get back to you soon.',
     errorSending: 'There was an error sending your message. Please try again.',
     sendingMessage: 'Sending...',
+    
+    // AI Advisor
+    aiAdvisorPlaceholder: 'Ask about taxes, expenses, or financial planning...',
+    tryAsking: 'Try asking:',
+    
+    // Pricing Features
+    personalExpenseTracking: 'Personal expense tracking',
+    monthlySpendingAnalysis: 'Monthly spending analysis',
+    savingsRecommendations: 'Savings recommendations',
+    basicFinancialInsights: 'Basic financial insights',
+    mobileAppAccess: 'Mobile app access',
+    emailSupport: 'Email support',
+    everythingInPersonal: 'Everything in Personal',
+    multiCountryTaxCalc: 'Multi-country tax calculations',
+    businessExpenseManagement: 'Business expense management',
+    yearOverYearAnalysis: 'Year-over-year analysis',
+    financialAdvisorAI: 'Financial advisor AI',
+    investmentRecommendations: 'Investment recommendations',
+    prioritySupport: 'Priority support',
+    advancedAnalytics: 'Advanced analytics',
+    teamCollaboration: 'Team collaboration',
+    simpleTransparentPricing: 'Simple, Transparent Pricing',
+    chooseThePlan: 'Choose the plan that fits your needs. Start with a 7-day free trial, no credit card required.',
   },
   sk: {
     // Navigation
@@ -411,6 +434,29 @@ const translations: Record<string, Record<string, string>> = {
     thankYouContact: 'Ďakujeme, že ste nás kontaktovali. Čoskoro sa vám ozveme.',
     errorSending: 'Pri odosielaní správy sa vyskytla chyba. Skúste to prosím znova.',
     sendingMessage: 'Odosielanie...',
+    
+    // AI Advisor
+    aiAdvisorPlaceholder: 'Opýtajte sa na dane, výdavky alebo finančné plánovanie...',
+    tryAsking: 'Skúste sa opýtať:',
+    
+    // Pricing Features
+    personalExpenseTracking: 'Sledovanie osobných výdavkov',
+    monthlySpendingAnalysis: 'Analýza mesačných výdavkov',
+    savingsRecommendations: 'Odporúčania na úspory',
+    basicFinancialInsights: 'Základné finančné prehľady',
+    mobileAppAccess: 'Prístup k mobilnej aplikácii',
+    emailSupport: 'E-mailová podpora',
+    everythingInPersonal: 'Všetko z Osobného',
+    multiCountryTaxCalc: 'Daňové výpočty pre viaceré krajiny',
+    businessExpenseManagement: 'Správa obchodných výdavkov',
+    yearOverYearAnalysis: 'Medziročná analýza',
+    financialAdvisorAI: 'AI finančný poradca',
+    investmentRecommendations: 'Investičné odporúčania',
+    prioritySupport: 'Prioritná podpora',
+    advancedAnalytics: 'Pokročilá analytika',
+    teamCollaboration: 'Tímová spolupráca',
+    simpleTransparentPricing: 'Jednoduché, transparentné ceny',
+    chooseThePlan: 'Vyberte si plán, ktorý vyhovuje vašim potrebám. Začnite so 7-dňovou bezplatnou skúšobnou verziou, kreditná karta nie je potrebná.',
   },
   de: {
     // Navigation
@@ -600,6 +646,29 @@ const translations: Record<string, Record<string, string>> = {
     thankYouContact: 'Vielen Dank für Ihre Kontaktaufnahme. Wir werden uns bald bei Ihnen melden.',
     errorSending: 'Beim Senden Ihrer Nachricht ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.',
     sendingMessage: 'Senden...',
+    
+    // AI Advisor
+    aiAdvisorPlaceholder: 'Fragen Sie nach Steuern, Ausgaben oder Finanzplanung...',
+    tryAsking: 'Versuchen Sie zu fragen:',
+    
+    // Pricing Features
+    personalExpenseTracking: 'Persönliche Ausgabenverfolgung',
+    monthlySpendingAnalysis: 'Monatliche Ausgabenanalyse',
+    savingsRecommendations: 'Sparempfehlungen',
+    basicFinancialInsights: 'Grundlegende finanzielle Einblicke',
+    mobileAppAccess: 'Zugriff auf mobile App',
+    emailSupport: 'E-Mail-Support',
+    everythingInPersonal: 'Alles aus Persönlich',
+    multiCountryTaxCalc: 'Steuerberechnungen für mehrere Länder',
+    businessExpenseManagement: 'Verwaltung von Geschäftsausgaben',
+    yearOverYearAnalysis: 'Jahr-für-Jahr-Analyse',
+    financialAdvisorAI: 'KI-Finanzberater',
+    investmentRecommendations: 'Anlageempfehlungen',
+    prioritySupport: 'Priority-Support',
+    advancedAnalytics: 'Erweiterte Analytik',
+    teamCollaboration: 'Team-Zusammenarbeit',
+    simpleTransparentPricing: 'Einfache, transparente Preise',
+    chooseThePlan: 'Wählen Sie den Plan, der zu Ihren Bedürfnissen passt. Beginnen Sie mit einer 7-tägigen kostenlosen Testversion, keine Kreditkarte erforderlich.',
   },
   fr: {
     // Navigation
@@ -789,6 +858,29 @@ const translations: Record<string, Record<string, string>> = {
     thankYouContact: 'Merci de nous avoir contactés. Nous vous répondrons bientôt.',
     errorSending: 'Une erreur s\'est produite lors de l\'envoi de votre message. Veuillez réessayer.',
     sendingMessage: 'Envoi...',
+    
+    // AI Advisor
+    aiAdvisorPlaceholder: 'Posez des questions sur les impôts, les dépenses ou la planification financière...',
+    tryAsking: 'Essayez de demander:',
+    
+    // Pricing Features
+    personalExpenseTracking: 'Suivi des dépenses personnelles',
+    monthlySpendingAnalysis: 'Analyse des dépenses mensuelles',
+    savingsRecommendations: 'Recommandations d\'épargne',
+    basicFinancialInsights: 'Informations financières de base',
+    mobileAppAccess: 'Accès à l\'application mobile',
+    emailSupport: 'Support par e-mail',
+    everythingInPersonal: 'Tout dans Personnel',
+    multiCountryTaxCalc: 'Calculs fiscaux multi-pays',
+    businessExpenseManagement: 'Gestion des dépenses professionnelles',
+    yearOverYearAnalysis: 'Analyse d\'une année sur l\'autre',
+    financialAdvisorAI: 'Conseiller financier IA',
+    investmentRecommendations: 'Recommandations d\'investissement',
+    prioritySupport: 'Support prioritaire',
+    advancedAnalytics: 'Analyses avancées',
+    teamCollaboration: 'Collaboration en équipe',
+    simpleTransparentPricing: 'Tarification simple et transparente',
+    chooseThePlan: 'Choisissez le plan qui correspond à vos besoins. Commencez par un essai gratuit de 7 jours, aucune carte de crédit requise.',
   },
 };
 
