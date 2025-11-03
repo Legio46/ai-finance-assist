@@ -15,7 +15,6 @@ const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phone: '',
     description: ''
   });
 
@@ -37,7 +36,6 @@ const Contact = () => {
       setFormData({
         name: '',
         email: '',
-        phone: '',
         description: ''
       });
     } catch (error) {
@@ -125,18 +123,6 @@ const Contact = () => {
                         required
                       />
                     </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">{t('phoneNumber')}</Label>
-                    <Input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      placeholder={t('phoneNumber')}
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                    />
                   </div>
 
                   <div className="space-y-2">
