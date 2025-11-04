@@ -305,7 +305,7 @@ const translations: Record<string, Record<string, string>> = {
     missionText: 'Posilniť jednotlivcov a podniky inteligentnými finančnými nástrojmi, ktoré zjednodušujú zložité výpočty, poskytujú užitočné poznatky a pomáhajú používateľom robiť informované finančné rozhodnutia v rôznych krajinách a menách.',
     ourValues: 'Naše hodnoty',
     userCentric: 'Zamerané na používateľa',
-    userCentricDesc: 'Každá funkcia, ktorú vytvárame, je navrhnutá s potrebami našich používateľov na prvom mieste, zabezpečuje jednoduchosť bez obetovani funkčnosti.',
+    userCentricDesc: 'Každá funkcia, ktorú vytvárame, je navrhnutá s potrebami našich používateľov na prvom mieste, zabezpečuje jednoduchosť bez obetovania funkčnosti.',
     innovation: 'Inovácia',
     innovationDesc: 'Využívame najmodernejšiu AI a technológiu na poskytovanie poznatkov a automatizácie, ktoré tradičné finančné nástroje jednoducho nemôžu poskytnúť.',
     trustAndSecurity: 'Dôvera & Bezpečnosť',
