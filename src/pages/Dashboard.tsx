@@ -48,6 +48,7 @@ const Dashboard = () => {
 
   const isTrialActive = profile?.trial_end && new Date(profile.trial_end) > new Date();
   const subscriptionStatus = profile?.subscription_tier || 'free';
+  const hasBusinessAccess = subscriptionStatus === 'business' || (subscriptionStatus === 'free' && isTrialActive);
 
   return (
     <div className="min-h-screen bg-background">
@@ -105,9 +106,10 @@ const Dashboard = () => {
               <User className="w-4 h-4 mr-2" />
               {t('personal')}
             </TabsTrigger>
-            <TabsTrigger value="business">
+            <TabsTrigger value="business" disabled={!hasBusinessAccess}>
               <Building2 className="w-4 h-4 mr-2" />
               {t('business')}
+              {!hasBusinessAccess && <Badge variant="secondary" className="ml-2 text-xs">Pro</Badge>}
             </TabsTrigger>
             <TabsTrigger value="advisor">{t('aiAdvisor')}</TabsTrigger>
             <TabsTrigger value="security">
@@ -189,12 +191,14 @@ const Dashboard = () => {
                     {t('trackPersonalExpenses')}
                   </Button>
                   <Button 
-                    onClick={() => setActiveTab('business')} 
+                    onClick={() => hasBusinessAccess ? setActiveTab('business') : window.location.href = '/pricing'} 
                     variant="outline" 
-                    className="h-20 flex-col"
+                    className="h-20 flex-col relative"
+                    disabled={!hasBusinessAccess}
                   >
                     <Building2 className="w-6 h-6 mb-2" />
                     {t('manageBusinessTaxes')}
+                    {!hasBusinessAccess && <Badge variant="secondary" className="absolute top-2 right-2 text-xs">Pro</Badge>}
                   </Button>
                   <Button 
                     onClick={() => setActiveTab('advisor')} 
@@ -214,7 +218,25 @@ const Dashboard = () => {
           </TabsContent>
 
           <TabsContent value="business">
-            <BusinessDashboard />
+            {hasBusinessAccess ? (
+              <BusinessDashboard />
+            ) : (
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t('upgradeToBusiness')}</CardTitle>
+                  <CardDescription>{t('businessFeaturesLocked')}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-muted-foreground">
+                    Unlock advanced business features including multi-country tax calculations, 
+                    business expense management, and advanced analytics.
+                  </p>
+                  <Button asChild>
+                    <Link to="/pricing">{t('viewPricing')}</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           <TabsContent value="advisor">

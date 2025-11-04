@@ -79,7 +79,7 @@ const Contact = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <p className="text-muted-foreground font-medium">support@legio.financial</p>
+                <p className="text-muted-foreground font-medium">support@legio.com</p>
                 <p className="text-sm text-muted-foreground">
                   {t('emailResponse')}
                 </p>

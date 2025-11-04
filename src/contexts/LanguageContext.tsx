@@ -245,6 +245,8 @@ const translations: Record<string, Record<string, string>> = {
     teamCollaboration: 'Team collaboration',
     simpleTransparentPricing: 'Simple, Transparent Pricing',
     chooseThePlan: 'Choose the plan that fits your needs. Start with a 7-day free trial, no credit card required.',
+    upgradeToBusiness: 'Upgrade to Business Plan',
+    businessFeaturesLocked: 'Business features are only available with the Business plan',
   },
   sk: {
     // Navigation
@@ -457,6 +459,8 @@ const translations: Record<string, Record<string, string>> = {
     teamCollaboration: 'Tímová spolupráca',
     simpleTransparentPricing: 'Jednoduché, transparentné ceny',
     chooseThePlan: 'Vyberte si plán, ktorý vyhovuje vašim potrebám. Začnite so 7-dňovou bezplatnou skúšobnou verziou, kreditná karta nie je potrebná.',
+    upgradeToBusiness: 'Prejsť na Business plán',
+    businessFeaturesLocked: 'Business funkcie sú dostupné len s Business plánom',
   },
   de: {
     // Navigation
@@ -669,6 +673,8 @@ const translations: Record<string, Record<string, string>> = {
     teamCollaboration: 'Team-Zusammenarbeit',
     simpleTransparentPricing: 'Einfache, transparente Preise',
     chooseThePlan: 'Wählen Sie den Plan, der zu Ihren Bedürfnissen passt. Beginnen Sie mit einer 7-tägigen kostenlosen Testversion, keine Kreditkarte erforderlich.',
+    upgradeToBusiness: 'Auf Business-Plan upgraden',
+    businessFeaturesLocked: 'Business-Funktionen sind nur mit dem Business-Plan verfügbar',
   },
   fr: {
     // Navigation
@@ -881,6 +887,8 @@ const translations: Record<string, Record<string, string>> = {
     teamCollaboration: 'Collaboration en équipe',
     simpleTransparentPricing: 'Tarification simple et transparente',
     chooseThePlan: 'Choisissez le plan qui correspond à vos besoins. Commencez par un essai gratuit de 7 jours, aucune carte de crédit requise.',
+    upgradeToBusiness: 'Passer au plan Business',
+    businessFeaturesLocked: 'Les fonctionnalités Business ne sont disponibles qu\'avec le plan Business',
   },
 };
 
