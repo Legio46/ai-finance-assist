@@ -19,6 +19,7 @@ const Pricing = () => {
     t('savingsRecommendations'),
     t('basicFinancialInsights'),
     t('mobileAppAccess'),
+    t('multiLanguageSupport'),
     t('emailSupport')
   ];
 
