@@ -23,6 +23,8 @@ import BusinessDashboard from '@/components/BusinessDashboard';
 import PersonalDashboard from '@/components/PersonalDashboard';
 import AIAdvisor from '@/components/AIAdvisor';
 import { supabase } from '@/integrations/supabase/client';
+import LanguageSelector from '@/components/LanguageSelector';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 const Dashboard = () => {
   const { user, profile, loading, signOut } = useAuth();
@@ -76,6 +78,8 @@ const Dashboard = () => {
                 </Link>
               </Button>
             )}
+            <ThemeToggle />
+            <LanguageSelector />
             <Button variant="outline" onClick={signOut}>
               Sign out
             </Button>

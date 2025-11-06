@@ -163,10 +163,14 @@ const translations: Record<string, Record<string, string>> = {
     returnToHome: 'Return to Home',
 
     // Footer
+    empoweringText: 'Empowering individuals and businesses with intelligent financial management',
+    allRightsReserved: 'All rights reserved',
     footerRights: 'All rights reserved',
     productTitle: 'Product',
     supportTitle: 'Support',
     legalTitle: 'Legal',
+    partnershipTitle: 'Partnership',
+    partnerWithUs: 'Partner with us',
     helpCenter: 'Help Center',
     privacyPolicy: 'Privacy Policy',
     termsOfService: 'Terms of Service',
@@ -378,10 +382,14 @@ const translations: Record<string, Record<string, string>> = {
     returnToHome: 'Návrat na domovskú stránku',
 
     // Footer
+    empoweringText: 'Posilňovanie jednotlivcov a podnikov inteligentným finančným riadením',
+    allRightsReserved: 'Všetky práva vyhradené',
     footerRights: 'Všetky práva vyhradené',
     productTitle: 'Produkt',
     supportTitle: 'Podpora',
     legalTitle: 'Právne',
+    partnershipTitle: 'Partnerstvo',
+    partnerWithUs: 'Partnerte s nami',
     helpCenter: 'Centrum pomoci',
     privacyPolicy: 'Zásady ochrany osobných údajov',
     termsOfService: 'Podmienky služby',
@@ -593,10 +601,14 @@ const translations: Record<string, Record<string, string>> = {
     returnToHome: 'Zurück zur Startseite',
 
     // Footer
+    empoweringText: 'Stärkung von Einzelpersonen und Unternehmen mit intelligentem Finanzmanagement',
+    allRightsReserved: 'Alle Rechte vorbehalten',
     footerRights: 'Alle Rechte vorbehalten',
     productTitle: 'Produkt',
     supportTitle: 'Support',
     legalTitle: 'Rechtliches',
+    partnershipTitle: 'Partnerschaft',
+    partnerWithUs: 'Werden Sie Partner',
     helpCenter: 'Hilfezentrum',
     privacyPolicy: 'Datenschutzrichtlinie',
     termsOfService: 'Nutzungsbedingungen',
@@ -808,10 +820,14 @@ const translations: Record<string, Record<string, string>> = {
     returnToHome: "Retour à l'accueil",
 
     // Footer
+    empoweringText: 'Autonomiser les particuliers et les entreprises avec une gestion financière intelligente',
+    allRightsReserved: 'Tous droits réservés',
     footerRights: 'Tous droits réservés',
     productTitle: 'Produit',
     supportTitle: 'Support',
     legalTitle: 'Légal',
+    partnershipTitle: 'Partenariat',
+    partnerWithUs: 'Devenez partenaire',
     helpCenter: "Centre d'aide",
     privacyPolicy: 'Politique de confidentialité',
     termsOfService: "Conditions d'utilisation",
