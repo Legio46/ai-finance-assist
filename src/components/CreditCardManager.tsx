@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { CreditCard, Plus, Trash2, Edit } from 'lucide-react';
 
 interface CreditCardData {
@@ -30,6 +31,7 @@ interface CreditCardManagerProps {
 const CreditCardManager: React.FC<CreditCardManagerProps> = ({ cardType }) => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { formatCurrency } = useLanguage();
   const [cards, setCards] = useState<CreditCardData[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -321,11 +323,11 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ cardType }) => {
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <p className="text-muted-foreground">Balance</p>
-                    <p className="font-medium">${card.current_balance?.toLocaleString() || '0'}</p>
+                    <p className="font-medium">{formatCurrency(card.current_balance || 0)}</p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">Limit</p>
-                    <p className="font-medium">${card.credit_limit?.toLocaleString() || '0'}</p>
+                    <p className="font-medium">{formatCurrency(card.credit_limit || 0)}</p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">APR</p>

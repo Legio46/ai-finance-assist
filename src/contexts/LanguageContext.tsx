@@ -31,6 +31,7 @@ export const languages: Language[] = [
 export const currencies: Currency[] = [
   { code: 'USD', name: 'US Dollar', symbol: '$' },
   { code: 'EUR', name: 'Euro', symbol: '€' },
+  { code: 'GBP', name: 'British Pound', symbol: '£' },
 ];
 
 const translations: Record<string, Record<string, string>> = {

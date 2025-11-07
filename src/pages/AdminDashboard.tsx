@@ -52,7 +52,7 @@ const AdminDashboard = () => {
   const { user } = useAuth();
   const { isAdmin, loading: adminLoading } = useAdminCheck();
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { t, formatCurrency } = useLanguage();
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
@@ -60,13 +60,15 @@ const AdminDashboard = () => {
   const [securityEvents, setSecurityEvents] = useState([]);
   const [activityLogs, setActivityLogs] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUserRoles, setSelectedUserRoles] = useState<string[]>([]);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [editForm, setEditForm] = useState({
     full_name: '',
     subscription_tier: '',
     subscription_status: '',
-    account_type: ''
+    account_type: '',
+    role: 'user'
   });
 
   // Mock data for revenue chart
@@ -170,14 +172,47 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleEditUser = (selectedUserData: any) => {
+  const handleEditUser = async (selectedUserData: any) => {
     setSelectedUser(selectedUserData);
-    setEditForm({
-      full_name: selectedUserData.full_name || '',
-      subscription_tier: selectedUserData.subscription_tier || 'free',
-      subscription_status: selectedUserData.subscription_status || 'inactive',
-      account_type: selectedUserData.account_type || 'personal'
-    });
+    
+    // Fetch user roles
+    try {
+      const { data: rolesData, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', selectedUserData.user_id);
+      
+      if (!error && rolesData) {
+        setSelectedUserRoles(rolesData.map(r => r.role));
+        setEditForm({
+          full_name: selectedUserData.full_name || '',
+          subscription_tier: selectedUserData.subscription_tier || 'free',
+          subscription_status: selectedUserData.subscription_status || 'inactive',
+          account_type: selectedUserData.account_type || 'personal',
+          role: rolesData.find(r => r.role === 'admin') ? 'admin' : 'user'
+        });
+      } else {
+        setSelectedUserRoles([]);
+        setEditForm({
+          full_name: selectedUserData.full_name || '',
+          subscription_tier: selectedUserData.subscription_tier || 'free',
+          subscription_status: selectedUserData.subscription_status || 'inactive',
+          account_type: selectedUserData.account_type || 'personal',
+          role: 'user'
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching roles:', error);
+      setSelectedUserRoles([]);
+      setEditForm({
+        full_name: selectedUserData.full_name || '',
+        subscription_tier: selectedUserData.subscription_tier || 'free',
+        subscription_status: selectedUserData.subscription_status || 'inactive',
+        account_type: selectedUserData.account_type || 'personal',
+        role: 'user'
+      });
+    }
+    
     setShowEditDialog(true);
   };
 
@@ -185,12 +220,34 @@ const AdminDashboard = () => {
     if (!selectedUser) return;
 
     try {
-      const { error } = await supabase
+      // Update profile
+      const { error: profileError } = await supabase
         .from('profiles')
-        .update(editForm)
+        .update({
+          full_name: editForm.full_name,
+          subscription_tier: editForm.subscription_tier,
+          subscription_status: editForm.subscription_status,
+          account_type: editForm.account_type
+        })
         .eq('user_id', selectedUser.user_id);
 
-      if (error) throw error;
+      if (profileError) throw profileError;
+
+      // Update roles
+      // First, remove all existing roles for this user
+      await supabase
+        .from('user_roles')
+        .delete()
+        .eq('user_id', selectedUser.user_id);
+
+      // Then add the new role if it's admin
+      if (editForm.role === 'admin') {
+        const { error: roleError } = await supabase
+          .from('user_roles')
+          .insert([{ user_id: selectedUser.user_id, role: 'admin' }]);
+
+        if (roleError) throw roleError;
+      }
 
       await logActivity('UPDATE_USER', selectedUser.user_id, {
         changes: editForm,
@@ -199,7 +256,7 @@ const AdminDashboard = () => {
 
       toast({
         title: "User Updated",
-        description: "User information has been updated successfully.",
+        description: "User information and role have been updated successfully.",
       });
 
       setShowEditDialog(false);
@@ -350,7 +407,7 @@ const AdminDashboard = () => {
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">$15,231</div>
+              <div className="text-2xl font-bold">{formatCurrency(15231)}</div>
               <p className="text-xs text-muted-foreground">+20.1% from last month</p>
             </CardContent>
           </Card>
@@ -436,7 +493,7 @@ const AdminDashboard = () => {
                           <p className="text-sm text-muted-foreground">{transaction.plan} Plan</p>
                         </div>
                         <div className="text-right">
-                          <p className="font-medium">${transaction.amount}</p>
+                          <p className="font-medium">{formatCurrency(transaction.amount)}</p>
                           <p className="text-sm text-muted-foreground">{transaction.date}</p>
                         </div>
                       </div>
@@ -917,6 +974,18 @@ const AdminDashboard = () => {
                     <SelectItem value="inactive">Inactive</SelectItem>
                     <SelectItem value="active">Active</SelectItem>
                     <SelectItem value="cancelled">Cancelled</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="role">User Role</Label>
+                <Select value={editForm.role} onValueChange={(value) => setEditForm({...editForm, role: value})}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="user">User</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

@@ -29,7 +29,7 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 const Dashboard = () => {
   const { user, profile, loading, signOut } = useAuth();
   const { isAdmin } = useAdminCheck();
-  const { t } = useLanguage();
+  const { t, formatCurrency } = useLanguage();
   const [activeTab, setActiveTab] = useState('overview');
 
   // Redirect if not authenticated
@@ -50,7 +50,7 @@ const Dashboard = () => {
 
   const isTrialActive = profile?.trial_end && new Date(profile.trial_end) > new Date();
   const subscriptionStatus = profile?.subscription_tier || 'free';
-  const hasBusinessAccess = subscriptionStatus === 'business' || (subscriptionStatus === 'free' && isTrialActive);
+  const hasBusinessAccess = subscriptionStatus === 'business' || (subscriptionStatus === 'free' && isTrialActive) || isAdmin;
 
   return (
     <div className="min-h-screen bg-background">
@@ -130,7 +130,7 @@ const Dashboard = () => {
                   <CreditCard className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">$2,350</div>
+                  <div className="text-2xl font-bold">{formatCurrency(2350)}</div>
                   <p className="text-xs text-muted-foreground">
                     <span className="text-success">-12%</span> from last month
                   </p>
@@ -143,7 +143,7 @@ const Dashboard = () => {
                   <PiggyBank className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">$8,500</div>
+                  <div className="text-2xl font-bold">{formatCurrency(8500)}</div>
                   <p className="text-xs text-muted-foreground">
                     <span className="text-success">+23%</span> of yearly goal
                   </p>
@@ -156,7 +156,7 @@ const Dashboard = () => {
                   <Calculator className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">$12,340</div>
+                  <div className="text-2xl font-bold">{formatCurrency(12340)}</div>
                   <p className="text-xs text-muted-foreground">
                     For current fiscal year
                   </p>

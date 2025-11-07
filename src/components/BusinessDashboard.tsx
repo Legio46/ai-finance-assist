@@ -17,6 +17,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 const BusinessDashboard = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { formatCurrency } = useLanguage();
   const [businessData, setBusinessData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -102,7 +103,7 @@ const BusinessDashboard = () => {
 
       toast({
         title: "Tax Calculated",
-        description: `Estimated tax: $${taxResult.taxAmount.toLocaleString()} (${taxResult.taxRate.toFixed(1)}%)`,
+        description: `Estimated tax: ${formatCurrency(taxResult.taxAmount)} (${taxResult.taxRate.toFixed(1)}%)`,
       });
 
       // Reset form
@@ -140,7 +141,7 @@ const BusinessDashboard = () => {
             <Building2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalRevenue.toLocaleString()}</div>
+            <div className="text-2xl font-bold">{formatCurrency(totalRevenue)}</div>
             <p className="text-xs text-muted-foreground">Across all businesses</p>
           </CardContent>
         </Card>
@@ -151,7 +152,7 @@ const BusinessDashboard = () => {
             <Calculator className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-destructive">${totalTax.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-destructive">{formatCurrency(totalTax)}</div>
             <p className="text-xs text-muted-foreground">Tax obligation</p>
           </CardContent>
         </Card>
@@ -167,7 +168,7 @@ const BusinessDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className={`text-2xl font-bold ${totalProfit >= 0 ? 'text-success' : 'text-destructive'}`}>
-              ${totalProfit.toLocaleString()}
+              {formatCurrency(totalProfit)}
             </div>
             <p className="text-xs text-muted-foreground">After tax calculation</p>
           </CardContent>
@@ -290,13 +291,13 @@ const BusinessDashboard = () => {
                   </div>
                   <div className="text-right">
                     <div className="text-lg font-semibold">
-                      ${business.annual_revenue?.toLocaleString()}
+                      {formatCurrency(business.annual_revenue || 0)}
                     </div>
                     <div className="text-sm text-destructive">
-                      Tax: ${business.calculated_tax?.toLocaleString()}
+                      Tax: {formatCurrency(business.calculated_tax || 0)}
                     </div>
                     <div className={`text-sm ${business.profit_loss >= 0 ? 'text-success' : 'text-destructive'}`}>
-                      Profit: ${business.profit_loss?.toLocaleString()}
+                      Profit: {formatCurrency(business.profit_loss || 0)}
                     </div>
                   </div>
                 </div>
