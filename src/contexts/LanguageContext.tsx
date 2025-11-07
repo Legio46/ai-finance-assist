@@ -957,8 +957,19 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const formatCurrency = (amount: number): string => {
     const currencyInfo = currencies.find(c => c.code === currency);
-    if (!currencyInfo) return `$${amount}`;
-    return `${currencyInfo.symbol}${amount}`;
+    if (!currencyInfo) return `$${amount.toFixed(2)}`;
+    
+    // Conversion rates from EUR (base currency)
+    const conversionRates: Record<string, number> = {
+      'EUR': 1,
+      'USD': 1.156,
+      'GBP': 0.8812,
+    };
+    
+    // Convert from EUR to selected currency
+    const convertedAmount = amount * (conversionRates[currency] || 1);
+    
+    return `${currencyInfo.symbol}${convertedAmount.toFixed(2)}`;
   };
 
   return (
