@@ -5,34 +5,32 @@ import { Check } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const Pricing = () => {
   const { toast } = useToast();
   const { t, formatCurrency } = useLanguage();
-  const [isYearly, setIsYearly] = useState(false);
   
-  const personalFeatures = [
-    t('personalExpenseTracking'),
-    t('monthlySpendingAnalysis'),
-    t('savingsRecommendations'),
-    t('basicFinancialInsights'),
-    t('mobileAppAccess'),
-    t('multiLanguageSupport'),
-    t('emailSupport')
+  const basicFeatures = [
+    "Track expenses and income (cash + cards)",
+    "Bank import via open banking or manual",
+    "Automatic transaction categorization",
+    "Monthly overview dashboard with charts",
+    "Interactive charts (pie, bar, line)",
+    "Simple budget setting and tracking",
+    "Export data (CSV/PDF)"
   ];
 
-  const businessFeatures = [
-    t('everythingInPersonal'),
-    t('multiCountryTaxCalc'),
-    t('businessExpenseManagement'),
-    t('yearOverYearAnalysis'),
-    t('financialAdvisorAI'),
-    t('investmentRecommendations'),
-    t('prioritySupport'),
-    t('advancedAnalytics'),
-    t('teamCollaboration')
+  const proFeatures = [
+    "Everything in Basic +",
+    "Recurring payment tracking with reminders",
+    "Investment tracking (stocks, crypto, ETFs, real estate)",
+    "Live prices and portfolio performance",
+    "Financial calendar (bills, paydays, dividends)",
+    "AI financial advisor chat",
+    "Advanced financial planning tools",
+    "Net worth forecasting & retirement planner",
+    "Goal tracking with progress bars"
   ];
 
   return (
@@ -42,168 +40,157 @@ const Pricing = () => {
         <div className="text-center mb-16">
           <h1 className="text-4xl font-bold mb-6">{t('simpleTransparentPricing')}</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            {t('chooseThePlan')}
+            Choose the perfect plan for your financial needs
           </p>
-          
-          {/* Yearly/Monthly Toggle */}
-          <div className="flex items-center justify-center gap-4 mt-8">
-            <span className={`text-sm ${!isYearly ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
-              {t('monthly')}
-            </span>
-            <button
-              onClick={() => setIsYearly(!isYearly)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
-                isYearly ? 'bg-primary' : 'bg-input'
-              }`}
-            >
-              <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-background transition-transform ${
-                  isYearly ? 'translate-x-6' : 'translate-x-1'
-                }`}
-              />
-            </button>
-            <span className={`text-sm ${isYearly ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
-              {t('yearly')}
-            </span>
-            {isYearly && (
-              <Badge variant="secondary" className="ml-2">
-                {t('savePercent')}
-              </Badge>
-            )}
-          </div>
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-16">
-          {/* Personal Plan */}
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-16">
+          {/* Personal Basic Plan */}
           <Card className="relative">
-            <div className="absolute -top-2 right-4">
-              <Badge className="bg-destructive text-destructive-foreground">{t('sale50Off')}</Badge>
-            </div>
             <CardHeader className="text-center">
-              <CardTitle className="text-2xl">{t('personal')}</CardTitle>
-              <CardDescription>{t('perfectForIndividuals')}</CardDescription>
+              <CardTitle className="text-2xl">Personal Basic</CardTitle>
+              <CardDescription>Perfect for individuals starting out</CardDescription>
               <div className="mt-4">
-                {isYearly ? (
-                  <>
-                    <span className="text-4xl font-bold">{formatCurrency(161.89)}</span>
-                    <span className="text-muted-foreground">/{t('yearly')}</span>
-                    <div className="text-sm text-muted-foreground">
-                      <span className="line-through">{formatCurrency(179.88)}</span> {t('savePercent')}
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-1">
-                      {t('regularPrice')} <span className="line-through">{formatCurrency(323.78)}</span>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="flex items-center justify-center gap-2">
-                      <span className="text-2xl text-muted-foreground line-through">{formatCurrency(29.99)}</span>
-                      <span className="text-4xl font-bold">{formatCurrency(14.99)}</span>
-                    </div>
-                    <span className="text-muted-foreground">/{t('monthly')}</span>
-                  </>
-                )}
+                <span className="text-4xl font-bold">{formatCurrency(8)}</span>
+                <span className="text-muted-foreground">/{t('monthly')}</span>
               </div>
               <Badge variant="secondary" className="w-fit mx-auto mt-2">{t('dayFreeTrial')}</Badge>
             </CardHeader>
             <CardContent>
               <ul className="space-y-3 mb-6">
-                {personalFeatures.map((feature, index) => (
+                {basicFeatures.map((feature, index) => (
                   <li key={index} className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-primary" />
+                    <Check className="w-4 h-4 text-primary flex-shrink-0" />
                     <span className="text-sm">{feature}</span>
                   </li>
                 ))}
               </ul>
-          <Button 
-            onClick={() => {
-              supabase.functions.invoke('create-checkout', {
-                body: { plan: 'personal' }
-              }).then(({ data, error }) => {
-                if (error) {
-                  toast({
-                    title: "Error",
-                    description: "Failed to create checkout session",
-                    variant: "destructive",
+              <Button 
+                onClick={() => {
+                  supabase.functions.invoke('create-checkout', {
+                    body: { plan: 'basic' }
+                  }).then(({ data, error }) => {
+                    if (error) {
+                      toast({
+                        title: "Error",
+                        description: "Failed to create checkout session",
+                        variant: "destructive",
+                      });
+                    } else if (data?.url) {
+                      window.open(data.url, '_blank');
+                    }
                   });
-                } else if (data?.url) {
-                  window.open(data.url, '_blank');
-                }
-              });
-            }}
-            className="w-full"
-          >
-            {t('startFreeTrial')}
-          </Button>
+                }}
+                className="w-full"
+              >
+                {t('startFreeTrial')}
+              </Button>
             </CardContent>
           </Card>
 
-          {/* Business Plan */}
-          <Card className="relative border-primary">
-            <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 flex gap-2">
+          {/* Personal Pro Plan */}
+          <Card className="relative border-primary border-2">
+            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
               <Badge className="bg-primary text-primary-foreground">{t('mostPopular')}</Badge>
-              <Badge className="bg-destructive text-destructive-foreground">{t('sale40Off')}</Badge>
+            </div>
+            <CardHeader className="text-center pt-8">
+              <CardTitle className="text-2xl">Personal Pro</CardTitle>
+              <CardDescription>For serious financial planning</CardDescription>
+              <div className="mt-4">
+                <span className="text-4xl font-bold">{formatCurrency(10)}</span>
+                <span className="text-muted-foreground">/{t('monthly')}</span>
+              </div>
+              <Badge variant="secondary" className="w-fit mx-auto mt-2">{t('dayFreeTrial')}</Badge>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3 mb-6">
+                {proFeatures.map((feature, index) => (
+                  <li key={index} className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-primary flex-shrink-0" />
+                    <span className="text-sm">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+              <Button 
+                onClick={() => {
+                  supabase.functions.invoke('create-checkout', {
+                    body: { plan: 'pro' }
+                  }).then(({ data, error }) => {
+                    if (error) {
+                      toast({
+                        title: "Error",
+                        description: "Failed to create checkout session",
+                        variant: "destructive",
+                      });
+                    } else if (data?.url) {
+                      window.open(data.url, '_blank');
+                    }
+                  });
+                }}
+                className="w-full"
+              >
+                {t('startFreeTrial')}
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Business Plan - Coming Soon */}
+          <Card className="relative opacity-75">
+            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+              <Badge variant="secondary">Coming Soon</Badge>
             </div>
             <CardHeader className="text-center pt-8">
               <CardTitle className="text-2xl">{t('business')}</CardTitle>
               <CardDescription>{t('forEntrepreneurs')}</CardDescription>
               <div className="mt-4">
-                {isYearly ? (
-                  <>
-                    <span className="text-4xl font-bold">{formatCurrency(323.89)}</span>
-                    <span className="text-muted-foreground">/{t('yearly')}</span>
-                    <div className="text-sm text-muted-foreground">
-                      <span className="line-through">{formatCurrency(359.88)}</span> {t('savePercent')}
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-1">
-                      {t('regularPrice')} <span className="line-through">{formatCurrency(539.78)}</span>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="flex items-center justify-center gap-2">
-                      <span className="text-2xl text-muted-foreground line-through">{formatCurrency(49.99)}</span>
-                      <span className="text-4xl font-bold">{formatCurrency(29.99)}</span>
-                    </div>
-                    <span className="text-muted-foreground">/{t('monthly')}</span>
-                  </>
-                )}
+                <span className="text-4xl font-bold text-muted-foreground">TBA</span>
               </div>
-              <Badge variant="secondary" className="w-fit mx-auto mt-2">{t('dayFreeTrial')}</Badge>
             </CardHeader>
             <CardContent>
               <ul className="space-y-3 mb-6">
-                {businessFeatures.map((feature, index) => (
-                  <li key={index} className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-primary" />
-                    <span className="text-sm">{feature}</span>
-                  </li>
-                ))}
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                  <span className="text-sm text-muted-foreground">Multi-entity management</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                  <span className="text-sm text-muted-foreground">Advanced tax planning</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                  <span className="text-sm text-muted-foreground">Team collaboration</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                  <span className="text-sm text-muted-foreground">Priority support</span>
+                </li>
               </ul>
-          <Button 
-            onClick={() => {
-              supabase.functions.invoke('create-checkout', {
-                body: { plan: 'business' }
-              }).then(({ data, error }) => {
-                if (error) {
-                  toast({
-                    title: "Error",
-                    description: "Failed to create checkout session",
-                    variant: "destructive",
-                  });
-                } else if (data?.url) {
-                  window.open(data.url, '_blank');
-                }
-              });
-            }}
-            className="w-full"
-          >
-            {t('startFreeTrial')}
-          </Button>
+              <Button 
+                disabled
+                variant="outline"
+                className="w-full"
+              >
+                Notify Me
+              </Button>
             </CardContent>
           </Card>
         </div>
+
+        {/* Free Currency Converter CTA */}
+        <Card className="max-w-4xl mx-auto mb-16 bg-gradient-to-br from-primary/10 to-accent/10 border-primary/20">
+          <CardContent className="text-center py-8">
+            <h3 className="text-2xl font-bold mb-4">
+              Need a Currency Converter? It's Free!
+            </h3>
+            <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+              Access our real-time currency converter for all major currencies and cryptocurrencies—no signup required.
+            </p>
+            <Link to="/converter">
+              <Button size="lg" variant="outline">Try Free Converter</Button>
+            </Link>
+          </CardContent>
+        </Card>
 
         {/* FAQ Section */}
         <section className="max-w-3xl mx-auto">
