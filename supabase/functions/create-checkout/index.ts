@@ -71,7 +71,7 @@ Deno.serve(async (req: Request) => {
 
     const { plan } = requestBody;
 
-    if (!plan || !['personal', 'business'].includes(plan)) {
+    if (!plan || !['basic', 'pro'].includes(plan)) {
       return new Response(
         JSON.stringify({ error: "Invalid plan selected" }),
         {
@@ -94,8 +94,8 @@ Deno.serve(async (req: Request) => {
     const customerId = customers.data.length > 0 ? customers.data[0].id : undefined;
 
     const prices = {
-      personal: { amount: 1499, name: "Personal Plan" },
-      business: { amount: 2999, name: "Business Plan" },
+      basic: { amount: 800, name: "Personal Basic" },
+      pro: { amount: 1000, name: "Personal Pro" },
     };
 
     const selectedPrice = prices[plan as keyof typeof prices];
@@ -108,10 +108,10 @@ Deno.serve(async (req: Request) => {
       line_items: [
         {
           price_data: {
-            currency: "usd",
+            currency: "eur",
             product_data: {
               name: selectedPrice.name,
-              description: `Legio Financial ${selectedPrice.name} - 7-day free trial included`,
+              description: `FinanceAI ${selectedPrice.name} - 7-day free trial included`,
             },
             unit_amount: selectedPrice.amount,
             recurring: { interval: "month" },

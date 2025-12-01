@@ -18,6 +18,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import CreateAccount from "./pages/CreateAccount";
 import NotFound from "./pages/NotFound";
 import Affiliate from "./pages/Affiliate";
+import CurrencyConverter from "./pages/CurrencyConverter";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ const App = () => (
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/create-account" element={<CreateAccount />} />
               <Route path="/affiliate" element={<Affiliate />} />
+              <Route path="/converter" element={<CurrencyConverter />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AuthProvider>
