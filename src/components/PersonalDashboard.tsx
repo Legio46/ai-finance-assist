@@ -12,9 +12,14 @@ import { useToast } from "@/hooks/use-toast";
 import CreditCardManager from '@/components/CreditCardManager';
 import CreditCardTransactions from '@/components/CreditCardTransactions';
 import { useLanguage } from '@/contexts/LanguageContext';
+import IncomeTracker from '@/components/IncomeTracker';
+import BudgetManager from '@/components/BudgetManager';
+import RecurringPayments from '@/components/RecurringPayments';
+import InvestmentTracker from '@/components/InvestmentTracker';
+import FinancialGoals from '@/components/FinancialGoals';
 
 const PersonalDashboard = () => {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { toast } = useToast();
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,6 +28,9 @@ const PersonalDashboard = () => {
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
   const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
   const [uploadingReceipt, setUploadingReceipt] = useState(false);
+  
+  // Check if user has Pro features
+  const hasProFeatures = profile?.subscription_tier === 'personal_pro' || profile?.subscription_tier === 'pro';
 
   const [formData, setFormData] = useState({
     category: '',
@@ -503,6 +511,54 @@ const PersonalDashboard = () => {
               className="bg-gradient-primary hover:opacity-90"
             >
               Add Your First Expense
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Personal Basic Features */}
+      <IncomeTracker />
+      <BudgetManager />
+
+      {/* Personal Pro Features */}
+      {hasProFeatures ? (
+        <>
+          <RecurringPayments />
+          <InvestmentTracker />
+          <FinancialGoals />
+        </>
+      ) : (
+        <Card className="border-2 border-primary/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              Unlock Pro Features
+              <Badge variant="default">Personal Pro</Badge>
+            </CardTitle>
+            <CardDescription>
+              Upgrade to Personal Pro to access advanced features
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="space-y-2 text-sm">
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                <span>Recurring payment tracking with due-date reminders</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                <span>Investment portfolio tracking with live prices</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                <span>Financial goals with progress tracking</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                <span>AI financial advisor & advanced planning tools</span>
+              </div>
+            </div>
+            <Button className="w-full bg-gradient-primary hover:opacity-90 mt-4">
+              Upgrade to Personal Pro - €10/month
             </Button>
           </CardContent>
         </Card>
