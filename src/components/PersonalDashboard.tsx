@@ -29,8 +29,13 @@ const PersonalDashboard = () => {
   const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
   const [uploadingReceipt, setUploadingReceipt] = useState(false);
   
-  // Check if user has Pro features
-  const hasProFeatures = profile?.subscription_tier === 'personal_pro' || profile?.subscription_tier === 'pro';
+  // Check if user has Pro features - checking multiple possible tier values and trial status
+  const isOnTrial = profile?.trial_end && new Date(profile.trial_end) > new Date();
+  const hasProFeatures = 
+    profile?.subscription_tier === 'personal_pro' || 
+    profile?.subscription_tier === 'pro' ||
+    isOnTrial || // Trial users get Pro access
+    profile?.subscription_status === 'active'; // Active subscription gets Pro access
 
   const [formData, setFormData] = useState({
     category: '',
