@@ -38,7 +38,7 @@ const IncomeTracker = () => {
     if (!user) return;
 
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('income_sources')
         .select('*')
         .eq('user_id', user.id)
@@ -58,7 +58,7 @@ const IncomeTracker = () => {
     if (!user) return;
 
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('income_sources')
         .insert([
           {
@@ -100,7 +100,7 @@ const IncomeTracker = () => {
 
   const deleteIncomeSource = async (id: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('income_sources')
         .delete()
         .eq('id', id);

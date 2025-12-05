@@ -35,7 +35,7 @@ const FinancialGoals = () => {
     if (!user) return;
 
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('financial_goals')
         .select('*')
         .eq('user_id', user.id)
@@ -55,7 +55,7 @@ const FinancialGoals = () => {
     if (!user) return;
 
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('financial_goals')
         .insert([
           {
@@ -94,7 +94,7 @@ const FinancialGoals = () => {
 
   const updateGoalProgress = async (goalId: string, newAmount: number) => {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('financial_goals')
         .update({ current_amount: newAmount })
         .eq('id', goalId);
@@ -118,7 +118,7 @@ const FinancialGoals = () => {
 
   const deleteGoal = async (id: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('financial_goals')
         .delete()
         .eq('id', id);
