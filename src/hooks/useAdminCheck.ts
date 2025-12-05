@@ -21,10 +21,10 @@ export const useAdminCheck = () => {
           .select('role')
           .eq('user_id', user.id)
           .eq('role', 'admin')
-          .single();
+          .maybeSingle();
 
         if (error) {
-          // No admin role found
+          console.error('Error checking admin role:', error);
           setIsAdmin(false);
         } else {
           setIsAdmin(!!data);

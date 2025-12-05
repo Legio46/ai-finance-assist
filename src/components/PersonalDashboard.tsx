@@ -34,8 +34,9 @@ const PersonalDashboard = () => {
   const hasProFeatures = 
     profile?.subscription_tier === 'personal_pro' || 
     profile?.subscription_tier === 'pro' ||
+    profile?.subscription_tier === 'business' || // Business tier gets Pro access
     isOnTrial || // Trial users get Pro access
-    profile?.subscription_status === 'active'; // Active subscription gets Pro access
+    (profile?.subscription_status === 'active' && profile?.subscription_tier !== 'free'); // Active paid subscription gets Pro access
 
   const [formData, setFormData] = useState({
     category: '',
