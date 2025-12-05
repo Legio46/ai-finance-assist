@@ -74,6 +74,33 @@ export type Database = {
         }
         Relationships: []
       }
+      budgets: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          id: string
+          period: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string
+          id?: string
+          period?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          id?: string
+          period?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       business_data: {
         Row: {
           annual_revenue: number | null
@@ -241,6 +268,108 @@ export type Database = {
         }
         Relationships: []
       }
+      financial_goals: {
+        Row: {
+          created_at: string
+          current_amount: number | null
+          goal_name: string
+          id: string
+          target_amount: number
+          target_date: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_amount?: number | null
+          goal_name: string
+          id?: string
+          target_amount: number
+          target_date?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_amount?: number | null
+          goal_name?: string
+          id?: string
+          target_amount?: number
+          target_date?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      income_sources: {
+        Row: {
+          amount: number
+          category: string | null
+          created_at: string
+          frequency: string
+          id: string
+          is_active: boolean | null
+          source_name: string
+          start_date: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category?: string | null
+          created_at?: string
+          frequency?: string
+          id?: string
+          is_active?: boolean | null
+          source_name: string
+          start_date?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string | null
+          created_at?: string
+          frequency?: string
+          id?: string
+          is_active?: boolean | null
+          source_name?: string
+          start_date?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      investments: {
+        Row: {
+          created_at: string
+          current_price: number
+          id: string
+          investment_name: string
+          investment_type: string
+          purchase_date: string | null
+          purchase_price: number
+          quantity: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_price: number
+          id?: string
+          investment_name: string
+          investment_type: string
+          purchase_date?: string | null
+          purchase_price: number
+          quantity: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_price?: number
+          id?: string
+          investment_name?: string
+          investment_type?: string
+          purchase_date?: string | null
+          purchase_price?: number
+          quantity?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       "Legio table": {
         Row: {
           created_at: string
@@ -360,6 +489,42 @@ export type Database = {
           trial_ends_at?: string | null
           two_factor_enabled?: boolean | null
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      recurring_payments: {
+        Row: {
+          amount: number
+          category: string | null
+          created_at: string
+          frequency: string
+          id: string
+          is_active: boolean | null
+          next_due_date: string | null
+          payment_name: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category?: string | null
+          created_at?: string
+          frequency?: string
+          id?: string
+          is_active?: boolean | null
+          next_due_date?: string | null
+          payment_name: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string | null
+          created_at?: string
+          frequency?: string
+          id?: string
+          is_active?: boolean | null
+          next_due_date?: string | null
+          payment_name?: string
           user_id?: string
         }
         Relationships: []
