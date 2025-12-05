@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageSelector from "@/components/LanguageSelector";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import CurrencyConverterDropdown from "@/components/CurrencyConverterDropdown";
 import logo from "@/assets/logo.png";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
@@ -57,6 +58,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               >
                 {t('contact')}
               </Link>
+              <CurrencyConverterDropdown />
             </div>
 
             <div className="flex items-center gap-2">

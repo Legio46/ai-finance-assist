@@ -959,7 +959,8 @@ const AdminDashboard = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="free">Free</SelectItem>
-                    <SelectItem value="personal">Personal</SelectItem>
+                    <SelectItem value="personal_basic">Personal Basic</SelectItem>
+                    <SelectItem value="personal_pro">Personal Pro</SelectItem>
                     <SelectItem value="business">Business</SelectItem>
                   </SelectContent>
                 </Select>
