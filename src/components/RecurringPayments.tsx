@@ -39,7 +39,7 @@ const RecurringPayments = () => {
     if (!user) return;
 
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('recurring_payments')
         .select('*')
         .eq('user_id', user.id)
@@ -59,7 +59,7 @@ const RecurringPayments = () => {
     if (!user) return;
 
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('recurring_payments')
         .insert([
           {
@@ -101,7 +101,7 @@ const RecurringPayments = () => {
 
   const deletePayment = async (id: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('recurring_payments')
         .delete()
         .eq('id', id);

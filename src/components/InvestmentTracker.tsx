@@ -39,7 +39,7 @@ const InvestmentTracker = () => {
     if (!user) return;
 
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('investments')
         .select('*')
         .eq('user_id', user.id)
@@ -59,7 +59,7 @@ const InvestmentTracker = () => {
     if (!user) return;
 
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('investments')
         .insert([
           {
@@ -102,7 +102,7 @@ const InvestmentTracker = () => {
 
   const deleteInvestment = async (id: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('investments')
         .delete()
         .eq('id', id);
