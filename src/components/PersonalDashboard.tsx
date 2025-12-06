@@ -31,12 +31,18 @@ const PersonalDashboard = () => {
   
   // Check if user has Pro features - checking multiple possible tier values and trial status
   const isOnTrial = profile?.trial_end && new Date(profile.trial_end) > new Date();
-  const hasProFeatures = 
+  const hasProFeatures = Boolean(
     profile?.subscription_tier === 'personal_pro' || 
     profile?.subscription_tier === 'pro' ||
-    profile?.subscription_tier === 'business' || // Business tier gets Pro access
-    isOnTrial || // Trial users get Pro access
-    (profile?.subscription_status === 'active' && profile?.subscription_tier !== 'free'); // Active paid subscription gets Pro access
+    profile?.subscription_tier === 'business' ||
+    profile?.subscription_tier === 'Personal Pro' ||
+    profile?.subscription_tier === 'Personal Basic' || // Basic tier should also have access to core features
+    isOnTrial ||
+    profile?.subscription_status === 'active'
+  );
+  
+  console.log('Profile:', profile);
+  console.log('Has Pro Features:', hasProFeatures, 'Tier:', profile?.subscription_tier, 'Status:', profile?.subscription_status);
 
   const [formData, setFormData] = useState({
     category: '',
