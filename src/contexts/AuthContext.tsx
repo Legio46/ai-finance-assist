@@ -32,14 +32,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  const refreshProfile = async () => {
-    if (!user) return;
+  const refreshProfile = async (userId?: string) => {
+    const targetUserId = userId || user?.id;
+    if (!targetUserId) return;
 
     try {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', targetUserId)
         .maybeSingle();
 
       if (error) {
@@ -47,6 +48,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
 
+      console.log('Profile loaded:', data);
       setProfile(data);
     } catch (error) {
       console.error('Error refreshing profile:', error);
@@ -61,13 +63,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(session?.user ?? null);
 
         if (session?.user) {
-          (async () => {
-            try {
-              await refreshProfile();
-            } catch (error) {
-              console.error('Error refreshing profile:', error);
-            }
-          })();
+          // Use setTimeout to avoid Supabase deadlock
+          setTimeout(() => {
+            refreshProfile(session.user.id);
+          }, 0);
         } else {
           setProfile(null);
         }
@@ -82,13 +81,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(session?.user ?? null);
 
       if (session?.user) {
-        (async () => {
-          try {
-            await refreshProfile();
-          } catch (error) {
-            console.error('Error refreshing profile:', error);
-          }
-        })();
+        refreshProfile(session.user.id);
       }
 
       setLoading(false);
@@ -96,6 +89,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return () => subscription.unsubscribe();
   }, []);
+
 
   const signUp = async (email: string, password: string, fullName: string, accountType: string = 'personal') => {
     try {

@@ -17,6 +17,7 @@ import BudgetManager from '@/components/BudgetManager';
 import RecurringPayments from '@/components/RecurringPayments';
 import InvestmentTracker from '@/components/InvestmentTracker';
 import FinancialGoals from '@/components/FinancialGoals';
+import AIAdvisor from '@/components/AIAdvisor';
 
 const PersonalDashboard = () => {
   const { user, profile } = useAuth();
@@ -538,6 +539,10 @@ const PersonalDashboard = () => {
           <RecurringPayments />
           <InvestmentTracker />
           <FinancialGoals />
+          <AIAdvisor userContext={{
+            country: profile?.country,
+            accountType: profile?.account_type,
+          }} />
         </>
       ) : (
         <Card className="border-2 border-primary/20">
