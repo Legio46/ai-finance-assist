@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { ArrowLeftRight, Coins } from "lucide-react";
+import { ArrowLeftRight, Coins, RefreshCw } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -13,26 +13,9 @@ const CurrencyConverterDropdown = () => {
   const [toCurrency, setToCurrency] = useState("USD");
   const [convertedAmount, setConvertedAmount] = useState<number>(0);
   const [isOpen, setIsOpen] = useState(false);
-
-  // Using real approximate exchange rates (as of late 2024)
-  const rates: Record<string, number> = {
-    EUR: 1,
-    USD: 1.09,
-    GBP: 0.86,
-    JPY: 163.5,
-    CHF: 0.94,
-    CAD: 1.48,
-    AUD: 1.65,
-    CNY: 7.92,
-    INR: 91.2,
-    CZK: 25.2,
-    PLN: 4.32,
-    BTC: 0.000011,
-    ETH: 0.00029,
-    SOL: 0.0052,
-    XRP: 0.42,
-    ADA: 1.1,
-  };
+  const [rates, setRates] = useState<Record<string, number>>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const fiatCurrencies = [
     { code: "EUR", name: "Euro", symbol: "€" },
@@ -58,13 +41,64 @@ const CurrencyConverterDropdown = () => {
 
   const allCurrencies = [...fiatCurrencies, ...cryptoCurrencies];
 
+  // Fetch fiat rates from Google Finance via open API
+  const fetchRates = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      // Fetch fiat rates from ExchangeRate-API (free, no key required for basic usage)
+      const fiatResponse = await fetch('https://open.er-api.com/v6/latest/EUR');
+      const fiatData = await fiatResponse.json();
+      
+      // Fetch crypto rates from CoinGecko (free API)
+      const cryptoResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,ripple,cardano&vs_currencies=eur');
+      const cryptoData = await cryptoResponse.json();
+
+      const newRates: Record<string, number> = { EUR: 1 };
+      
+      // Add fiat rates
+      if (fiatData.rates) {
+        Object.keys(fiatData.rates).forEach(code => {
+          newRates[code] = fiatData.rates[code];
+        });
+      }
+
+      // Add crypto rates (inverted since we get EUR per crypto)
+      if (cryptoData.bitcoin) newRates.BTC = 1 / cryptoData.bitcoin.eur;
+      if (cryptoData.ethereum) newRates.ETH = 1 / cryptoData.ethereum.eur;
+      if (cryptoData.solana) newRates.SOL = 1 / cryptoData.solana.eur;
+      if (cryptoData.ripple) newRates.XRP = 1 / cryptoData.ripple.eur;
+      if (cryptoData.cardano) newRates.ADA = 1 / cryptoData.cardano.eur;
+
+      setRates(newRates);
+      setLastUpdated(new Date());
+    } catch (error) {
+      console.error('Failed to fetch rates:', error);
+      // Fallback rates
+      setRates({
+        EUR: 1, USD: 1.09, GBP: 0.86, JPY: 163.5, CHF: 0.94,
+        CAD: 1.48, AUD: 1.65, CNY: 7.92, INR: 91.2, CZK: 25.2, PLN: 4.32,
+        BTC: 0.000011, ETH: 0.00029, SOL: 0.0052, XRP: 0.42, ADA: 1.1,
+      });
+    }
+    setIsLoading(false);
+  }, []);
+
+  // Fetch rates on mount and when popover opens
   useEffect(() => {
+    if (isOpen && Object.keys(rates).length === 0) {
+      fetchRates();
+    }
+  }, [isOpen, fetchRates, rates]);
+
+  // Calculate conversion
+  useEffect(() => {
+    if (Object.keys(rates).length === 0) return;
     const numAmount = parseFloat(amount) || 0;
-    const fromRate = rates[fromCurrency];
-    const toRate = rates[toCurrency];
+    const fromRate = rates[fromCurrency] || 1;
+    const toRate = rates[toCurrency] || 1;
     const result = (numAmount / fromRate) * toRate;
     setConvertedAmount(result);
-  }, [amount, fromCurrency, toCurrency]);
+  }, [amount, fromCurrency, toCurrency, rates]);
 
   const swapCurrencies = () => {
     setFromCurrency(toCurrency);
@@ -165,13 +199,31 @@ const CurrencyConverterDropdown = () => {
 
           {/* Result */}
           <div className="bg-muted/50 p-3 rounded-lg">
-            <p className="text-xs text-muted-foreground mb-1">Result</p>
+            <div className="flex items-center justify-between mb-1">
+              <p className="text-xs text-muted-foreground">Result</p>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={fetchRates}
+                disabled={isLoading}
+                className="h-6 w-6"
+              >
+                <RefreshCw className={`h-3 w-3 ${isLoading ? 'animate-spin' : ''}`} />
+              </Button>
+            </div>
             <p className="text-xl font-bold text-primary">
-              {getCurrencySymbol(toCurrency)} {convertedAmount.toLocaleString(undefined, { maximumFractionDigits: 6 })}
+              {isLoading ? '...' : `${getCurrencySymbol(toCurrency)} ${convertedAmount.toLocaleString(undefined, { maximumFractionDigits: 6 })}`}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              1 {fromCurrency} = {(rates[toCurrency] / rates[fromCurrency]).toFixed(4)} {toCurrency}
+              {rates[fromCurrency] && rates[toCurrency] 
+                ? `1 ${fromCurrency} = ${(rates[toCurrency] / rates[fromCurrency]).toFixed(4)} ${toCurrency}`
+                : 'Loading rates...'}
             </p>
+            {lastUpdated && (
+              <p className="text-xs text-muted-foreground/60 mt-1">
+                Updated: {lastUpdated.toLocaleTimeString()}
+              </p>
+            )}
           </div>
         </div>
       </PopoverContent>
