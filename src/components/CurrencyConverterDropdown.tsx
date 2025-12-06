@@ -25,13 +25,16 @@ const CurrencyConverterDropdown = () => {
     AUD: 1.65,
     CNY: 7.92,
     INR: 91.2,
-    BTC: 0.000011,
-    ETH: 0.00029,
     CZK: 25.2,
     PLN: 4.32,
+    BTC: 0.000011,
+    ETH: 0.00029,
+    SOL: 0.0052,
+    XRP: 0.42,
+    ADA: 1.1,
   };
 
-  const currencies = [
+  const fiatCurrencies = [
     { code: "EUR", name: "Euro", symbol: "€" },
     { code: "USD", name: "US Dollar", symbol: "$" },
     { code: "GBP", name: "British Pound", symbol: "£" },
@@ -43,9 +46,17 @@ const CurrencyConverterDropdown = () => {
     { code: "INR", name: "Indian Rupee", symbol: "₹" },
     { code: "CZK", name: "Czech Koruna", symbol: "Kč" },
     { code: "PLN", name: "Polish Zloty", symbol: "zł" },
+  ];
+
+  const cryptoCurrencies = [
     { code: "BTC", name: "Bitcoin", symbol: "₿" },
     { code: "ETH", name: "Ethereum", symbol: "Ξ" },
+    { code: "SOL", name: "Solana", symbol: "◎" },
+    { code: "XRP", name: "Ripple", symbol: "✕" },
+    { code: "ADA", name: "Cardano", symbol: "₳" },
   ];
+
+  const allCurrencies = [...fiatCurrencies, ...cryptoCurrencies];
 
   useEffect(() => {
     const numAmount = parseFloat(amount) || 0;
@@ -61,7 +72,7 @@ const CurrencyConverterDropdown = () => {
   };
 
   const getCurrencySymbol = (code: string) => {
-    return currencies.find((c) => c.code === code)?.symbol || code;
+    return allCurrencies.find((c) => c.code === code)?.symbol || code;
   };
 
   return (
@@ -100,7 +111,14 @@ const CurrencyConverterDropdown = () => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {currencies.map((currency) => (
+                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">Currencies</div>
+                {fiatCurrencies.map((currency) => (
+                  <SelectItem key={currency.code} value={currency.code}>
+                    {currency.symbol} {currency.code}
+                  </SelectItem>
+                ))}
+                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground border-t mt-1 pt-2">Crypto</div>
+                {cryptoCurrencies.map((currency) => (
                   <SelectItem key={currency.code} value={currency.code}>
                     {currency.symbol} {currency.code}
                   </SelectItem>
@@ -129,7 +147,14 @@ const CurrencyConverterDropdown = () => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {currencies.map((currency) => (
+                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">Currencies</div>
+                {fiatCurrencies.map((currency) => (
+                  <SelectItem key={currency.code} value={currency.code}>
+                    {currency.symbol} {currency.code}
+                  </SelectItem>
+                ))}
+                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground border-t mt-1 pt-2">Crypto</div>
+                {cryptoCurrencies.map((currency) => (
                   <SelectItem key={currency.code} value={currency.code}>
                     {currency.symbol} {currency.code}
                   </SelectItem>
