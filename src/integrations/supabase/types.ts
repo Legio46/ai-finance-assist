@@ -149,6 +149,48 @@ export type Database = {
         }
         Relationships: []
       }
+      calendar_events: {
+        Row: {
+          amount: number
+          created_at: string
+          event_date: string
+          event_name: string
+          event_type: string
+          id: string
+          is_recurring: boolean | null
+          notes: string | null
+          recurrence_frequency: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          event_date: string
+          event_name: string
+          event_type?: string
+          id?: string
+          is_recurring?: boolean | null
+          notes?: string | null
+          recurrence_frequency?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          event_date?: string
+          event_name?: string
+          event_type?: string
+          id?: string
+          is_recurring?: boolean | null
+          notes?: string | null
+          recurrence_frequency?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       credit_card_transactions: {
         Row: {
           amount: number
