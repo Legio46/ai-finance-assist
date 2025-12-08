@@ -17,6 +17,7 @@ import BudgetManager from '@/components/BudgetManager';
 import RecurringPayments from '@/components/RecurringPayments';
 import InvestmentTracker from '@/components/InvestmentTracker';
 import FinancialGoals from '@/components/FinancialGoals';
+import FinancialCalendar from '@/components/FinancialCalendar';
 
 const PersonalDashboard = () => {
   const { user, profile } = useAuth();
@@ -538,6 +539,7 @@ const PersonalDashboard = () => {
           <RecurringPayments />
           <InvestmentTracker />
           <FinancialGoals />
+          <FinancialCalendar />
         </>
       ) : (
         <Card className="border-2 border-primary/20">
@@ -563,6 +565,10 @@ const PersonalDashboard = () => {
               <div className="flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-primary" />
                 <span>Financial goals with progress tracking</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                <span>Financial calendar with bills, paydays & events</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-primary" />
