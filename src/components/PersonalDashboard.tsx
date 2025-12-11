@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Plus, CreditCard, TrendingUp, TrendingDown, PieChart, Camera, Upload, X, Eye } from 'lucide-react';
+import { Plus, CreditCard, TrendingUp, TrendingDown, PieChart, Camera, Upload, X, Eye, Wallet, Target, Calendar, LineChart, RefreshCcw } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/hooks/use-toast";
@@ -254,8 +254,35 @@ const PersonalDashboard = () => {
   const currentDay = currentDate.getDate();
   const averageDaily = currentDay > 0 ? Number(currentMonthTotal) / Number(currentDay) : 0;
 
+  // Category Section Header Component
+  const CategorySection = ({ icon: Icon, title, description, children, badge }: { 
+    icon: React.ElementType, 
+    title: string, 
+    description?: string, 
+    children: React.ReactNode,
+    badge?: string 
+  }) => (
+    <div className="space-y-4">
+      <div className="flex items-center gap-3 pb-2 border-b border-border">
+        <div className="p-2 rounded-lg bg-primary/10">
+          <Icon className="w-5 h-5 text-primary" />
+        </div>
+        <div className="flex-1">
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-semibold">{title}</h2>
+            {badge && <Badge variant="secondary" className="text-xs">{badge}</Badge>}
+          </div>
+          {description && <p className="text-sm text-muted-foreground">{description}</p>}
+        </div>
+      </div>
+      <div className="space-y-4">
+        {children}
+      </div>
+    </div>
+  );
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
@@ -306,240 +333,296 @@ const PersonalDashboard = () => {
         </Card>
       </div>
 
-      {/* Add Expense Form */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Personal Expenses</CardTitle>
-              <CardDescription>Track your personal spending and get insights</CardDescription>
+      {/* ==================== EXPENSE TRACKING CATEGORY ==================== */}
+      <CategorySection 
+        icon={Wallet} 
+        title="Expense Tracking" 
+        description="Track and categorize your daily spending"
+        badge="Personal Basic"
+      >
+        {/* Add Expense Form */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Personal Expenses</CardTitle>
+                <CardDescription>Track your personal spending and get insights</CardDescription>
+              </div>
+              <Button 
+                onClick={() => setShowAddForm(!showAddForm)}
+                className="bg-gradient-primary hover:opacity-90"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add Expense
+              </Button>
             </div>
-            <Button 
-              onClick={() => setShowAddForm(!showAddForm)}
-              className="bg-gradient-primary hover:opacity-90"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Expense
-            </Button>
-          </div>
-        </CardHeader>
-        {showAddForm && (
-          <CardContent className="border-t pt-6">
-            <form onSubmit={addExpense} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="category">Category</Label>
-                  <Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {expenseCategories.map((category) => (
-                        <SelectItem key={category} value={category}>{category}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+          </CardHeader>
+          {showAddForm && (
+            <CardContent className="border-t pt-6">
+              <form onSubmit={addExpense} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="category">Category</Label>
+                    <Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {expenseCategories.map((category) => (
+                          <SelectItem key={category} value={category}>{category}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="amount">Amount</Label>
+                    <Input
+                      id="amount"
+                      type="number"
+                      step="0.01"
+                      value={formData.amount}
+                      onChange={(e) => setFormData({...formData, amount: e.target.value})}
+                      required
+                    />
+                  </div>
                 </div>
                 <div>
-                  <Label htmlFor="amount">Amount</Label>
+                  <Label htmlFor="description">Description</Label>
                   <Input
-                    id="amount"
-                    type="number"
-                    step="0.01"
-                    value={formData.amount}
-                    onChange={(e) => setFormData({...formData, amount: e.target.value})}
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    placeholder="Optional description"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="date">Date</Label>
+                  <Input
+                    id="date"
+                    type="date"
+                    value={formData.date}
+                    onChange={(e) => setFormData({...formData, date: e.target.value})}
                     required
                   />
                 </div>
-              </div>
-              <div>
-                <Label htmlFor="description">Description</Label>
-                <Input
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  placeholder="Optional description"
-                />
-              </div>
-              <div>
-                <Label htmlFor="date">Date</Label>
-                <Input
-                  id="date"
-                  type="date"
-                  value={formData.date}
-                  onChange={(e) => setFormData({...formData, date: e.target.value})}
-                  required
-                />
-              </div>
-              
-              {/* Receipt Upload */}
-              <div>
-                <Label>Receipt Image (Optional)</Label>
-                <div className="flex gap-2 mt-2">
-                  <label htmlFor="camera-input" className="flex-1">
-                    <div className="flex items-center justify-center gap-2 px-4 py-2 border border-input rounded-md cursor-pointer hover:bg-accent transition-colors">
-                      <Camera className="w-4 h-4" />
-                      <span className="text-sm">Camera</span>
-                    </div>
-                    <input
-                      id="camera-input"
-                      type="file"
-                      accept="image/*"
-                      capture="environment"
-                      onChange={handleReceiptCapture}
-                      className="hidden"
-                    />
-                  </label>
-                  
-                  <label htmlFor="file-input" className="flex-1">
-                    <div className="flex items-center justify-center gap-2 px-4 py-2 border border-input rounded-md cursor-pointer hover:bg-accent transition-colors">
-                      <Upload className="w-4 h-4" />
-                      <span className="text-sm">Upload</span>
-                    </div>
-                    <input
-                      id="file-input"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleReceiptCapture}
-                      className="hidden"
-                    />
-                  </label>
-                </div>
                 
-                {receiptPreview && (
-                  <div className="mt-2 relative">
-                    <img 
-                      src={receiptPreview} 
-                      alt="Receipt preview" 
-                      className="w-full h-32 object-cover rounded-md border border-input"
-                    />
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="sm"
-                      className="absolute top-2 right-2"
-                      onClick={removeReceipt}
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
-                  </div>
-                )}
-              </div>
-
-              <Button type="submit" className="w-full" disabled={uploadingReceipt}>
-                {uploadingReceipt ? "Saving..." : "Add Expense"}
-              </Button>
-            </form>
-          </CardContent>
-        )}
-      </Card>
-
-      <CreditCardManager cardType="personal" />
-
-      {/* Credit Card Transactions Section */}
-      <CreditCardTransactions cardType="personal" />
-
-      {/* Category Breakdown */}
-      {topCategories.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Spending Breakdown</CardTitle>
-            <CardDescription>Your top spending categories this month</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {topCategories.map(([category, amount]) => (
-                <div key={category} className="flex items-center justify-between">
-                  <span className="text-sm font-medium">{category}</span>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-24 bg-secondary rounded-full h-2">
-                      <div 
-                        className="bg-primary h-2 rounded-full" 
-                        style={{ width: `${(Number(amount) / currentMonthTotal) * 100}%` }}
-                      ></div>
-                    </div>
-                    <span className="text-sm font-bold">{formatCurrency(Number(amount))}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Recent Expenses */}
-      {expenses.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Expenses</CardTitle>
-            <CardDescription>Your latest spending activity</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {expenses.slice(0, 10).map((expense) => (
-                <div key={expense.id} className="flex justify-between items-center gap-4 py-2 border-b border-border last:border-0">
-                  <div className="flex items-center gap-3 flex-1">
-                    {expense.receipt_image_url && (
-                      <div className="relative group">
-                        <img 
-                          src={expense.receipt_image_url} 
-                          alt="Receipt" 
-                          className="w-12 h-12 object-cover rounded border border-input cursor-pointer"
-                          onClick={() => window.open(expense.receipt_image_url, '_blank')}
-                        />
-                        <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded flex items-center justify-center">
-                          <Eye className="w-4 h-4 text-white" />
-                        </div>
+                {/* Receipt Upload */}
+                <div>
+                  <Label>Receipt Image (Optional)</Label>
+                  <div className="flex gap-2 mt-2">
+                    <label htmlFor="camera-input" className="flex-1">
+                      <div className="flex items-center justify-center gap-2 px-4 py-2 border border-input rounded-md cursor-pointer hover:bg-accent transition-colors">
+                        <Camera className="w-4 h-4" />
+                        <span className="text-sm">Camera</span>
                       </div>
-                    )}
-                    <div>
-                      <div className="font-medium">{expense.category}</div>
-                      <div className="text-sm text-muted-foreground">{expense.description || 'No description'}</div>
-                      <div className="text-xs text-muted-foreground">{new Date(expense.date).toLocaleDateString()}</div>
+                      <input
+                        id="camera-input"
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        onChange={handleReceiptCapture}
+                        className="hidden"
+                      />
+                    </label>
+                    
+                    <label htmlFor="file-input" className="flex-1">
+                      <div className="flex items-center justify-center gap-2 px-4 py-2 border border-input rounded-md cursor-pointer hover:bg-accent transition-colors">
+                        <Upload className="w-4 h-4" />
+                        <span className="text-sm">Upload</span>
+                      </div>
+                      <input
+                        id="file-input"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleReceiptCapture}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                  
+                  {receiptPreview && (
+                    <div className="mt-2 relative">
+                      <img 
+                        src={receiptPreview} 
+                        alt="Receipt preview" 
+                        className="w-full h-32 object-cover rounded-md border border-input"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        className="absolute top-2 right-2"
+                        onClick={removeReceipt}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
+                <Button type="submit" className="w-full" disabled={uploadingReceipt}>
+                  {uploadingReceipt ? "Saving..." : "Add Expense"}
+                </Button>
+              </form>
+            </CardContent>
+          )}
+        </Card>
+
+        {/* Category Breakdown */}
+        {topCategories.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Spending Breakdown</CardTitle>
+              <CardDescription>Your top spending categories this month</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {topCategories.map(([category, amount]) => (
+                  <div key={category} className="flex items-center justify-between">
+                    <span className="text-sm font-medium">{category}</span>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-24 bg-secondary rounded-full h-2">
+                        <div 
+                          className="bg-primary h-2 rounded-full" 
+                          style={{ width: `${(Number(amount) / currentMonthTotal) * 100}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-sm font-bold">{formatCurrency(Number(amount))}</span>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="font-bold">{formatCurrency(expense.amount)}</div>
-                    {expense.is_recurring && (
-                      <Badge variant="secondary" className="text-xs">Recurring</Badge>
-                    )}
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Recent Expenses */}
+        {expenses.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Expenses</CardTitle>
+              <CardDescription>Your latest spending activity</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {expenses.slice(0, 10).map((expense) => (
+                  <div key={expense.id} className="flex justify-between items-center gap-4 py-2 border-b border-border last:border-0">
+                    <div className="flex items-center gap-3 flex-1">
+                      {expense.receipt_image_url && (
+                        <div className="relative group">
+                          <img 
+                            src={expense.receipt_image_url} 
+                            alt="Receipt" 
+                            className="w-12 h-12 object-cover rounded border border-input cursor-pointer"
+                            onClick={() => window.open(expense.receipt_image_url, '_blank')}
+                          />
+                          <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded flex items-center justify-center">
+                            <Eye className="w-4 h-4 text-white" />
+                          </div>
+                        </div>
+                      )}
+                      <div>
+                        <div className="font-medium">{expense.category}</div>
+                        <div className="text-sm text-muted-foreground">{expense.description || 'No description'}</div>
+                        <div className="text-xs text-muted-foreground">{new Date(expense.date).toLocaleDateString()}</div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-bold">{formatCurrency(expense.amount)}</div>
+                      {expense.is_recurring && (
+                        <Badge variant="secondary" className="text-xs">Recurring</Badge>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
-      {expenses.length === 0 && (
-        <Card>
-          <CardContent className="text-center py-12">
-            <CreditCard className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-xl font-semibold mb-2">No Expenses Yet</h3>
-            <p className="text-muted-foreground mb-6">
-              Start tracking your expenses to get AI-powered insights and recommendations
-            </p>
-            <Button 
-              onClick={() => setShowAddForm(true)}
-              className="bg-gradient-primary hover:opacity-90"
-            >
-              Add Your First Expense
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+        {expenses.length === 0 && (
+          <Card>
+            <CardContent className="text-center py-12">
+              <CreditCard className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
+              <h3 className="text-xl font-semibold mb-2">No Expenses Yet</h3>
+              <p className="text-muted-foreground mb-6">
+                Start tracking your expenses to get AI-powered insights and recommendations
+              </p>
+              <Button 
+                onClick={() => setShowAddForm(true)}
+                className="bg-gradient-primary hover:opacity-90"
+              >
+                Add Your First Expense
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+      </CategorySection>
 
-      {/* Personal Basic Features */}
-      <IncomeTracker />
-      <BudgetManager />
+      {/* ==================== CREDIT CARDS CATEGORY ==================== */}
+      <CategorySection 
+        icon={CreditCard} 
+        title="Credit Cards" 
+        description="Manage your credit cards and transactions"
+        badge="Personal Basic"
+      >
+        <CreditCardManager cardType="personal" />
+        <CreditCardTransactions cardType="personal" />
+      </CategorySection>
 
-      {/* Personal Pro Features */}
+      {/* ==================== INCOME & BUDGET CATEGORY ==================== */}
+      <CategorySection 
+        icon={TrendingUp} 
+        title="Income & Budget" 
+        description="Track your income sources and manage budgets"
+        badge="Personal Basic"
+      >
+        <IncomeTracker />
+        <BudgetManager />
+      </CategorySection>
+
+      {/* ==================== PERSONAL PRO FEATURES ==================== */}
       {hasProFeatures ? (
         <>
-          <RecurringPayments />
-          <InvestmentTracker />
-          <FinancialGoals />
-          <FinancialCalendar />
+          {/* Recurring Payments Category */}
+          <CategorySection 
+            icon={RefreshCcw} 
+            title="Recurring Payments" 
+            description="Track subscriptions, bills, and recurring expenses"
+            badge="Personal Pro"
+          >
+            <RecurringPayments />
+          </CategorySection>
+
+          {/* Investment Portfolio Category */}
+          <CategorySection 
+            icon={LineChart} 
+            title="Investment Portfolio" 
+            description="Track and manage your investment holdings"
+            badge="Personal Pro"
+          >
+            <InvestmentTracker />
+          </CategorySection>
+
+          {/* Financial Goals Category */}
+          <CategorySection 
+            icon={Target} 
+            title="Financial Goals" 
+            description="Set and track your savings and financial goals"
+            badge="Personal Pro"
+          >
+            <FinancialGoals />
+          </CategorySection>
+
+          {/* Financial Calendar Category */}
+          <CategorySection 
+            icon={Calendar} 
+            title="Financial Calendar" 
+            description="View bills, paydays, and important financial dates"
+            badge="Personal Pro"
+          >
+            <FinancialCalendar />
+          </CategorySection>
         </>
       ) : (
         <Card className="border-2 border-primary/20">
