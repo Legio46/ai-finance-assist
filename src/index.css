@@ -17,33 +17,33 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    /* Vibrant blue-purple primary */
-    --primary: 262 83% 58%;
+    /* Primary - Coral Red #E23E57 */
+    --primary: 351 76% 56%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 262 83% 68%;
+    --primary-glow: 351 76% 66%;
 
-    /* Soft accent colors */
-    --secondary: 280 40% 96%;
-    --secondary-foreground: 262 47% 28%;
+    /* Secondary - Deep Maroon #88304E */
+    --secondary: 340 49% 36%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 220 17% 94%;
-    --muted-foreground: 220 13% 46%;
+    --muted: 340 17% 94%;
+    --muted-foreground: 340 13% 46%;
 
-    /* Vibrant accent - coral/pink */
-    --accent: 340 82% 62%;
+    /* Accent - Deep Maroon #88304E */
+    --accent: 340 49% 36%;
     --accent-foreground: 0 0% 100%;
-    --accent-glow: 340 82% 72%;
+    --accent-glow: 340 49% 46%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 88%;
-    --input: 220 13% 91%;
-    --ring: 262 83% 58%;
+    --border: 340 13% 88%;
+    --input: 340 13% 91%;
+    --ring: 351 76% 56%;
 
     --radius: 0.75rem;
 
-    /* Financial theme colors - vibrant versions */
+    /* Financial theme colors */
     --success: 142 76% 36%;
     --success-foreground: 0 0% 100%;
     --success-glow: 142 76% 46%;
@@ -55,61 +55,63 @@ All colors MUST be HSL.
     --info-foreground: 0 0% 100%;
 
     /* Rich gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%), hsl(217 91% 60%));
-    --gradient-secondary: linear-gradient(135deg, hsl(340 82% 62%), hsl(262 83% 58%));
+    --gradient-primary: linear-gradient(135deg, hsl(351 76% 56%), hsl(340 49% 36%));
+    --gradient-secondary: linear-gradient(135deg, hsl(340 49% 36%), hsl(351 76% 56%));
     --gradient-success: linear-gradient(135deg, hsl(142 76% 36%), hsl(199 89% 48%));
-    --gradient-hero: linear-gradient(135deg, hsl(262 83% 58%) 0%, hsl(217 91% 60%) 50%, hsl(340 82% 62%) 100%);
-    --gradient-card: linear-gradient(135deg, hsl(262 83% 98%) 0%, hsl(340 82% 98%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(351 76% 56%) 0%, hsl(340 49% 36%) 50%, hsl(351 76% 46%) 100%);
+    --gradient-card: linear-gradient(135deg, hsl(351 76% 98%) 0%, hsl(340 49% 98%) 100%);
 
     /* Glows and shadows */
-    --shadow-primary: 0 10px 40px -10px hsl(262 83% 58% / 0.3);
-    --shadow-accent: 0 10px 40px -10px hsl(340 82% 62% / 0.3);
+    --shadow-primary: 0 10px 40px -10px hsl(351 76% 56% / 0.3);
+    --shadow-accent: 0 10px 40px -10px hsl(340 49% 36% / 0.3);
     --shadow-success: 0 10px 40px -10px hsl(142 76% 36% / 0.3);
-    --glow-primary: 0 0 60px hsl(262 83% 68% / 0.4);
+    --glow-primary: 0 0 60px hsl(351 76% 66% / 0.4);
 
-    --sidebar-background: 262 40% 97%;
+    --sidebar-background: 340 40% 97%;
     --sidebar-foreground: 222 47% 11%;
-    --sidebar-primary: 262 83% 58%;
+    --sidebar-primary: 351 76% 56%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 280 40% 94%;
-    --sidebar-accent-foreground: 262 47% 28%;
-    --sidebar-border: 220 13% 88%;
-    --sidebar-ring: 262 83% 58%;
+    --sidebar-accent: 340 40% 94%;
+    --sidebar-accent-foreground: 340 49% 28%;
+    --sidebar-border: 340 13% 88%;
+    --sidebar-ring: 351 76% 56%;
   }
 
   .dark {
-    --background: 222 47% 8%;
-    --foreground: 220 17% 94%;
+    --background: 340 30% 8%;
+    --foreground: 340 17% 94%;
 
-    --card: 222 47% 11%;
-    --card-foreground: 220 17% 94%;
+    --card: 340 30% 11%;
+    --card-foreground: 340 17% 94%;
 
-    --popover: 222 47% 11%;
-    --popover-foreground: 220 17% 94%;
+    --popover: 340 30% 11%;
+    --popover-foreground: 340 17% 94%;
 
-    /* Vibrant colors in dark mode */
-    --primary: 262 83% 58%;
+    /* Primary - Coral Red #E23E57 */
+    --primary: 351 76% 56%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 262 83% 68%;
+    --primary-glow: 351 76% 66%;
 
-    --secondary: 262 47% 16%;
-    --secondary-foreground: 220 17% 94%;
+    /* Secondary - Deep Maroon #88304E */
+    --secondary: 340 49% 26%;
+    --secondary-foreground: 340 17% 94%;
 
-    --muted: 222 47% 16%;
-    --muted-foreground: 220 17% 65%;
+    --muted: 340 30% 16%;
+    --muted-foreground: 340 17% 65%;
 
-    --accent: 340 82% 62%;
+    /* Accent - Deep Maroon #88304E */
+    --accent: 340 49% 36%;
     --accent-foreground: 0 0% 100%;
-    --accent-glow: 340 82% 72%;
+    --accent-glow: 340 49% 46%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 222 47% 20%;
-    --input: 222 47% 20%;
-    --ring: 262 83% 58%;
+    --border: 340 30% 20%;
+    --input: 340 30% 20%;
+    --ring: 351 76% 56%;
 
-    /* Financial theme colors - vibrant dark versions */
+    /* Financial theme colors - dark versions */
     --success: 142 76% 46%;
     --success-foreground: 0 0% 100%;
     --success-glow: 142 76% 56%;
@@ -121,26 +123,26 @@ All colors MUST be HSL.
     --info-foreground: 0 0% 100%;
 
     /* Rich gradients for dark mode */
-    --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%), hsl(217 91% 60%));
-    --gradient-secondary: linear-gradient(135deg, hsl(340 82% 62%), hsl(262 83% 58%));
+    --gradient-primary: linear-gradient(135deg, hsl(351 76% 56%), hsl(340 49% 36%));
+    --gradient-secondary: linear-gradient(135deg, hsl(340 49% 36%), hsl(351 76% 56%));
     --gradient-success: linear-gradient(135deg, hsl(142 76% 46%), hsl(199 89% 58%));
-    --gradient-hero: linear-gradient(135deg, hsl(262 83% 58%) 0%, hsl(217 91% 60%) 50%, hsl(340 82% 62%) 100%);
-    --gradient-card: linear-gradient(135deg, hsl(262 47% 16%) 0%, hsl(340 47% 16%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(351 76% 56%) 0%, hsl(340 49% 36%) 50%, hsl(351 76% 46%) 100%);
+    --gradient-card: linear-gradient(135deg, hsl(340 30% 16%) 0%, hsl(351 30% 16%) 100%);
 
     /* Glows and shadows for dark mode */
-    --shadow-primary: 0 10px 40px -10px hsl(262 83% 58% / 0.5);
-    --shadow-accent: 0 10px 40px -10px hsl(340 82% 62% / 0.5);
+    --shadow-primary: 0 10px 40px -10px hsl(351 76% 56% / 0.5);
+    --shadow-accent: 0 10px 40px -10px hsl(340 49% 36% / 0.5);
     --shadow-success: 0 10px 40px -10px hsl(142 76% 46% / 0.5);
-    --glow-primary: 0 0 80px hsl(262 83% 68% / 0.6);
+    --glow-primary: 0 0 80px hsl(351 76% 66% / 0.6);
 
-    --sidebar-background: 222 47% 11%;
-    --sidebar-foreground: 220 17% 94%;
-    --sidebar-primary: 262 83% 58%;
+    --sidebar-background: 340 30% 11%;
+    --sidebar-foreground: 340 17% 94%;
+    --sidebar-primary: 351 76% 56%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 262 47% 16%;
-    --sidebar-accent-foreground: 220 17% 94%;
-    --sidebar-border: 222 47% 20%;
-    --sidebar-ring: 262 83% 58%;
+    --sidebar-accent: 340 30% 16%;
+    --sidebar-accent-foreground: 340 17% 94%;
+    --sidebar-border: 340 30% 20%;
+    --sidebar-ring: 351 76% 56%;
   }
 }
 
