@@ -111,7 +111,7 @@ Deno.serve(async (req: Request) => {
             currency: "eur",
             product_data: {
               name: selectedPrice.name,
-              description: `FinanceAI ${selectedPrice.name} - 7-day free trial included`,
+              description: `Legio Finance ${selectedPrice.name} - 7-day free trial included`,
             },
             unit_amount: selectedPrice.amount,
             recurring: { interval: "month" },
