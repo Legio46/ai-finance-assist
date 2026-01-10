@@ -33,20 +33,23 @@ const PersonalDashboard = () => {
   const [uploadingReceipt, setUploadingReceipt] = useState(false);
   const [activeView, setActiveView] = useState<CategoryView>('overview');
   
-  // Check if user has Pro features
-  const isOnTrial = profile?.trial_end && new Date(profile.trial_end) > new Date();
-  const hasProFeatures = Boolean(
-    profile?.subscription_tier === 'personal_pro' || 
-    profile?.subscription_tier === 'pro' ||
+  // Check if user has Pro features (only personal_pro tier gets Pro features)
+  const isOnTrial = profile?.trial_ends_at && new Date(profile.trial_ends_at) > new Date();
+  const hasBasicFeatures = Boolean(
+    profile?.subscription_tier === 'personal_basic' ||
+    profile?.subscription_tier === 'personal_pro' ||
     profile?.subscription_tier === 'business' ||
-    profile?.subscription_tier === 'Personal Pro' ||
-    profile?.subscription_tier === 'Personal Basic' ||
     isOnTrial ||
     profile?.subscription_status === 'active'
   );
+  const hasProFeatures = Boolean(
+    profile?.subscription_tier === 'personal_pro' ||
+    profile?.subscription_tier === 'business' ||
+    isOnTrial
+  );
   
   console.log('Profile:', profile);
-  console.log('Has Pro Features:', hasProFeatures, 'Tier:', profile?.subscription_tier, 'Status:', profile?.subscription_status);
+  console.log('Has Basic Features:', hasBasicFeatures, 'Has Pro Features:', hasProFeatures, 'Tier:', profile?.subscription_tier, 'Status:', profile?.subscription_status);
 
   const [formData, setFormData] = useState({
     category: '',

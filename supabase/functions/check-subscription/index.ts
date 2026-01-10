@@ -121,10 +121,15 @@ Deno.serve(async (req: Request) => {
       const price = await stripeClient.prices.retrieve(priceId);
       const amount = price.unit_amount || 0;
 
-      if (amount === 1499) {
-        subscriptionTier = "personal";
+      // Match prices from create-checkout: basic = 800 cents (€8), pro = 1000 cents (€10)
+      if (amount === 800) {
+        subscriptionTier = "personal_basic";
+      } else if (amount === 1000) {
+        subscriptionTier = "personal_pro";
+      } else if (amount === 1499) {
+        subscriptionTier = "personal_basic"; // Legacy price support
       } else if (amount === 2999) {
-        subscriptionTier = "business";
+        subscriptionTier = "personal_pro"; // Legacy price support
       }
     }
 
