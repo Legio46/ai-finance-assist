@@ -6,6 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2, Send, Bot, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -52,16 +53,20 @@ const AIAdvisor: React.FC<AIAdvisorProps> = ({ userContext }) => {
   }, [messages]);
 
   const streamChat = async (userMessage: string) => {
-    const SUPABASE_URL = "https://ehohaixttjnvoylviuda.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVob2hhaXh0dGpudm95bHZpdWRhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY4ODMwNTksImV4cCI6MjA3MjQ1OTA1OX0.248-a4KDBGcGhYYYTq2ipHIrH2hxKAYh_T_CWN9zkws";
-    const CHAT_URL = `${SUPABASE_URL}/functions/v1/ai-advisor`;
+    // Get the Supabase URL from the client for constructing the function URL
+    const supabaseUrl = 'https://ehohaixttjnvoylviuda.supabase.co';
+    const functionUrl = `${supabaseUrl}/functions/v1/ai-advisor`;
+    
+    // Get the current session for authentication
+    const { data: { session } } = await supabase.auth.getSession();
+    const accessToken = session?.access_token;
     
     try {
-      const resp = await fetch(CHAT_URL, {
+      const resp = await fetch(functionUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${SUPABASE_KEY}`,
+          ...(accessToken ? { "Authorization": `Bearer ${accessToken}` } : {}),
         },
         body: JSON.stringify({ 
           message: userMessage,

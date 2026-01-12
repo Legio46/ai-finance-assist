@@ -1,10 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
-};
+import { getCorsHeaders, handleCors } from "../_shared/cors.ts";
 
 // Map common crypto symbols to CoinGecko IDs
 const symbolToId: Record<string, string> = {
@@ -56,9 +51,11 @@ const symbolToId: Record<string, string> = {
 };
 
 Deno.serve(async (req: Request) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { status: 200, headers: corsHeaders });
-  }
+  // Handle CORS preflight
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
+  
+  const corsHeaders = getCorsHeaders(req);
 
   try {
     const { symbols } = await req.json();
