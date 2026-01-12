@@ -98,16 +98,19 @@ const InvestmentTracker = () => {
       });
 
       const uniqueSymbols = [...new Set(symbols)];
+      console.log('Fetching crypto prices for symbols:', uniqueSymbols);
 
       const response = await supabase.functions.invoke('crypto-prices', {
         body: { symbols: uniqueSymbols }
       });
 
+      console.log('Crypto prices response:', response);
+
       if (response.error) {
         console.error('Error fetching crypto prices:', response.error);
         toast({
           title: "Price Update Failed",
-          description: "Could not fetch live crypto prices",
+          description: response.error.message || "Could not fetch live crypto prices. Please try again.",
           variant: "destructive",
         });
         return;
@@ -119,9 +122,26 @@ const InvestmentTracker = () => {
         
         // Update investments with live prices
         await updateInvestmentPrices(cryptoInvestments, response.data.prices);
+        
+        toast({
+          title: "Prices Updated",
+          description: `Fetched live prices for ${Object.keys(response.data.prices).length} cryptocurrencies`,
+        });
+      } else if (response.data?.error) {
+        console.error('API returned error:', response.data.error);
+        toast({
+          title: "Price Update Failed",
+          description: response.data.error,
+          variant: "destructive",
+        });
       }
     } catch (error) {
       console.error('Error fetching live prices:', error);
+      toast({
+        title: "Connection Error",
+        description: "Could not connect to price service. Please check your connection and try again.",
+        variant: "destructive",
+      });
     } finally {
       setFetchingPrices(false);
     }
