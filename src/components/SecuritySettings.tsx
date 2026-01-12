@@ -104,6 +104,26 @@ const SecuritySettings = () => {
     }
   };
 
+  // Password validation helper
+  const validatePassword = (password: string): { valid: boolean; message: string } => {
+    if (password.length < 8) {
+      return { valid: false, message: "Password must be at least 8 characters long" };
+    }
+    if (!/[A-Z]/.test(password)) {
+      return { valid: false, message: "Password must contain at least one uppercase letter" };
+    }
+    if (!/[a-z]/.test(password)) {
+      return { valid: false, message: "Password must contain at least one lowercase letter" };
+    }
+    if (!/\d/.test(password)) {
+      return { valid: false, message: "Password must contain at least one number" };
+    }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      return { valid: false, message: "Password must contain at least one special character (!@#$%^&*)" };
+    }
+    return { valid: true, message: "" };
+  };
+
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -116,10 +136,11 @@ const SecuritySettings = () => {
       return;
     }
 
-    if (newPassword.length < 6) {
+    const validation = validatePassword(newPassword);
+    if (!validation.valid) {
       toast({
-        title: "Error",
-        description: "Password must be at least 6 characters",
+        title: "Weak Password",
+        description: validation.message,
         variant: "destructive",
       });
       return;
@@ -353,7 +374,7 @@ const SecuritySettings = () => {
                 <DialogHeader>
                   <DialogTitle>Change Password</DialogTitle>
                   <DialogDescription>
-                    Enter your new password below. Make sure it's at least 6 characters long.
+                    Enter your new password. It must be at least 8 characters with uppercase, lowercase, number, and special character.
                   </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleChangePassword} className="space-y-4">
