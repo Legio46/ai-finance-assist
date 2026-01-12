@@ -4,22 +4,23 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Shield, Phone, Mail, Key } from 'lucide-react';
+import { Shield, Phone, Mail, Key, AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const SecuritySettings = () => {
   const { user, profile, refreshProfile } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [verificationCode, setVerificationCode] = useState('');
-  const [isVerifyingPhone, setIsVerifyingPhone] = useState(false);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [showEmailDialog, setShowEmailDialog] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [newEmail, setNewEmail] = useState('');
 
   useEffect(() => {
     if (profile?.phone_number) {
@@ -30,13 +31,26 @@ const SecuritySettings = () => {
   const handleUpdatePhone = async () => {
     if (!user) return;
 
+    // Validate phone number format
+    const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+    const cleanedPhone = phoneNumber.replace(/[\s()-]/g, '');
+    
+    if (!phoneRegex.test(cleanedPhone)) {
+      toast({
+        title: "Invalid phone number",
+        description: "Please enter a valid phone number in international format (e.g., +1234567890)",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       const { error } = await supabase
         .from('profiles')
         .update({ 
-          phone_number: phoneNumber,
-          phone_verified: false // Reset verification when changing number
+          phone_number: cleanedPhone,
+          phone_verified: false
         })
         .eq('user_id', user.id);
 
@@ -44,7 +58,7 @@ const SecuritySettings = () => {
 
       toast({
         title: "Phone number updated",
-        description: "Your phone number has been updated. Please verify it to enable SMS notifications.",
+        description: "Your phone number has been saved. Phone verification requires SMS service integration.",
       });
 
       refreshProfile();
@@ -78,67 +92,6 @@ const SecuritySettings = () => {
           : "Two-factor authentication has been disabled.",
       });
 
-      refreshProfile();
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const simulatePhoneVerification = async () => {
-    if (!phoneNumber) {
-      toast({
-        title: "Error",
-        description: "Please enter a phone number first",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsVerifyingPhone(true);
-    
-    // Simulate sending verification code
-    setTimeout(() => {
-      toast({
-        title: "Verification code sent",
-        description: `A verification code has been sent to ${phoneNumber}. For demo purposes, use code: 123456`,
-      });
-      setIsVerifyingPhone(false);
-    }, 2000);
-  };
-
-  const handleVerifyPhone = async () => {
-    if (!user) return;
-
-    if (verificationCode !== '123456') {
-      toast({
-        title: "Error",
-        description: "Invalid verification code",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ phone_verified: true })
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Phone verified",
-        description: "Your phone number has been successfully verified!",
-      });
-
-      setVerificationCode('');
       refreshProfile();
     } catch (error: any) {
       toast({
@@ -199,13 +152,24 @@ const SecuritySettings = () => {
     }
   };
 
-  const handleChangeEmail = async () => {
-    const newEmail = prompt("Enter your new email address:");
-    if (!newEmail) return;
+  const handleChangeEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(newEmail.trim())) {
+      toast({
+        title: "Invalid email",
+        description: "Please enter a valid email address",
+        variant: "destructive",
+      });
+      return;
+    }
 
+    setLoading(true);
     try {
       const { error } = await supabase.auth.updateUser({
-        email: newEmail
+        email: newEmail.trim()
       });
 
       if (error) throw error;
@@ -214,12 +178,17 @@ const SecuritySettings = () => {
         title: "Verification email sent",
         description: "Please check your new email address to confirm the change.",
       });
+      
+      setShowEmailDialog(false);
+      setNewEmail('');
     } catch (error: any) {
       toast({
         title: "Error",
         description: error.message,
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -260,8 +229,11 @@ const SecuritySettings = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Phone className="h-5 w-5" />
-            Phone Verification
+            Phone Number
           </CardTitle>
+          <CardDescription>
+            Add your phone number for account recovery
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center gap-2">
@@ -272,7 +244,7 @@ const SecuritySettings = () => {
                 type="tel"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
-                placeholder="+1 (555) 123-4567"
+                placeholder="+1234567890"
               />
             </div>
             <Button
@@ -280,36 +252,18 @@ const SecuritySettings = () => {
               disabled={loading}
               variant="outline"
             >
-              Update
+              {loading ? 'Saving...' : 'Save'}
             </Button>
           </div>
 
           {phoneNumber && !profile?.phone_verified && (
-            <div className="space-y-2">
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Enter verification code"
-                  value={verificationCode}
-                  onChange={(e) => setVerificationCode(e.target.value)}
-                />
-                <Button
-                  onClick={simulatePhoneVerification}
-                  disabled={isVerifyingPhone}
-                  variant="outline"
-                >
-                  {isVerifyingPhone ? 'Sending...' : 'Send Code'}
-                </Button>
-              </div>
-              {verificationCode && (
-                <Button
-                  onClick={handleVerifyPhone}
-                  disabled={loading}
-                  className="w-full"
-                >
-                  Verify Phone
-                </Button>
-              )}
-            </div>
+            <Alert>
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                Phone verification via SMS requires integration with an SMS provider (e.g., Twilio). 
+                Your phone number has been saved for account recovery purposes.
+              </AlertDescription>
+            </Alert>
           )}
 
           {profile?.phone_verified && (
@@ -340,9 +294,37 @@ const SecuritySettings = () => {
                 <Shield className="h-4 w-4" />
                 <span className="text-sm">Verified</span>
               </div>
-              <Button onClick={handleChangeEmail} variant="outline" size="sm">
-                Change Email
-              </Button>
+              <Dialog open={showEmailDialog} onOpenChange={setShowEmailDialog}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    Change Email
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Change Email Address</DialogTitle>
+                    <DialogDescription>
+                      Enter your new email address. You will receive a verification email to confirm the change.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={handleChangeEmail} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="new-email">New Email Address</Label>
+                      <Input
+                        id="new-email"
+                        type="email"
+                        value={newEmail}
+                        onChange={(e) => setNewEmail(e.target.value)}
+                        placeholder="newemail@example.com"
+                        required
+                      />
+                    </div>
+                    <Button type="submit" className="w-full" disabled={loading}>
+                      {loading ? 'Sending...' : 'Send Verification Email'}
+                    </Button>
+                  </form>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         </CardContent>
