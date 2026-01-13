@@ -5,23 +5,24 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Plus, TrendingUp, TrendingDown, Trash2, RefreshCw, Wifi, WifiOff } from 'lucide-react';
+import { Plus, TrendingUp, TrendingDown, Trash2, RefreshCw, Wifi, Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { LineChart, Line, ResponsiveContainer, Tooltip } from 'recharts';
 
-interface CryptoPrice {
+interface AssetPrice {
   price_eur: number;
   price_usd: number;
   change_24h: number;
   last_updated: number;
   chart_7d?: number[][];
+  name?: string;
 }
 
 interface LivePrices {
-  [symbol: string]: CryptoPrice;
+  [symbol: string]: AssetPrice;
 }
 
 const InvestmentTracker = () => {
@@ -33,6 +34,7 @@ const InvestmentTracker = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [livePrices, setLivePrices] = useState<LivePrices>({});
   const [fetchingPrices, setFetchingPrices] = useState(false);
+  const [fetchingFormPrice, setFetchingFormPrice] = useState(false);
   const [lastPriceUpdate, setLastPriceUpdate] = useState<Date | null>(null);
   const [formData, setFormData] = useState({
     investment_name: '',
@@ -47,6 +49,9 @@ const InvestmentTracker = () => {
 
   // Popular crypto symbols for suggestions
   const popularCryptos = ['BTC', 'ETH', 'SOL', 'XRP', 'ADA', 'DOGE', 'DOT', 'MATIC', 'LINK', 'AVAX'];
+  
+  // Popular stock symbols for suggestions
+  const popularStocks = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'META', 'TSLA', 'JPM', 'V', 'WMT'];
 
   useEffect(() => {
     if (user) {
@@ -57,8 +62,13 @@ const InvestmentTracker = () => {
   // Fetch live prices when investments change
   useEffect(() => {
     const cryptoInvestments = investments.filter(inv => inv.investment_type === 'Crypto');
+    const stockInvestments = investments.filter(inv => inv.investment_type === 'Stocks');
+    
     if (cryptoInvestments.length > 0) {
-      fetchLivePrices(cryptoInvestments);
+      fetchLivePrices(cryptoInvestments, 'Crypto');
+    }
+    if (stockInvestments.length > 0) {
+      fetchLivePrices(stockInvestments, 'Stocks');
     }
   }, [investments]);
 
@@ -81,51 +91,52 @@ const InvestmentTracker = () => {
     }
   };
 
-  const fetchLivePrices = useCallback(async (cryptoInvestments: any[]) => {
-    if (cryptoInvestments.length === 0) return;
+  const fetchLivePrices = useCallback(async (assetInvestments: any[], type: 'Crypto' | 'Stocks') => {
+    if (assetInvestments.length === 0) return;
 
     setFetchingPrices(true);
     try {
-      // Extract symbols from investment names (e.g., "BTC", "Bitcoin", etc.)
-      const symbols = cryptoInvestments.map(inv => {
+      // Extract symbols from investment names
+      const symbols = assetInvestments.map(inv => {
         const name = inv.investment_name.toUpperCase().trim();
-        // Handle common variations
-        if (name.includes('BITCOIN') || name === 'BTC') return 'BTC';
-        if (name.includes('ETHEREUM') || name === 'ETH') return 'ETH';
-        if (name.includes('SOLANA') || name === 'SOL') return 'SOL';
-        // Default to the name itself
-        return name.split(' ')[0]; // Take first word as symbol
+        if (type === 'Crypto') {
+          if (name.includes('BITCOIN') || name === 'BTC') return 'BTC';
+          if (name.includes('ETHEREUM') || name === 'ETH') return 'ETH';
+          if (name.includes('SOLANA') || name === 'SOL') return 'SOL';
+        }
+        return name.split(' ')[0];
       });
 
       const uniqueSymbols = [...new Set(symbols)];
-      console.log('Fetching crypto prices for symbols:', uniqueSymbols);
+      const endpoint = type === 'Crypto' ? 'crypto-prices' : 'stock-prices';
+      console.log(`Fetching ${type} prices for symbols:`, uniqueSymbols);
 
-      const response = await supabase.functions.invoke('crypto-prices', {
+      const response = await supabase.functions.invoke(endpoint, {
         body: { symbols: uniqueSymbols }
       });
 
-      console.log('Crypto prices response:', response);
+      console.log(`${type} prices response:`, response);
 
       if (response.error) {
-        console.error('Error fetching crypto prices:', response.error);
+        console.error(`Error fetching ${type} prices:`, response.error);
         toast({
           title: "Price Update Failed",
-          description: response.error.message || "Could not fetch live crypto prices. Please try again.",
+          description: response.error.message || `Could not fetch live ${type} prices. Please try again.`,
           variant: "destructive",
         });
         return;
       }
 
       if (response.data?.prices) {
-        setLivePrices(response.data.prices);
+        setLivePrices(prev => ({ ...prev, ...response.data.prices }));
         setLastPriceUpdate(new Date());
         
         // Update investments with live prices
-        await updateInvestmentPrices(cryptoInvestments, response.data.prices);
+        await updateInvestmentPrices(assetInvestments, response.data.prices);
         
         toast({
           title: "Prices Updated",
-          description: `Fetched live prices for ${Object.keys(response.data.prices).length} cryptocurrencies`,
+          description: `Fetched live prices for ${Object.keys(response.data.prices).length} ${type.toLowerCase()}`,
         });
       } else if (response.data?.error) {
         console.error('API returned error:', response.data.error);
@@ -178,24 +189,70 @@ const InvestmentTracker = () => {
     return upperName.split(' ')[0];
   };
 
-  const getLivePrice = (investment: any): CryptoPrice | null => {
-    if (investment.investment_type !== 'Crypto') return null;
+  const getLivePrice = (investment: any): AssetPrice | null => {
+    if (investment.investment_type !== 'Crypto' && investment.investment_type !== 'Stocks') return null;
     const symbol = getSymbolFromName(investment.investment_name);
     return livePrices[symbol] || null;
   };
 
+  // Auto-fetch price when investment name changes for Crypto or Stocks
+  const fetchSingleAssetPrice = useCallback(async (symbol: string, type: string) => {
+    if (!symbol || (type !== 'Crypto' && type !== 'Stocks')) return;
+    
+    setFetchingFormPrice(true);
+    try {
+      const endpoint = type === 'Crypto' ? 'crypto-prices' : 'stock-prices';
+      const response = await supabase.functions.invoke(endpoint, {
+        body: { symbols: [symbol.toUpperCase()] }
+      });
+
+      if (response.data?.prices) {
+        const symbolKey = symbol.toUpperCase();
+        const priceData = response.data.prices[symbolKey];
+        
+        if (priceData) {
+          setFormData(prev => ({
+            ...prev,
+            current_price: priceData.price_eur.toFixed(2)
+          }));
+          toast({
+            title: "Price Fetched",
+            description: `Current price: €${priceData.price_eur.toFixed(2)}`,
+          });
+        } else {
+          toast({
+            title: "Symbol Not Found",
+            description: `Could not find price for ${symbol}`,
+            variant: "destructive",
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching single asset price:', error);
+    } finally {
+      setFetchingFormPrice(false);
+    }
+  }, [toast]);
+
   const handleRefreshPrices = () => {
     const cryptoInvestments = investments.filter(inv => inv.investment_type === 'Crypto');
-    if (cryptoInvestments.length > 0) {
-      fetchLivePrices(cryptoInvestments);
+    const stockInvestments = investments.filter(inv => inv.investment_type === 'Stocks');
+    
+    if (cryptoInvestments.length > 0 || stockInvestments.length > 0) {
+      if (cryptoInvestments.length > 0) {
+        fetchLivePrices(cryptoInvestments, 'Crypto');
+      }
+      if (stockInvestments.length > 0) {
+        fetchLivePrices(stockInvestments, 'Stocks');
+      }
       toast({
         title: "Refreshing Prices",
-        description: "Fetching latest crypto prices...",
+        description: "Fetching latest prices...",
       });
     } else {
       toast({
-        title: "No Crypto Investments",
-        description: "Add crypto investments to see live prices",
+        title: "No Tracked Assets",
+        description: "Add crypto or stock investments to see live prices",
       });
     }
   };
@@ -322,7 +379,16 @@ const InvestmentTracker = () => {
     (totalGainLoss / (totalValue - totalGainLoss)) * 100 : 0;
 
   const hasCryptoInvestments = investments.some(inv => inv.investment_type === 'Crypto');
+  const hasStockInvestments = investments.some(inv => inv.investment_type === 'Stocks');
+  const hasLiveAssets = hasCryptoInvestments || hasStockInvestments;
 
+  // Handler for quick symbol selection that auto-fetches price
+  const handleQuickSymbolSelect = (symbol: string) => {
+    setFormData(prev => ({ ...prev, investment_name: symbol }));
+    if (formData.investment_type === 'Crypto' || formData.investment_type === 'Stocks') {
+      fetchSingleAssetPrice(symbol, formData.investment_type);
+    }
+  };
   return (
     <Card>
       <CardHeader>
@@ -343,7 +409,7 @@ const InvestmentTracker = () => {
             </CardDescription>
           </div>
           <div className="flex gap-2">
-            {hasCryptoInvestments && (
+            {hasLiveAssets && (
               <Button 
                 variant="outline" 
                 size="sm" 
@@ -380,13 +446,26 @@ const InvestmentTracker = () => {
           <form onSubmit={addInvestment} className="space-y-4 border-t pt-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Investment Name</Label>
-                <Input
-                  value={formData.investment_name}
-                  onChange={(e) => setFormData({...formData, investment_name: e.target.value})}
-                  placeholder="e.g., BTC, ETH, AAPL"
-                  required
-                />
+                <Label>Investment Name / Symbol</Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={formData.investment_name}
+                    onChange={(e) => setFormData({...formData, investment_name: e.target.value.toUpperCase()})}
+                    placeholder={formData.investment_type === 'Crypto' ? 'e.g., BTC, ETH' : formData.investment_type === 'Stocks' ? 'e.g., AAPL, MSFT' : 'Investment name'}
+                    required
+                  />
+                  {(formData.investment_type === 'Crypto' || formData.investment_type === 'Stocks') && formData.investment_name && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => fetchSingleAssetPrice(formData.investment_name, formData.investment_type)}
+                      disabled={fetchingFormPrice}
+                    >
+                      {fetchingFormPrice ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Fetch Price'}
+                    </Button>
+                  )}
+                </div>
                 {formData.investment_type === 'Crypto' && (
                   <div className="flex flex-wrap gap-1 mt-2">
                     {popularCryptos.slice(0, 5).map(symbol => (
@@ -396,7 +475,25 @@ const InvestmentTracker = () => {
                         variant="outline"
                         size="sm"
                         className="h-6 text-xs"
-                        onClick={() => setFormData({...formData, investment_name: symbol})}
+                        onClick={() => handleQuickSymbolSelect(symbol)}
+                        disabled={fetchingFormPrice}
+                      >
+                        {symbol}
+                      </Button>
+                    ))}
+                  </div>
+                )}
+                {formData.investment_type === 'Stocks' && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {popularStocks.slice(0, 5).map(symbol => (
+                      <Button
+                        key={symbol}
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-6 text-xs"
+                        onClick={() => handleQuickSymbolSelect(symbol)}
+                        disabled={fetchingFormPrice}
                       >
                         {symbol}
                       </Button>
@@ -406,7 +503,9 @@ const InvestmentTracker = () => {
               </div>
               <div>
                 <Label>Type</Label>
-                <Select value={formData.investment_type} onValueChange={(value) => setFormData({...formData, investment_type: value})}>
+                <Select value={formData.investment_type} onValueChange={(value) => {
+                  setFormData({...formData, investment_type: value, current_price: ''});
+                }}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
@@ -440,14 +539,18 @@ const InvestmentTracker = () => {
                 />
               </div>
               <div>
-                <Label>Current Price (€)</Label>
+                <Label className="flex items-center gap-2">
+                  Current Price (€)
+                  {fetchingFormPrice && <Loader2 className="w-3 h-3 animate-spin" />}
+                </Label>
                 <Input
                   type="number"
                   step="0.01"
                   value={formData.current_price}
                   onChange={(e) => setFormData({...formData, current_price: e.target.value})}
-                  placeholder={formData.investment_type === 'Crypto' ? 'Auto-fetched' : ''}
+                  placeholder={(formData.investment_type === 'Crypto' || formData.investment_type === 'Stocks') ? 'Auto-fetched' : 'Enter price'}
                   required
+                  className={fetchingFormPrice ? 'animate-pulse' : ''}
                 />
               </div>
             </div>
@@ -478,7 +581,7 @@ const InvestmentTracker = () => {
                     <div>
                       <div className="font-medium flex items-center gap-2">
                         {investment.investment_name}
-                        {investment.investment_type === 'Crypto' && livePrice && (
+                        {(investment.investment_type === 'Crypto' || investment.investment_type === 'Stocks') && livePrice && (
                           <Badge variant="outline" className="text-xs flex items-center gap-1">
                             <Wifi className="w-3 h-3" />
                             Live
