@@ -30,7 +30,11 @@ import {
   Eye,
   CheckCircle,
   XCircle,
-  AlertCircle
+  AlertCircle,
+  Sparkles,
+  Zap,
+  LineChart as LineChartIcon,
+  Coins
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
@@ -448,13 +452,17 @@ const AdminDashboard = () => {
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="security">Security</TabsTrigger>
             <TabsTrigger value="transactions">Transactions</TabsTrigger>
             <TabsTrigger value="reports">Reports</TabsTrigger>
             <TabsTrigger value="alerts">Alerts</TabsTrigger>
+            <TabsTrigger value="whats-new" className="flex items-center gap-1">
+              <Sparkles className="h-3 w-3" />
+              What's New
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -915,6 +923,118 @@ const AdminDashboard = () => {
                       </div>
                     ))
                   )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="whats-new" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-primary" />
+                  <CardTitle>What's New</CardTitle>
+                </div>
+                <CardDescription>Latest features and improvements to the platform</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Latest Update */}
+                <div className="border-l-4 border-primary pl-4 py-2">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge className="bg-gradient-primary text-white">NEW</Badge>
+                    <span className="text-sm text-muted-foreground">January 2026</span>
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">Investment Portfolio - Live Pricing</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3">
+                      <Coins className="h-5 w-5 text-primary mt-0.5" />
+                      <div>
+                        <p className="font-medium">Auto-Fetch Crypto & Stock Prices</p>
+                        <p className="text-sm text-muted-foreground">
+                          Current prices are now automatically fetched when adding new crypto or stock investments. 
+                          No more manual price entry required!
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <LineChartIcon className="h-5 w-5 text-primary mt-0.5" />
+                      <div>
+                        <p className="font-medium">Yahoo Finance Integration</p>
+                        <p className="text-sm text-muted-foreground">
+                          Real-time stock prices from Yahoo Finance for popular stocks like AAPL, MSFT, GOOGL, 
+                          AMZN, NVDA, and more.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Zap className="h-5 w-5 text-primary mt-0.5" />
+                      <div>
+                        <p className="font-medium">Quick Symbol Selection</p>
+                        <p className="text-sm text-muted-foreground">
+                          One-click buttons for popular crypto (BTC, ETH, SOL, XRP, ADA) and 
+                          stocks (AAPL, MSFT, GOOGL, AMZN, NVDA) that instantly fetch current prices.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Previous Update */}
+                <div className="border-l-4 border-muted pl-4 py-2">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge variant="secondary">UPDATE</Badge>
+                    <span className="text-sm text-muted-foreground">January 2026</span>
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">Security Enhancements</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3">
+                      <Shield className="h-5 w-5 text-muted-foreground mt-0.5" />
+                      <div>
+                        <p className="font-medium">Enhanced CORS Protection</p>
+                        <p className="text-sm text-muted-foreground">
+                          All edge functions now have improved origin validation for better security.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Lock className="h-5 w-5 text-muted-foreground mt-0.5" />
+                      <div>
+                        <p className="font-medium">Stronger Password Requirements</p>
+                        <p className="text-sm text-muted-foreground">
+                          Password changes now require uppercase, lowercase, numbers, and special characters.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Feature Update */}
+                <div className="border-l-4 border-muted pl-4 py-2">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge variant="secondary">FEATURE</Badge>
+                    <span className="text-sm text-muted-foreground">December 2025</span>
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">Live Crypto Charts</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3">
+                      <TrendingUp className="h-5 w-5 text-muted-foreground mt-0.5" />
+                      <div>
+                        <p className="font-medium">7-Day Price Sparklines</p>
+                        <p className="text-sm text-muted-foreground">
+                          Crypto investments now display 7-day price history sparklines with live data from CoinGecko.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Activity className="h-5 w-5 text-muted-foreground mt-0.5" />
+                      <div>
+                        <p className="font-medium">24h Price Change Indicators</p>
+                        <p className="text-sm text-muted-foreground">
+                          See real-time 24-hour price changes for all your crypto holdings.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
