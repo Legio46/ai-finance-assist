@@ -60,6 +60,7 @@ const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
+  const [filterSubscription, setFilterSubscription] = useState('all');
   const [systemAlerts, setSystemAlerts] = useState([]);
   const [securityEvents, setSecurityEvents] = useState([]);
   const [activityLogs, setActivityLogs] = useState([]);
@@ -67,6 +68,17 @@ const AdminDashboard = () => {
   const [selectedUserRoles, setSelectedUserRoles] = useState<string[]>([]);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    activeSubscriptions: 0,
+    freeUsers: 0,
+    basicUsers: 0,
+    proUsers: 0,
+    businessUsers: 0,
+    trialUsers: 0,
+    personalAccounts: 0,
+    businessAccounts: 0
+  });
   const [editForm, setEditForm] = useState({
     full_name: '',
     subscription_tier: '',
@@ -109,7 +121,31 @@ const AdminDashboard = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setUsers(data || []);
+      const userData = data || [];
+      setUsers(userData);
+      
+      // Calculate stats
+      const now = new Date();
+      const activeSubscriptions = userData.filter(u => u.subscription_status === 'active').length;
+      const freeUsers = userData.filter(u => !u.subscription_tier || u.subscription_tier === 'free').length;
+      const basicUsers = userData.filter(u => u.subscription_tier === 'personal_basic').length;
+      const proUsers = userData.filter(u => u.subscription_tier === 'personal_pro').length;
+      const businessUsers = userData.filter(u => u.subscription_tier === 'business').length;
+      const trialUsers = userData.filter(u => u.trial_end && new Date(u.trial_end) > now).length;
+      const personalAccounts = userData.filter(u => u.account_type === 'personal').length;
+      const businessAccounts = userData.filter(u => u.account_type === 'business').length;
+      
+      setStats({
+        totalUsers: userData.length,
+        activeSubscriptions,
+        freeUsers,
+        basicUsers,
+        proUsers,
+        businessUsers,
+        trialUsers,
+        personalAccounts,
+        businessAccounts
+      });
     } catch (error) {
       console.error('Error fetching users:', error);
     }
@@ -366,9 +402,32 @@ const AdminDashboard = () => {
     const matchesSearch = user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          user.email?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    if (filterType === 'all') return matchesSearch;
-    return matchesSearch && user.account_type === filterType;
+    const matchesType = filterType === 'all' || user.account_type === filterType;
+    const matchesSubscription = filterSubscription === 'all' || 
+      (filterSubscription === 'free' && (!user.subscription_tier || user.subscription_tier === 'free')) ||
+      user.subscription_tier === filterSubscription;
+    
+    return matchesSearch && matchesType && matchesSubscription;
   });
+
+  const getSubscriptionBadge = (tier: string | null, status: string | null, trialEnd: string | null) => {
+    const isTrialActive = trialEnd && new Date(trialEnd) > new Date();
+    
+    if (isTrialActive && (!tier || tier === 'free')) {
+      return <Badge className="bg-purple-500">Trial</Badge>;
+    }
+    
+    switch (tier) {
+      case 'personal_basic':
+        return <Badge className="bg-blue-500">Basic</Badge>;
+      case 'personal_pro':
+        return <Badge className="bg-green-500">Pro</Badge>;
+      case 'business':
+        return <Badge className="bg-orange-500">Business</Badge>;
+      default:
+        return <Badge variant="secondary">Free</Badge>;
+    }
+  };
 
   // Show loading while checking admin status
   if (adminLoading) {
@@ -404,48 +463,95 @@ const AdminDashboard = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{t('totalRevenue')}</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(15231)}</div>
-              <p className="text-xs text-muted-foreground">+20.1% from last month</p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{t('activeUsers')}</CardTitle>
+              <CardTitle className="text-sm font-medium">Total Users</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{users.length}</div>
-              <p className="text-xs text-muted-foreground">+180.1% from last month</p>
+              <div className="text-2xl font-bold">{stats.totalUsers}</div>
+              <p className="text-xs text-muted-foreground">Registered accounts</p>
             </CardContent>
           </Card>
           
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{t('sales')}</CardTitle>
+              <CardTitle className="text-sm font-medium">Active Subscriptions</CardTitle>
               <CreditCard className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">+12,234</div>
-              <p className="text-xs text-muted-foreground">+19% from last month</p>
+              <div className="text-2xl font-bold">{stats.activeSubscriptions}</div>
+              <p className="text-xs text-muted-foreground">Paying customers</p>
             </CardContent>
           </Card>
           
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{t('activeNow')}</CardTitle>
+              <CardTitle className="text-sm font-medium">Trial Users</CardTitle>
               <Activity className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">+573</div>
-              <p className="text-xs text-muted-foreground">+201 since last hour</p>
+              <div className="text-2xl font-bold">{stats.trialUsers}</div>
+              <p className="text-xs text-muted-foreground">Active trials</p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Free Users</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.freeUsers}</div>
+              <p className="text-xs text-muted-foreground">No subscription</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Subscription Breakdown */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card className="bg-blue-500/10 border-blue-500/30">
+            <CardContent className="pt-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-blue-600">Basic Plan</p>
+                  <p className="text-2xl font-bold">{stats.basicUsers}</p>
+                </div>
+                <Badge className="bg-blue-500">{formatCurrency(8)}/mo</Badge>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-green-500/10 border-green-500/30">
+            <CardContent className="pt-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-green-600">Pro Plan</p>
+                  <p className="text-2xl font-bold">{stats.proUsers}</p>
+                </div>
+                <Badge className="bg-green-500">{formatCurrency(10)}/mo</Badge>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-orange-500/10 border-orange-500/30">
+            <CardContent className="pt-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-orange-600">Business Plan</p>
+                  <p className="text-2xl font-bold">{stats.businessUsers}</p>
+                </div>
+                <Badge variant="outline" className="text-orange-500">Coming Soon</Badge>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-muted">
+            <CardContent className="pt-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Account Types</p>
+                  <p className="text-sm">Personal: {stats.personalAccounts} | Business: {stats.businessAccounts}</p>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -529,8 +635,19 @@ const AdminDashboard = () => {
                 onChange={(e) => setFilterType(e.target.value)}
                 className="px-3 py-2 border border-input rounded-md bg-background"
               >
-                <option value="all">All Types</option>
+                <option value="all">All Account Types</option>
                 <option value="personal">Personal</option>
+                <option value="business">Business</option>
+              </select>
+              <select
+                value={filterSubscription}
+                onChange={(e) => setFilterSubscription(e.target.value)}
+                className="px-3 py-2 border border-input rounded-md bg-background"
+              >
+                <option value="all">All Subscriptions</option>
+                <option value="free">Free</option>
+                <option value="personal_basic">Basic</option>
+                <option value="personal_pro">Pro</option>
                 <option value="business">Business</option>
               </select>
             </div>
@@ -556,14 +673,15 @@ const AdminDashboard = () => {
                       </div>
                       <div className="flex items-center gap-4">
                         <Badge variant={user.account_type === 'business' ? 'default' : 'secondary'}>
-                          {user.account_type}
+                          {user.account_type || 'personal'}
                         </Badge>
+                        {getSubscriptionBadge(user.subscription_tier, user.subscription_status, user.trial_end)}
                         <div className="text-right">
                           <p className="text-sm font-medium">
                             {new Date(user.created_at).toLocaleDateString()}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {user.subscription_status || 'Free'}
+                            {user.subscription_status === 'active' ? 'Active' : 'Inactive'}
                           </p>
                         </div>
                         <div className="flex gap-2">
@@ -764,26 +882,32 @@ const AdminDashboard = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Monthly Report</CardTitle>
-                  <CardDescription>Financial summary for the current month</CardDescription>
+                  <CardTitle>User Summary</CardTitle>
+                  <CardDescription>Current user statistics</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     <div className="flex justify-between">
-                      <span>Total Revenue</span>
-                      <span className="font-bold">$15,231</span>
+                      <span>Total Users</span>
+                      <span className="font-bold">{stats.totalUsers}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>New Subscriptions</span>
-                      <span className="font-bold">47</span>
+                      <span>Active Subscriptions</span>
+                      <span className="font-bold">{stats.activeSubscriptions}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Cancelled Subscriptions</span>
-                      <span className="font-bold">3</span>
+                      <span>Active Trials</span>
+                      <span className="font-bold">{stats.trialUsers}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Net Growth</span>
-                      <span className="font-bold text-green-600">+44</span>
+                      <span>Free Users</span>
+                      <span className="font-bold">{stats.freeUsers}</span>
+                    </div>
+                    <div className="flex justify-between border-t pt-2 mt-2">
+                      <span>Estimated Monthly Revenue</span>
+                      <span className="font-bold text-green-600">
+                        {formatCurrency((stats.basicUsers * 8) + (stats.proUsers * 10))}
+                      </span>
                     </div>
                   </div>
                 </CardContent>
@@ -791,14 +915,16 @@ const AdminDashboard = () => {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>User Distribution</CardTitle>
-                  <CardDescription>Account types breakdown</CardDescription>
+                  <CardTitle>Subscription Distribution</CardTitle>
+                  <CardDescription>Users by subscription tier</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={200}>
                     <BarChart data={[
-                      { type: 'Personal', count: 32 },
-                      { type: 'Business', count: 18 }
+                      { type: 'Free', count: stats.freeUsers },
+                      { type: 'Basic', count: stats.basicUsers },
+                      { type: 'Pro', count: stats.proUsers },
+                      { type: 'Business', count: stats.businessUsers }
                     ]}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="type" />
@@ -807,6 +933,67 @@ const AdminDashboard = () => {
                       <Bar dataKey="count" fill="hsl(var(--primary))" />
                     </BarChart>
                   </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Account Types</CardTitle>
+                  <CardDescription>Personal vs Business accounts</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={200}>
+                    <BarChart data={[
+                      { type: 'Personal', count: stats.personalAccounts },
+                      { type: 'Business', count: stats.businessAccounts }
+                    ]}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="type" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey="count" fill="hsl(var(--accent-foreground))" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Revenue by Plan</CardTitle>
+                  <CardDescription>Estimated monthly revenue breakdown</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                        <span>Basic ({stats.basicUsers} users)</span>
+                      </div>
+                      <span className="font-bold">{formatCurrency(stats.basicUsers * 8)}/mo</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                        <span>Pro ({stats.proUsers} users)</span>
+                      </div>
+                      <span className="font-bold">{formatCurrency(stats.proUsers * 10)}/mo</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+                        <span>Business ({stats.businessUsers} users)</span>
+                      </div>
+                      <span className="font-bold text-muted-foreground">TBA</span>
+                    </div>
+                    <div className="border-t pt-3 flex justify-between">
+                      <span className="font-medium">Total Estimated</span>
+                      <span className="font-bold text-lg text-green-600">
+                        {formatCurrency((stats.basicUsers * 8) + (stats.proUsers * 10))}/mo
+                      </span>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -944,10 +1131,49 @@ const AdminDashboard = () => {
                     <Badge className="bg-gradient-primary text-white">NEW</Badge>
                     <span className="text-sm text-muted-foreground">January 2026</span>
                   </div>
+                  <h3 className="text-lg font-semibold mb-2">Investment Portfolio - Category Breakdown</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3">
+                      <TrendingUp className="h-5 w-5 text-primary mt-0.5" />
+                      <div>
+                        <p className="font-medium">Separate Category Totals</p>
+                        <p className="text-sm text-muted-foreground">
+                          Investments are now grouped by type (Crypto, Stocks, Real Estate, ETF, etc.) 
+                          with separate totals and gain/loss for each category.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Coins className="h-5 w-5 text-primary mt-0.5" />
+                      <div>
+                        <p className="font-medium">Category Summary Cards</p>
+                        <p className="text-sm text-muted-foreground">
+                          Color-coded cards show value, gain/loss, and asset count for each investment type at a glance.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <LineChartIcon className="h-5 w-5 text-primary mt-0.5" />
+                      <div>
+                        <p className="font-medium">Organized Investment View</p>
+                        <p className="text-sm text-muted-foreground">
+                          Investments are displayed in collapsible sections by category with clear headers and statistics.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Previous Update */}
+                <div className="border-l-4 border-muted pl-4 py-2">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge variant="secondary">UPDATE</Badge>
+                    <span className="text-sm text-muted-foreground">January 2026</span>
+                  </div>
                   <h3 className="text-lg font-semibold mb-2">Investment Portfolio - Live Pricing</h3>
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
-                      <Coins className="h-5 w-5 text-primary mt-0.5" />
+                      <Coins className="h-5 w-5 text-muted-foreground mt-0.5" />
                       <div>
                         <p className="font-medium">Auto-Fetch Crypto & Stock Prices</p>
                         <p className="text-sm text-muted-foreground">
@@ -957,7 +1183,7 @@ const AdminDashboard = () => {
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <LineChartIcon className="h-5 w-5 text-primary mt-0.5" />
+                      <LineChartIcon className="h-5 w-5 text-muted-foreground mt-0.5" />
                       <div>
                         <p className="font-medium">Yahoo Finance Integration</p>
                         <p className="text-sm text-muted-foreground">
@@ -967,7 +1193,7 @@ const AdminDashboard = () => {
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <Zap className="h-5 w-5 text-primary mt-0.5" />
+                      <Zap className="h-5 w-5 text-muted-foreground mt-0.5" />
                       <div>
                         <p className="font-medium">Quick Symbol Selection</p>
                         <p className="text-sm text-muted-foreground">
