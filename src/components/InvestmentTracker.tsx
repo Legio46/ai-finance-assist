@@ -354,6 +354,53 @@ const InvestmentTracker = () => {
     }, 0);
   };
 
+  // Group investments by type
+  const getInvestmentsByType = () => {
+    const grouped: { [key: string]: any[] } = {};
+    investments.forEach(inv => {
+      const type = inv.investment_type;
+      if (!grouped[type]) {
+        grouped[type] = [];
+      }
+      grouped[type].push(inv);
+    });
+    return grouped;
+  };
+
+  // Calculate totals for a specific type
+  const getTypeStats = (typeInvestments: any[]) => {
+    const totalValue = typeInvestments.reduce((total, inv) => {
+      return total + (inv.quantity * inv.current_price);
+    }, 0);
+    
+    const totalGainLoss = typeInvestments.reduce((total, inv) => {
+      const perf = calculatePerformance(inv);
+      return total + perf.gain;
+    }, 0);
+    
+    const totalPurchaseValue = typeInvestments.reduce((total, inv) => {
+      return total + (inv.quantity * inv.purchase_price);
+    }, 0);
+    
+    const percentage = totalPurchaseValue > 0 ? (totalGainLoss / totalPurchaseValue) * 100 : 0;
+    
+    return { totalValue, totalGainLoss, percentage };
+  };
+
+  // Get icon and color for investment type
+  const getTypeConfig = (type: string) => {
+    const configs: { [key: string]: { color: string; bgColor: string } } = {
+      'Crypto': { color: 'text-orange-500', bgColor: 'bg-orange-500/10' },
+      'Stocks': { color: 'text-blue-500', bgColor: 'bg-blue-500/10' },
+      'Real Estate': { color: 'text-green-500', bgColor: 'bg-green-500/10' },
+      'ETF': { color: 'text-purple-500', bgColor: 'bg-purple-500/10' },
+      'Mutual Funds': { color: 'text-indigo-500', bgColor: 'bg-indigo-500/10' },
+      'Bonds': { color: 'text-cyan-500', bgColor: 'bg-cyan-500/10' },
+      'Other': { color: 'text-gray-500', bgColor: 'bg-gray-500/10' },
+    };
+    return configs[type] || configs['Other'];
+  };
+
   // Format chart data for sparkline
   const formatChartData = (chartData: number[][] | undefined) => {
     if (!chartData || chartData.length === 0) return [];
@@ -381,6 +428,7 @@ const InvestmentTracker = () => {
   const hasCryptoInvestments = investments.some(inv => inv.investment_type === 'Crypto');
   const hasStockInvestments = investments.some(inv => inv.investment_type === 'Stocks');
   const hasLiveAssets = hasCryptoInvestments || hasStockInvestments;
+  const investmentsByType = getInvestmentsByType();
 
   // Handler for quick symbol selection that auto-fetches price
   const handleQuickSymbolSelect = (symbol: string) => {
@@ -428,9 +476,10 @@ const InvestmentTracker = () => {
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Overall Portfolio Summary */}
         <div className="grid grid-cols-2 gap-4">
           <div className="p-4 bg-muted rounded-lg">
-            <div className="text-sm text-muted-foreground mb-1">Portfolio Value</div>
+            <div className="text-sm text-muted-foreground mb-1">Total Portfolio Value</div>
             <div className="text-2xl font-bold">{formatCurrency(totalValue)}</div>
           </div>
           <div className="p-4 bg-muted rounded-lg">
@@ -441,6 +490,29 @@ const InvestmentTracker = () => {
             </div>
           </div>
         </div>
+
+        {/* Category Breakdown */}
+        {Object.keys(investmentsByType).length > 0 && (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            {Object.entries(investmentsByType).map(([type, typeInvestments]) => {
+              const stats = getTypeStats(typeInvestments);
+              const config = getTypeConfig(type);
+              return (
+                <div key={type} className={`p-3 rounded-lg border ${config.bgColor}`}>
+                  <div className={`text-sm font-medium ${config.color} mb-1`}>{type}</div>
+                  <div className="text-lg font-bold">{formatCurrency(stats.totalValue)}</div>
+                  <div className={`text-xs flex items-center gap-1 ${stats.totalGainLoss >= 0 ? 'text-success' : 'text-destructive'}`}>
+                    {stats.totalGainLoss >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                    {stats.totalGainLoss >= 0 ? '+' : ''}{formatCurrency(stats.totalGainLoss)} ({stats.percentage.toFixed(1)}%)
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {typeInvestments.length} {typeInvestments.length === 1 ? 'asset' : 'assets'}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         {showAddForm && (
           <form onSubmit={addInvestment} className="space-y-4 border-t pt-4">
@@ -567,93 +639,125 @@ const InvestmentTracker = () => {
           </form>
         )}
 
-        <div className="space-y-3">
-          {investments.map((investment) => {
-            const perf = calculatePerformance(investment);
-            const livePrice = getLivePrice(investment);
-            const chartData = livePrice?.chart_7d ? formatChartData(livePrice.chart_7d) : [];
-            const isPositiveChart = chartData.length > 1 && chartData[chartData.length - 1].price >= chartData[0].price;
+        {/* Investments grouped by type */}
+        <div className="space-y-6">
+          {Object.entries(investmentsByType).map(([type, typeInvestments]) => {
+            const config = getTypeConfig(type);
+            const stats = getTypeStats(typeInvestments);
             
             return (
-              <div key={investment.id} className="p-4 border rounded-lg">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="flex items-center gap-3">
-                    <div>
-                      <div className="font-medium flex items-center gap-2">
-                        {investment.investment_name}
-                        {(investment.investment_type === 'Crypto' || investment.investment_type === 'Stocks') && livePrice && (
-                          <Badge variant="outline" className="text-xs flex items-center gap-1">
-                            <Wifi className="w-3 h-3" />
-                            Live
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="text-sm text-muted-foreground flex items-center gap-2">
-                        {investment.investment_type}
-                        {livePrice && (
-                          <span className={`text-xs ${livePrice.change_24h >= 0 ? 'text-success' : 'text-destructive'}`}>
-                            24h: {livePrice.change_24h >= 0 ? '+' : ''}{livePrice.change_24h.toFixed(2)}%
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
+              <div key={type} className="space-y-3">
+                <div className={`flex items-center justify-between p-3 rounded-lg ${config.bgColor}`}>
                   <div className="flex items-center gap-2">
-                    {/* 7-day sparkline chart */}
-                    {chartData.length > 0 && (
-                      <div className="w-20 h-10">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <LineChart data={chartData}>
-                            <Line 
-                              type="monotone" 
-                              dataKey="price" 
-                              stroke={isPositiveChart ? 'hsl(var(--success))' : 'hsl(var(--destructive))'} 
-                              strokeWidth={1.5}
-                              dot={false}
-                            />
-                            <Tooltip 
-                              formatter={(value: number) => [formatCurrency(value), 'Price']}
-                              labelFormatter={() => ''}
-                              contentStyle={{ 
-                                background: 'hsl(var(--background))', 
-                                border: '1px solid hsl(var(--border))',
-                                borderRadius: '6px',
-                                fontSize: '12px'
-                              }}
-                            />
-                          </LineChart>
-                        </ResponsiveContainer>
-                      </div>
-                    )}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => deleteInvestment(investment.id)}
-                    >
-                      <Trash2 className="w-4 h-4 text-destructive" />
-                    </Button>
+                    <h3 className={`font-semibold ${config.color}`}>{type}</h3>
+                    <Badge variant="secondary" className="text-xs">
+                      {typeInvestments.length} {typeInvestments.length === 1 ? 'asset' : 'assets'}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-4 text-sm">
+                    <div>
+                      <span className="text-muted-foreground">Value: </span>
+                      <span className="font-medium">{formatCurrency(stats.totalValue)}</span>
+                    </div>
+                    <div className={`flex items-center gap-1 ${stats.totalGainLoss >= 0 ? 'text-success' : 'text-destructive'}`}>
+                      {stats.totalGainLoss >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+                      <span className="font-medium">
+                        {stats.totalGainLoss >= 0 ? '+' : ''}{formatCurrency(stats.totalGainLoss)} ({stats.percentage.toFixed(1)}%)
+                      </span>
+                    </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-4 gap-2 text-sm">
-                  <div>
-                    <div className="text-muted-foreground">Quantity</div>
-                    <div className="font-medium">{investment.quantity}</div>
-                  </div>
-                  <div>
-                    <div className="text-muted-foreground">Price</div>
-                    <div className="font-medium">{formatCurrency(investment.current_price)}</div>
-                  </div>
-                  <div>
-                    <div className="text-muted-foreground">Value</div>
-                    <div className="font-medium">{formatCurrency(perf.currentValue)}</div>
-                  </div>
-                  <div>
-                    <div className="text-muted-foreground">Gain/Loss</div>
-                    <div className={`font-medium flex items-center gap-1 ${perf.isPositive ? 'text-success' : 'text-destructive'}`}>
-                      {perf.isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                      {perf.percentage.toFixed(2)}%
-                    </div>
-                  </div>
+                
+                <div className="space-y-2 pl-2">
+                  {typeInvestments.map((investment) => {
+                    const perf = calculatePerformance(investment);
+                    const livePrice = getLivePrice(investment);
+                    const chartData = livePrice?.chart_7d ? formatChartData(livePrice.chart_7d) : [];
+                    const isPositiveChart = chartData.length > 1 && chartData[chartData.length - 1].price >= chartData[0].price;
+                    
+                    return (
+                      <div key={investment.id} className="p-4 border rounded-lg">
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="flex items-center gap-3">
+                            <div>
+                              <div className="font-medium flex items-center gap-2">
+                                {investment.investment_name}
+                                {(investment.investment_type === 'Crypto' || investment.investment_type === 'Stocks') && livePrice && (
+                                  <Badge variant="outline" className="text-xs flex items-center gap-1">
+                                    <Wifi className="w-3 h-3" />
+                                    Live
+                                  </Badge>
+                                )}
+                              </div>
+                              <div className="text-sm text-muted-foreground flex items-center gap-2">
+                                {livePrice && (
+                                  <span className={`text-xs ${livePrice.change_24h >= 0 ? 'text-success' : 'text-destructive'}`}>
+                                    24h: {livePrice.change_24h >= 0 ? '+' : ''}{livePrice.change_24h.toFixed(2)}%
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {/* 7-day sparkline chart */}
+                            {chartData.length > 0 && (
+                              <div className="w-20 h-10">
+                                <ResponsiveContainer width="100%" height="100%">
+                                  <LineChart data={chartData}>
+                                    <Line 
+                                      type="monotone" 
+                                      dataKey="price" 
+                                      stroke={isPositiveChart ? 'hsl(var(--success))' : 'hsl(var(--destructive))'} 
+                                      strokeWidth={1.5}
+                                      dot={false}
+                                    />
+                                    <Tooltip 
+                                      formatter={(value: number) => [formatCurrency(value), 'Price']}
+                                      labelFormatter={() => ''}
+                                      contentStyle={{ 
+                                        background: 'hsl(var(--background))', 
+                                        border: '1px solid hsl(var(--border))',
+                                        borderRadius: '6px',
+                                        fontSize: '12px'
+                                      }}
+                                    />
+                                  </LineChart>
+                                </ResponsiveContainer>
+                              </div>
+                            )}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => deleteInvestment(investment.id)}
+                            >
+                              <Trash2 className="w-4 h-4 text-destructive" />
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-4 gap-2 text-sm">
+                          <div>
+                            <div className="text-muted-foreground">Quantity</div>
+                            <div className="font-medium">{investment.quantity}</div>
+                          </div>
+                          <div>
+                            <div className="text-muted-foreground">Price</div>
+                            <div className="font-medium">{formatCurrency(investment.current_price)}</div>
+                          </div>
+                          <div>
+                            <div className="text-muted-foreground">Value</div>
+                            <div className="font-medium">{formatCurrency(perf.currentValue)}</div>
+                          </div>
+                          <div>
+                            <div className="text-muted-foreground">Gain/Loss</div>
+                            <div className={`font-medium flex items-center gap-1 ${perf.isPositive ? 'text-success' : 'text-destructive'}`}>
+                              {perf.isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                              {perf.percentage.toFixed(2)}%
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             );
