@@ -59,18 +59,18 @@ const InvestmentTracker = () => {
     }
   }, [user]);
 
-  // Fetch live prices when investments change
+  // Fetch live prices when investments change (silently, no toasts)
   useEffect(() => {
     const cryptoInvestments = investments.filter(inv => inv.investment_type === 'Crypto');
     const stockInvestments = investments.filter(inv => inv.investment_type === 'Stocks');
     
     if (cryptoInvestments.length > 0) {
-      fetchLivePrices(cryptoInvestments, 'Crypto');
+      fetchLivePrices(cryptoInvestments, 'Crypto', true);
     }
     if (stockInvestments.length > 0) {
-      fetchLivePrices(stockInvestments, 'Stocks');
+      fetchLivePrices(stockInvestments, 'Stocks', true);
     }
-  }, [investments]);
+  }, [investments.length]); // Only trigger on length change, not every re-render
 
   const fetchInvestments = async () => {
     if (!user) return;
@@ -91,7 +91,7 @@ const InvestmentTracker = () => {
     }
   };
 
-  const fetchLivePrices = useCallback(async (assetInvestments: any[], type: 'Crypto' | 'Stocks') => {
+  const fetchLivePrices = useCallback(async (assetInvestments: any[], type: 'Crypto' | 'Stocks', silent: boolean = false) => {
     if (assetInvestments.length === 0) return;
 
     setFetchingPrices(true);
@@ -119,11 +119,13 @@ const InvestmentTracker = () => {
 
       if (response.error) {
         console.error(`Error fetching ${type} prices:`, response.error);
-        toast({
-          title: "Price Update Failed",
-          description: response.error.message || `Could not fetch live ${type} prices. Please try again.`,
-          variant: "destructive",
-        });
+        if (!silent) {
+          toast({
+            title: "Price Update Failed",
+            description: response.error.message || `Could not fetch live ${type} prices. Please try again.`,
+            variant: "destructive",
+          });
+        }
         return;
       }
 
@@ -131,34 +133,35 @@ const InvestmentTracker = () => {
         setLivePrices(prev => ({ ...prev, ...response.data.prices }));
         setLastPriceUpdate(new Date());
         
-        // Update investments with live prices
-        await updateInvestmentPrices(assetInvestments, response.data.prices);
+        // Update investments with live prices (silently, don't re-fetch)
+        await updateInvestmentPrices(assetInvestments, response.data.prices, silent);
         
-        toast({
-          title: "Prices Updated",
-          description: `Fetched live prices for ${Object.keys(response.data.prices).length} ${type.toLowerCase()}`,
-        });
       } else if (response.data?.error) {
         console.error('API returned error:', response.data.error);
-        toast({
-          title: "Price Update Failed",
-          description: response.data.error,
-          variant: "destructive",
-        });
+        if (!silent) {
+          toast({
+            title: "Price Update Failed",
+            description: response.data.error,
+            variant: "destructive",
+          });
+        }
       }
     } catch (error) {
       console.error('Error fetching live prices:', error);
-      toast({
-        title: "Connection Error",
-        description: "Could not connect to price service. Please check your connection and try again.",
-        variant: "destructive",
-      });
+      if (!silent) {
+        toast({
+          title: "Connection Error",
+          description: "Could not connect to price service. Please check your connection and try again.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setFetchingPrices(false);
     }
   }, [toast]);
 
-  const updateInvestmentPrices = async (cryptoInvestments: any[], prices: LivePrices) => {
+  const updateInvestmentPrices = async (cryptoInvestments: any[], prices: LivePrices, silent: boolean = false) => {
+    let updated = false;
     for (const inv of cryptoInvestments) {
       const symbol = getSymbolFromName(inv.investment_name);
       const priceData = prices[symbol];
@@ -169,11 +172,14 @@ const InvestmentTracker = () => {
           .from('investments')
           .update({ current_price: priceData.price_eur })
           .eq('id', inv.id);
+        updated = true;
       }
     }
     
-    // Refresh investments to show updated prices
-    fetchInvestments();
+    // Only refresh if something was updated and not in silent mode
+    if (updated && !silent) {
+      fetchInvestments();
+    }
   };
 
   const getSymbolFromName = (name: string): string => {
@@ -234,20 +240,30 @@ const InvestmentTracker = () => {
     }
   }, [toast]);
 
-  const handleRefreshPrices = () => {
+  const handleRefreshPrices = async () => {
     const cryptoInvestments = investments.filter(inv => inv.investment_type === 'Crypto');
     const stockInvestments = investments.filter(inv => inv.investment_type === 'Stocks');
     
     if (cryptoInvestments.length > 0 || stockInvestments.length > 0) {
-      if (cryptoInvestments.length > 0) {
-        fetchLivePrices(cryptoInvestments, 'Crypto');
-      }
-      if (stockInvestments.length > 0) {
-        fetchLivePrices(stockInvestments, 'Stocks');
-      }
       toast({
         title: "Refreshing Prices",
         description: "Fetching latest prices...",
+      });
+      
+      // Fetch prices without showing individual toasts
+      if (cryptoInvestments.length > 0) {
+        await fetchLivePrices(cryptoInvestments, 'Crypto', true);
+      }
+      if (stockInvestments.length > 0) {
+        await fetchLivePrices(stockInvestments, 'Stocks', true);
+      }
+      
+      // Refresh investments to show updated prices
+      await fetchInvestments();
+      
+      toast({
+        title: "Prices Updated",
+        description: "All prices have been refreshed",
       });
     } else {
       toast({
