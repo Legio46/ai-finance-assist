@@ -18,6 +18,7 @@ import RecurringPayments from '@/components/RecurringPayments';
 import InvestmentTracker from '@/components/InvestmentTracker';
 import FinancialGoals from '@/components/FinancialGoals';
 import FinancialCalendar from '@/components/FinancialCalendar';
+import ReceiptImage from '@/components/ReceiptImage';
 
 type CategoryView = 'overview' | 'expenses' | 'credit-cards' | 'income-budget' | 'recurring-payments' | 'investments' | 'goals' | 'calendar';
 
@@ -122,6 +123,7 @@ const PersonalDashboard = () => {
 
     try {
       const fileExt = receiptFile.name.split('.').pop();
+      // Store only the file path, not a public URL
       const fileName = `${user.id}/${expenseId}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
@@ -130,11 +132,9 @@ const PersonalDashboard = () => {
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('receipts')
-        .getPublicUrl(fileName);
-
-      return publicUrl;
+      // Return only the file path - signed URLs will be generated on-demand
+      // This ensures private files remain secure and URLs expire appropriately
+      return fileName;
     } catch (error) {
       console.error('Error uploading receipt:', error);
       return null;
@@ -542,18 +542,12 @@ const PersonalDashboard = () => {
                     {expenses.slice(0, 10).map((expense) => (
                       <div key={expense.id} className="flex justify-between items-center gap-4 py-2 border-b border-border last:border-0">
                         <div className="flex items-center gap-3 flex-1">
-                          {expense.receipt_image_url && (
-                            <div className="relative group">
-                              <img 
-                                src={expense.receipt_image_url} 
-                                alt="Receipt" 
-                                className="w-12 h-12 object-cover rounded border border-input cursor-pointer"
-                                onClick={() => window.open(expense.receipt_image_url, '_blank')}
-                              />
-                              <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded flex items-center justify-center">
-                                <Eye className="w-4 h-4 text-white" />
-                              </div>
-                            </div>
+                        {expense.receipt_image_url && (
+                            <ReceiptImage 
+                              filePath={expense.receipt_image_url}
+                              className="w-12 h-12 object-cover rounded border border-input cursor-pointer"
+                              showHoverOverlay={true}
+                            />
                           )}
                           <div>
                             <div className="font-medium">{expense.category}</div>
