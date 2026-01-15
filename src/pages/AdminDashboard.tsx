@@ -256,42 +256,39 @@ const AdminDashboard = () => {
     setShowEditDialog(true);
   };
 
+  const callAdminOperation = async (action: string, targetUserId: string | null, data?: any) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw new Error('Not authenticated');
+
+    const response = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-operations`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ action, targetUserId, data }),
+      }
+    );
+
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.error || 'Operation failed');
+    }
+    return result;
+  };
+
   const handleUpdateUser = async () => {
     if (!selectedUser) return;
 
     try {
-      // Update profile
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({
-          full_name: editForm.full_name,
-          subscription_tier: editForm.subscription_tier,
-          subscription_status: editForm.subscription_status,
-          account_type: editForm.account_type
-        })
-        .eq('user_id', selectedUser.user_id);
-
-      if (profileError) throw profileError;
-
-      // Update roles
-      // First, remove all existing roles for this user
-      await supabase
-        .from('user_roles')
-        .delete()
-        .eq('user_id', selectedUser.user_id);
-
-      // Then add the new role if it's admin
-      if (editForm.role === 'admin') {
-        const { error: roleError } = await supabase
-          .from('user_roles')
-          .insert([{ user_id: selectedUser.user_id, role: 'admin' }]);
-
-        if (roleError) throw roleError;
-      }
-
-      await logActivity('UPDATE_USER', selectedUser.user_id, {
-        changes: editForm,
-        user_email: selectedUser.email
+      await callAdminOperation('updateUser', selectedUser.user_id, {
+        full_name: editForm.full_name,
+        subscription_tier: editForm.subscription_tier,
+        subscription_status: editForm.subscription_status,
+        account_type: editForm.account_type,
+        role: editForm.role,
       });
 
       toast({
@@ -305,7 +302,7 @@ const AdminDashboard = () => {
       console.error('Error updating user:', error);
       toast({
         title: "Error",
-        description: "Failed to update user information.",
+        description: error instanceof Error ? error.message : "Failed to update user information.",
         variant: "destructive",
       });
     }
@@ -315,14 +312,7 @@ const AdminDashboard = () => {
     if (!selectedUser) return;
 
     try {
-      const { error } = await supabase.auth.admin.deleteUser(selectedUser.user_id);
-
-      if (error) throw error;
-
-      await logActivity('DELETE_USER', selectedUser.user_id, {
-        user_email: selectedUser.email,
-        user_name: selectedUser.full_name
-      });
+      await callAdminOperation('deleteUser', selectedUser.user_id);
 
       toast({
         title: "User Deleted",
@@ -336,7 +326,7 @@ const AdminDashboard = () => {
       console.error('Error deleting user:', error);
       toast({
         title: "Error",
-        description: "Failed to delete user account.",
+        description: error instanceof Error ? error.message : "Failed to delete user account.",
         variant: "destructive",
       });
     }
@@ -344,16 +334,7 @@ const AdminDashboard = () => {
 
   const handleResolveSecurityEvent = async (eventId: string) => {
     try {
-      const { error } = await supabase
-        .from('security_events')
-        .update({
-          resolved: true,
-          resolved_by: user.id,
-          resolved_at: new Date().toISOString()
-        })
-        .eq('id', eventId);
-
-      if (error) throw error;
+      await callAdminOperation('resolveSecurityEvent', null, { eventId });
 
       toast({
         title: "Event Resolved",
@@ -365,7 +346,7 @@ const AdminDashboard = () => {
       console.error('Error resolving security event:', error);
       toast({
         title: "Error",
-        description: "Failed to resolve security event.",
+        description: error instanceof Error ? error.message : "Failed to resolve security event.",
         variant: "destructive",
       });
     }
@@ -373,12 +354,7 @@ const AdminDashboard = () => {
 
   const handleDismissAlert = async (alertId: string) => {
     try {
-      const { error } = await supabase
-        .from('system_alerts')
-        .update({ is_dismissed: true })
-        .eq('id', alertId);
-
-      if (error) throw error;
+      await callAdminOperation('dismissAlert', null, { alertId });
       fetchSystemAlerts();
     } catch (error) {
       console.error('Error dismissing alert:', error);
