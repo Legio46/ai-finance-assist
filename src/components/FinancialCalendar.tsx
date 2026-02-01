@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar, ChevronLeft, ChevronRight, DollarSign, CreditCard, TrendingUp, Wallet, Plus, Trash2, Edit2, X } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, DollarSign, CreditCard, TrendingUp, Wallet, Plus, Trash2, Edit2, Sparkles, Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -41,6 +41,14 @@ interface CustomEvent {
   notes: string | null;
 }
 
+interface AISuggestion {
+  event_name: string;
+  event_type: 'bill' | 'income' | 'investment' | 'goal' | 'custom';
+  amount: number;
+  suggested_date: string;
+  reason: string;
+}
+
 const FinancialCalendar = () => {
   const { user } = useAuth();
   const { formatCurrency } = useLanguage();
@@ -58,6 +66,12 @@ const FinancialCalendar = () => {
     event_date: '',
     notes: '',
   });
+
+  // AI Suggestions state
+  const [aiSuggestions, setAiSuggestions] = useState<AISuggestion[]>([]);
+  const [loadingAI, setLoadingAI] = useState(false);
+  const [showAISuggestions, setShowAISuggestions] = useState(false);
+  const [addingSuggestion, setAddingSuggestion] = useState<number | null>(null);
 
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth();
@@ -176,6 +190,105 @@ const FinancialCalendar = () => {
       console.error('Error fetching financial events:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchAISuggestions = async () => {
+    if (!user) return;
+    setLoadingAI(true);
+    setShowAISuggestions(true);
+
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-calendar-suggestions`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session?.session?.access_token}`,
+          },
+          body: JSON.stringify({}),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (response.status === 429) {
+          toast({
+            title: "Rate Limited",
+            description: "Please wait a moment before trying again.",
+            variant: "destructive",
+          });
+          return;
+        }
+        if (response.status === 402) {
+          toast({
+            title: "AI Credits Exhausted",
+            description: "Please add credits to your workspace.",
+            variant: "destructive",
+          });
+          return;
+        }
+        throw new Error(errorData.error || 'Failed to get suggestions');
+      }
+
+      const data = await response.json();
+      setAiSuggestions(data.suggestions || []);
+
+      if (!data.suggestions?.length) {
+        toast({
+          title: "No Suggestions",
+          description: "AI couldn't find any events to suggest based on your data.",
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching AI suggestions:', error);
+      toast({
+        title: "Error",
+        description: "Failed to get AI suggestions. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoadingAI(false);
+    }
+  };
+
+  const addSuggestionToCalendar = async (suggestion: AISuggestion, index: number) => {
+    if (!user) return;
+    setAddingSuggestion(index);
+
+    try {
+      const { error } = await supabase
+        .from('calendar_events')
+        .insert({
+          user_id: user.id,
+          event_name: suggestion.event_name,
+          event_type: suggestion.event_type,
+          amount: suggestion.amount,
+          event_date: suggestion.suggested_date,
+          notes: suggestion.reason,
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Event Added",
+        description: `${suggestion.event_name} added to your calendar.`,
+      });
+
+      // Remove the suggestion from the list
+      setAiSuggestions(prev => prev.filter((_, i) => i !== index));
+      fetchFinancialEvents();
+    } catch (error) {
+      console.error('Error adding suggestion:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add event to calendar.",
+        variant: "destructive",
+      });
+    } finally {
+      setAddingSuggestion(null);
     }
   };
 
@@ -385,6 +498,20 @@ const FinancialCalendar = () => {
               </CardDescription>
             </div>
             <div className="flex items-center gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={fetchAISuggestions}
+                disabled={loadingAI}
+                className="gap-1"
+              >
+                {loadingAI ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Sparkles className="w-4 h-4" />
+                )}
+                <span className="hidden sm:inline">AI Suggest</span>
+              </Button>
               <Button variant="outline" size="sm" onClick={() => setShowAddForm(true)}>
                 <Plus className="w-4 h-4 mr-1" />
                 Add Event
@@ -406,6 +533,55 @@ const FinancialCalendar = () => {
             </div>
           ) : (
             <div className="space-y-4">
+              {/* AI Suggestions Panel */}
+              {showAISuggestions && aiSuggestions.length > 0 && (
+                <div className="border rounded-lg p-4 bg-accent/20">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-sm font-medium flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-primary" />
+                      AI Suggested Events
+                    </h4>
+                    <Button variant="ghost" size="sm" onClick={() => setShowAISuggestions(false)}>
+                      Dismiss
+                    </Button>
+                  </div>
+                  <div className="space-y-2">
+                    {aiSuggestions.map((suggestion, index) => (
+                      <div 
+                        key={index} 
+                        className="flex items-center justify-between p-3 bg-background rounded-lg border"
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-medium">{suggestion.event_name}</span>
+                            <Badge variant="outline" className="text-xs capitalize">
+                              {suggestion.event_type}
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(suggestion.suggested_date).toLocaleDateString()} • {suggestion.reason}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold">{formatCurrency(suggestion.amount)}</span>
+                          <Button
+                            size="sm"
+                            onClick={() => addSuggestionToCalendar(suggestion, index)}
+                            disabled={addingSuggestion === index}
+                          >
+                            {addingSuggestion === index ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Plus className="w-4 h-4" />
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Legend */}
               <div className="flex flex-wrap gap-4 text-xs">
                 <div className="flex items-center gap-1.5">

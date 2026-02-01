@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Calendar, AlertCircle, Trash2 } from 'lucide-react';
+import { Plus, Calendar, AlertCircle, Trash2, Check, RotateCcw } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/hooks/use-toast";
@@ -17,6 +17,7 @@ const RecurringPayments = () => {
   const { formatCurrency } = useLanguage();
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [processingPayment, setProcessingPayment] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({
     payment_name: '',
@@ -51,6 +52,111 @@ const RecurringPayments = () => {
       console.error('Error fetching recurring payments:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const calculateNextDueDate = (currentDueDate: string, frequency: string): string => {
+    const date = new Date(currentDueDate);
+    
+    switch (frequency) {
+      case 'weekly':
+        date.setDate(date.getDate() + 7);
+        break;
+      case 'bi-weekly':
+        date.setDate(date.getDate() + 14);
+        break;
+      case 'monthly':
+        date.setMonth(date.getMonth() + 1);
+        break;
+      case 'quarterly':
+        date.setMonth(date.getMonth() + 3);
+        break;
+      case 'annually':
+        date.setFullYear(date.getFullYear() + 1);
+        break;
+      default:
+        date.setMonth(date.getMonth() + 1);
+    }
+    
+    return date.toISOString().split('T')[0];
+  };
+
+  const markAsPaid = async (payment: any) => {
+    if (!user) return;
+    setProcessingPayment(payment.id);
+
+    try {
+      // 1. Log the payment as an expense
+      const { error: expenseError } = await supabase
+        .from('personal_expenses')
+        .insert({
+          user_id: user.id,
+          amount: payment.amount,
+          category: payment.category || 'Other',
+          description: `${payment.payment_name} (Recurring)`,
+          date: payment.next_due_date,
+          is_recurring: true,
+        });
+
+      if (expenseError) throw expenseError;
+
+      // 2. Calculate and update the next due date
+      const newDueDate = calculateNextDueDate(payment.next_due_date, payment.frequency);
+      
+      const { error: updateError } = await supabase
+        .from('recurring_payments')
+        .update({ next_due_date: newDueDate })
+        .eq('id', payment.id);
+
+      if (updateError) throw updateError;
+
+      toast({
+        title: "Payment Recorded",
+        description: `${payment.payment_name} marked as paid. Next due: ${new Date(newDueDate).toLocaleDateString()}`,
+      });
+
+      fetchPayments();
+    } catch (error) {
+      console.error('Error marking payment as paid:', error);
+      toast({
+        title: "Error",
+        description: "Failed to process payment",
+        variant: "destructive",
+      });
+    } finally {
+      setProcessingPayment(null);
+    }
+  };
+
+  const skipPayment = async (payment: any) => {
+    if (!user) return;
+    setProcessingPayment(payment.id);
+
+    try {
+      const newDueDate = calculateNextDueDate(payment.next_due_date, payment.frequency);
+      
+      const { error } = await supabase
+        .from('recurring_payments')
+        .update({ next_due_date: newDueDate })
+        .eq('id', payment.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Payment Skipped",
+        description: `${payment.payment_name} moved to ${new Date(newDueDate).toLocaleDateString()}`,
+      });
+
+      fetchPayments();
+    } catch (error) {
+      console.error('Error skipping payment:', error);
+      toast({
+        title: "Error",
+        description: "Failed to skip payment",
+        variant: "destructive",
+      });
+    } finally {
+      setProcessingPayment(null);
     }
   };
 
@@ -133,6 +239,7 @@ const RecurringPayments = () => {
 
   const getDueBadge = (daysUntil: number) => {
     if (daysUntil < 0) return <Badge variant="destructive">Overdue</Badge>;
+    if (daysUntil === 0) return <Badge variant="destructive">Due Today</Badge>;
     if (daysUntil <= 3) return <Badge variant="destructive">Due Soon</Badge>;
     if (daysUntil <= 7) return <Badge className="bg-orange-500">Upcoming</Badge>;
     return <Badge variant="secondary">Scheduled</Badge>;
@@ -233,6 +340,8 @@ const RecurringPayments = () => {
         <div className="space-y-3">
           {payments.map((payment) => {
             const daysUntil = getDaysUntilDue(payment.next_due_date);
+            const isProcessing = processingPayment === payment.id;
+            const isDueOrOverdue = daysUntil <= 0;
             
             return (
               <div key={payment.id} className="flex justify-between items-center p-4 border rounded-lg">
@@ -247,12 +356,42 @@ const RecurringPayments = () => {
                     <span>• {payment.frequency}</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="font-bold">{formatCurrency(payment.amount)}</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-bold mr-2">{formatCurrency(payment.amount)}</span>
+                  
+                  {/* Mark as Paid button - prominent when due/overdue */}
+                  <Button
+                    variant={isDueOrOverdue ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => markAsPaid(payment)}
+                    disabled={isProcessing}
+                    className={isDueOrOverdue ? "bg-success hover:bg-success/90" : ""}
+                    title="Mark as paid and log expense"
+                  >
+                    {isProcessing ? (
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current" />
+                    ) : (
+                      <Check className="w-4 h-4" />
+                    )}
+                    <span className="ml-1 hidden sm:inline">Paid</span>
+                  </Button>
+
+                  {/* Skip button */}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => skipPayment(payment)}
+                    disabled={isProcessing}
+                    title="Skip this payment cycle"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                  </Button>
+
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => deletePayment(payment.id)}
+                    disabled={isProcessing}
                   >
                     <Trash2 className="w-4 h-4 text-destructive" />
                   </Button>
