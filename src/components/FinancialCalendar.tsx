@@ -18,6 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import ExportDataButton from './ExportDataButton';
 
 interface CalendarEvent {
   id: string;
@@ -201,7 +202,7 @@ const FinancialCalendar = () => {
     try {
       const { data: session } = await supabase.auth.getSession();
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-calendar-suggestions`,
+        `https://ehohaixttjnvoylviuda.supabase.co/functions/v1/ai-calendar-suggestions`,
         {
           method: 'POST',
           headers: {
@@ -498,6 +499,7 @@ const FinancialCalendar = () => {
               </CardDescription>
             </div>
             <div className="flex items-center gap-2">
+              <ExportDataButton dataType="calendar" />
               <Button 
                 variant="outline" 
                 size="sm" 

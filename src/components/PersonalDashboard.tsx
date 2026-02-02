@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Plus, CreditCard, TrendingUp, TrendingDown, PieChart, Camera, Upload, X, Eye, Wallet, Target, Calendar, LineChart, RefreshCcw, ArrowLeft, ChevronRight, Lock } from 'lucide-react';
+import { Plus, CreditCard, TrendingUp, TrendingDown, PieChart, Camera, Upload, X, Eye, Wallet, Target, Calendar, LineChart, RefreshCcw, ArrowLeft, ChevronRight, Lock, Calculator } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/hooks/use-toast";
@@ -19,8 +19,10 @@ import InvestmentTracker from '@/components/InvestmentTracker';
 import FinancialGoals from '@/components/FinancialGoals';
 import FinancialCalendar from '@/components/FinancialCalendar';
 import ReceiptImage from '@/components/ReceiptImage';
+import FinancialPlanner from '@/components/FinancialPlanner';
+import ExportDataButton from '@/components/ExportDataButton';
 
-type CategoryView = 'overview' | 'expenses' | 'credit-cards' | 'income-budget' | 'recurring-payments' | 'investments' | 'goals' | 'calendar';
+type CategoryView = 'overview' | 'expenses' | 'credit-cards' | 'income-budget' | 'recurring-payments' | 'investments' | 'goals' | 'calendar' | 'planner';
 
 const PersonalDashboard = () => {
   const { user, profile } = useAuth();
@@ -316,6 +318,14 @@ const PersonalDashboard = () => {
       icon: Calendar, 
       title: 'Financial Calendar', 
       description: 'View bills, paydays, and important financial dates',
+      badge: 'Personal Pro',
+      locked: !hasProFeatures
+    },
+    { 
+      id: 'planner' as CategoryView, 
+      icon: Calculator, 
+      title: 'Financial Planner', 
+      description: 'Advanced projections, scenarios, and goal tracking',
       badge: 'Personal Pro',
       locked: !hasProFeatures
     },
@@ -615,6 +625,9 @@ const PersonalDashboard = () => {
 
       case 'calendar':
         return <FinancialCalendar />;
+
+      case 'planner':
+        return <FinancialPlanner />;
 
       default:
         return null;
