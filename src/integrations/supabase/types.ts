@@ -478,6 +478,45 @@ export type Database = {
         }
         Relationships: []
       }
+      platform_updates: {
+        Row: {
+          badge_color: string | null
+          badge_type: string
+          created_at: string
+          description: string | null
+          features: Json | null
+          id: string
+          is_published: boolean
+          release_date: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          badge_color?: string | null
+          badge_type?: string
+          created_at?: string
+          description?: string | null
+          features?: Json | null
+          id?: string
+          is_published?: boolean
+          release_date?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          badge_color?: string | null
+          badge_type?: string
+          created_at?: string
+          description?: string | null
+          features?: Json | null
+          id?: string
+          is_published?: boolean
+          release_date?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           account_type: string | null

@@ -64,6 +64,7 @@ const AdminDashboard = () => {
   const [systemAlerts, setSystemAlerts] = useState([]);
   const [securityEvents, setSecurityEvents] = useState([]);
   const [activityLogs, setActivityLogs] = useState([]);
+  const [platformUpdates, setPlatformUpdates] = useState<any[]>([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedUserRoles, setSelectedUserRoles] = useState<string[]>([]);
   const [showEditDialog, setShowEditDialog] = useState(false);
@@ -110,6 +111,23 @@ const AdminDashboard = () => {
       fetchSystemAlerts();
       fetchSecurityEvents();
       fetchActivityLogs();
+      fetchPlatformUpdates();
+
+      // Subscribe to realtime updates for platform_updates
+      const channel = supabase
+        .channel('platform_updates_changes')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'platform_updates' },
+          () => {
+            fetchPlatformUpdates();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
     }
   }, [isAdmin]);
 
@@ -194,6 +212,22 @@ const AdminDashboard = () => {
       setActivityLogs(data || []);
     } catch (error) {
       console.error('Error fetching activity logs:', error);
+    }
+  };
+
+  const fetchPlatformUpdates = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('platform_updates')
+        .select('*')
+        .eq('is_published', true)
+        .order('release_date', { ascending: false })
+        .limit(10);
+      
+      if (error) throw error;
+      setPlatformUpdates(data || []);
+    } catch (error) {
+      console.error('Error fetching platform updates:', error);
     }
   };
 
@@ -1098,146 +1132,74 @@ const AdminDashboard = () => {
                   <Sparkles className="h-5 w-5 text-primary" />
                   <CardTitle>What's New</CardTitle>
                 </div>
-                <CardDescription>Latest features and improvements to the platform</CardDescription>
+                <CardDescription>Latest features and improvements to the platform (auto-refreshes)</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* Latest Update */}
-                <div className="border-l-4 border-primary pl-4 py-2">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Badge className="bg-gradient-primary text-white">NEW</Badge>
-                    <span className="text-sm text-muted-foreground">January 2026</span>
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2">Investment Portfolio - Category Breakdown</h3>
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <TrendingUp className="h-5 w-5 text-primary mt-0.5" />
-                      <div>
-                        <p className="font-medium">Separate Category Totals</p>
-                        <p className="text-sm text-muted-foreground">
-                          Investments are now grouped by type (Crypto, Stocks, Real Estate, ETF, etc.) 
-                          with separate totals and gain/loss for each category.
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Coins className="h-5 w-5 text-primary mt-0.5" />
-                      <div>
-                        <p className="font-medium">Category Summary Cards</p>
-                        <p className="text-sm text-muted-foreground">
-                          Color-coded cards show value, gain/loss, and asset count for each investment type at a glance.
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <LineChartIcon className="h-5 w-5 text-primary mt-0.5" />
-                      <div>
-                        <p className="font-medium">Organized Investment View</p>
-                        <p className="text-sm text-muted-foreground">
-                          Investments are displayed in collapsible sections by category with clear headers and statistics.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                {platformUpdates.length === 0 ? (
+                  <p className="text-muted-foreground text-center py-8">No updates yet</p>
+                ) : (
+                  platformUpdates.map((update, index) => {
+                    const IconMap: Record<string, any> = {
+                      TrendingUp,
+                      Coins,
+                      LineChart: LineChartIcon,
+                      Shield,
+                      Lock,
+                      Zap,
+                      Activity,
+                      Sparkles,
+                    };
+                    
+                    const getBadgeStyle = (badgeType: string) => {
+                      switch (badgeType) {
+                        case 'NEW':
+                          return 'bg-gradient-primary text-white';
+                        case 'FEATURE':
+                          return 'bg-green-500 text-white';
+                        case 'SECURITY':
+                          return 'bg-orange-500 text-white';
+                        default:
+                          return '';
+                      }
+                    };
 
-                {/* Previous Update */}
-                <div className="border-l-4 border-muted pl-4 py-2">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Badge variant="secondary">UPDATE</Badge>
-                    <span className="text-sm text-muted-foreground">January 2026</span>
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2">Investment Portfolio - Live Pricing</h3>
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <Coins className="h-5 w-5 text-muted-foreground mt-0.5" />
-                      <div>
-                        <p className="font-medium">Auto-Fetch Crypto & Stock Prices</p>
-                        <p className="text-sm text-muted-foreground">
-                          Current prices are now automatically fetched when adding new crypto or stock investments. 
-                          No more manual price entry required!
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <LineChartIcon className="h-5 w-5 text-muted-foreground mt-0.5" />
-                      <div>
-                        <p className="font-medium">Yahoo Finance Integration</p>
-                        <p className="text-sm text-muted-foreground">
-                          Real-time stock prices from Yahoo Finance for popular stocks like AAPL, MSFT, GOOGL, 
-                          AMZN, NVDA, and more.
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Zap className="h-5 w-5 text-muted-foreground mt-0.5" />
-                      <div>
-                        <p className="font-medium">Quick Symbol Selection</p>
-                        <p className="text-sm text-muted-foreground">
-                          One-click buttons for popular crypto (BTC, ETH, SOL, XRP, ADA) and 
-                          stocks (AAPL, MSFT, GOOGL, AMZN, NVDA) that instantly fetch current prices.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                    const features = update.features || [];
+                    const releaseDate = new Date(update.release_date);
+                    const formattedDate = releaseDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
-                {/* Previous Update */}
-                <div className="border-l-4 border-muted pl-4 py-2">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Badge variant="secondary">UPDATE</Badge>
-                    <span className="text-sm text-muted-foreground">January 2026</span>
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2">Security Enhancements</h3>
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <Shield className="h-5 w-5 text-muted-foreground mt-0.5" />
-                      <div>
-                        <p className="font-medium">Enhanced CORS Protection</p>
-                        <p className="text-sm text-muted-foreground">
-                          All edge functions now have improved origin validation for better security.
-                        </p>
+                    return (
+                      <div 
+                        key={update.id} 
+                        className={`border-l-4 ${index === 0 ? 'border-primary' : 'border-muted'} pl-4 py-2`}
+                      >
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge className={getBadgeStyle(update.badge_type)} variant={update.badge_type === 'UPDATE' ? 'secondary' : undefined}>
+                            {update.badge_type}
+                          </Badge>
+                          <span className="text-sm text-muted-foreground">{formattedDate}</span>
+                        </div>
+                        <h3 className="text-lg font-semibold mb-2">{update.title}</h3>
+                        {update.description && (
+                          <p className="text-sm text-muted-foreground mb-3">{update.description}</p>
+                        )}
+                        <div className="space-y-3">
+                          {features.map((feature: any, featureIndex: number) => {
+                            const IconComponent = IconMap[feature.icon] || Sparkles;
+                            return (
+                              <div key={featureIndex} className="flex items-start gap-3">
+                                <IconComponent className={`h-5 w-5 ${index === 0 ? 'text-primary' : 'text-muted-foreground'} mt-0.5`} />
+                                <div>
+                                  <p className="font-medium">{feature.title}</p>
+                                  <p className="text-sm text-muted-foreground">{feature.description}</p>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Lock className="h-5 w-5 text-muted-foreground mt-0.5" />
-                      <div>
-                        <p className="font-medium">Stronger Password Requirements</p>
-                        <p className="text-sm text-muted-foreground">
-                          Password changes now require uppercase, lowercase, numbers, and special characters.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Feature Update */}
-                <div className="border-l-4 border-muted pl-4 py-2">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Badge variant="secondary">FEATURE</Badge>
-                    <span className="text-sm text-muted-foreground">December 2025</span>
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2">Live Crypto Charts</h3>
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <TrendingUp className="h-5 w-5 text-muted-foreground mt-0.5" />
-                      <div>
-                        <p className="font-medium">7-Day Price Sparklines</p>
-                        <p className="text-sm text-muted-foreground">
-                          Crypto investments now display 7-day price history sparklines with live data from CoinGecko.
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Activity className="h-5 w-5 text-muted-foreground mt-0.5" />
-                      <div>
-                        <p className="font-medium">24h Price Change Indicators</p>
-                        <p className="text-sm text-muted-foreground">
-                          See real-time 24-hour price changes for all your crypto holdings.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                    );
+                  })
+                )}
               </CardContent>
             </Card>
           </TabsContent>
