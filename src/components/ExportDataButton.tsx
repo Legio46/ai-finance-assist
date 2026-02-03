@@ -244,13 +244,13 @@ const ExportDataButton: React.FC<ExportDataButtonProps> = ({ dataType, className
 
       if (dataType === 'all') {
         // Export each type separately
-        exports.forEach(exp => {
+        for (const exp of exports) {
           if (format === 'csv') {
             exportToCSV(exp.data, `${exp.filename}_${timestamp}`);
           } else {
-            exportToPDF(exp.data, `${exp.filename}_${timestamp}`);
+            await exportToPDF(exp.data, `${exp.filename}_${timestamp}`);
           }
-        });
+        }
         toast({
           title: 'Export Complete',
           description: `${exports.length} files exported as ${format.toUpperCase()}.`,
@@ -262,7 +262,7 @@ const ExportDataButton: React.FC<ExportDataButtonProps> = ({ dataType, className
           if (format === 'csv') {
             exportToCSV(exp.data, `${exp.filename}_${timestamp}`);
           } else {
-            exportToPDF(exp.data, `${exp.filename}_${timestamp}`);
+            await exportToPDF(exp.data, `${exp.filename}_${timestamp}`);
           }
           toast({
             title: 'Export Complete',
