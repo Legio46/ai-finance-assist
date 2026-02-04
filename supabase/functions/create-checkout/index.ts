@@ -88,7 +88,7 @@ Deno.serve(async (req: Request) => {
     const customerId = customers.data.length > 0 ? customers.data[0].id : undefined;
 
     const prices = {
-      basic: { amount: 800, name: "Personal Basic" },
+      basic: { amount: 500, name: "Personal Basic" },
       pro: { amount: 1000, name: "Personal Pro" },
     };
 

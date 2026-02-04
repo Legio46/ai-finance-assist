@@ -528,7 +528,7 @@ const AdminDashboard = () => {
                   <p className="text-sm font-medium text-blue-600">Basic Plan</p>
                   <p className="text-2xl font-bold">{stats.basicUsers}</p>
                 </div>
-                <Badge className="bg-blue-500">{formatCurrency(8)}/mo</Badge>
+                <Badge className="bg-blue-500">{formatCurrency(5)}/mo</Badge>
               </div>
             </CardContent>
           </Card>
