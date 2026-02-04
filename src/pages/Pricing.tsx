@@ -52,7 +52,7 @@ const Pricing = () => {
               <CardTitle className="text-2xl">Personal Basic</CardTitle>
               <CardDescription>Perfect for individuals starting out</CardDescription>
               <div className="mt-4">
-                <span className="text-4xl font-bold">{formatCurrency(8)}</span>
+                <span className="text-4xl font-bold">{formatCurrency(5)}</span>
                 <span className="text-muted-foreground">/{t('monthly')}</span>
               </div>
               <Badge variant="secondary" className="w-fit mx-auto mt-2">{t('dayFreeTrial')}</Badge>
