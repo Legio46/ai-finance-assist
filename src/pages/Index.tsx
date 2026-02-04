@@ -12,9 +12,11 @@ import {
   Star,
   Check,
   ArrowRight,
-  BarChart3
+  BarChart3,
+  Lock
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import SecurityBadge from '@/components/SecurityBadge';
 
 const Index = () => {
   const { t } = useLanguage();
@@ -61,9 +63,12 @@ const Index = () => {
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </Link>
-            <p className="text-sm text-muted-foreground">
-              {t('noCreditCard')}
-            </p>
+            <div className="flex flex-col items-center gap-2">
+              <p className="text-sm text-muted-foreground">
+                {t('noCreditCard')}
+              </p>
+              <SecurityBadge variant="compact" />
+            </div>
           </div>
 
           {/* Features Overview */}
