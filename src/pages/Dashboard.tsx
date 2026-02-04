@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import SecuritySettings from '@/components/SecuritySettings';
+import SecurityBadge from '@/components/SecurityBadge';
 import { Badge } from '@/components/ui/badge';
 import { 
   BarChart3, 
@@ -64,6 +65,7 @@ const Dashboard = () => {
             <Badge variant={subscriptionStatus === 'free' ? 'secondary' : 'default'} className="capitalize">
               {subscriptionStatus === 'free' && isTrialActive ? 'Trial' : subscriptionStatus}
             </Badge>
+            <SecurityBadge variant="compact" />
           </div>
           
           <div className="flex items-center space-x-4">
@@ -252,7 +254,8 @@ const Dashboard = () => {
             />
           </TabsContent>
 
-          <TabsContent value="security">
+          <TabsContent value="security" className="space-y-6">
+            <SecurityBadge variant="full" />
             <SecuritySettings />
           </TabsContent>
         </Tabs>

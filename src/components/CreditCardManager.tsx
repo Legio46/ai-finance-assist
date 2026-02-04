@@ -9,7 +9,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { CreditCard, Plus, Trash2, Edit } from 'lucide-react';
+import { CreditCard, Plus, Trash2, Edit, Lock } from 'lucide-react';
+import SecurityBadge from '@/components/SecurityBadge';
 
 interface CreditCardData {
   id: string;
@@ -178,7 +179,10 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ cardType }) => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold capitalize">{cardType} Credit Cards</h3>
+        <div className="flex items-center gap-3">
+          <h3 className="text-lg font-semibold capitalize">{cardType} Credit Cards</h3>
+          <SecurityBadge variant="inline" />
+        </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={() => {
@@ -296,7 +300,10 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ cardType }) => {
               <CardHeader className="pb-3">
                 <div className="flex justify-between items-start">
                   <div>
-                    <CardTitle className="text-lg">{card.card_name}</CardTitle>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      {card.card_name}
+                      <Lock className="h-3 w-3 text-green-600" />
+                    </CardTitle>
                     <p className="text-sm text-muted-foreground">
                       •••• {card.last_four_digits} • {card.bank_name}
                     </p>

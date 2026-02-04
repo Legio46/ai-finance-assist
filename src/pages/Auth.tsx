@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import SecurityBadge from '@/components/SecurityBadge';
 
 const Auth = () => {
   const { user, signIn, signUp, resetPassword, loading } = useAuth();
@@ -385,9 +386,12 @@ const Auth = () => {
           </div>
         )}
 
-        <p className="text-center text-sm text-muted-foreground">
-          Start your 7-day free trial today!
-        </p>
+        <div className="text-center space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Start your 7-day free trial today!
+          </p>
+          <SecurityBadge variant="compact" className="justify-center" />
+        </div>
       </div>
     </div>
   );
