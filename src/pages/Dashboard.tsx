@@ -23,6 +23,7 @@ import {
 import BusinessDashboard from '@/components/BusinessDashboard';
 import PersonalDashboard from '@/components/PersonalDashboard';
 import AIAdvisor from '@/components/AIAdvisor';
+import DashboardCharts from '@/components/DashboardCharts';
 import { supabase } from '@/integrations/supabase/client';
 import LanguageSelector from '@/components/LanguageSelector';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -178,6 +179,9 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Dashboard Charts */}
+            <DashboardCharts />
 
             {/* Quick Actions */}
             <Card>
