@@ -7,8 +7,10 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Copy, Users, DollarSign, TrendingUp } from 'lucide-react';
+import { Copy, Users, DollarSign, TrendingUp, Calendar, UserPlus } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { format } from 'date-fns';
 
 interface AffiliateData {
   id: string;
@@ -18,12 +20,22 @@ interface AffiliateData {
   referrals_count: number;
 }
 
+interface ReferralData {
+  id: string;
+  created_at: string;
+  commission_earned: number;
+  subscription_tier: string | null;
+  referred_user_id: string;
+}
+
 const Affiliate = () => {
   const { user, loading } = useAuth();
   const { toast } = useToast();
   const { t } = useLanguage();
   const [affiliateData, setAffiliateData] = useState<AffiliateData | null>(null);
+  const [referrals, setReferrals] = useState<ReferralData[]>([]);
   const [isJoining, setIsJoining] = useState(false);
+  const [loadingReferrals, setLoadingReferrals] = useState(false);
 
   const fetchAffiliateData = async () => {
     if (!user) return;
@@ -40,12 +52,35 @@ const Affiliate = () => {
       }
 
       setAffiliateData(data);
+      
+      // Fetch referrals if affiliate exists
+      if (data) {
+        fetchReferrals(data.id);
+      }
     } catch (error: any) {
       toast({
         title: "Error",
         description: "Failed to fetch affiliate data",
         variant: "destructive",
       });
+    }
+  };
+
+  const fetchReferrals = async (affiliateId: string) => {
+    setLoadingReferrals(true);
+    try {
+      const { data, error } = await supabase
+        .from('referrals')
+        .select('*')
+        .eq('affiliate_id', affiliateId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setReferrals(data || []);
+    } catch (error: any) {
+      console.error('Error fetching referrals:', error);
+    } finally {
+      setLoadingReferrals(false);
     }
   };
 
@@ -302,6 +337,60 @@ const Affiliate = () => {
                     <li>• When someone signs up using your link, you earn commission</li>
                   </ul>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Referral History */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <UserPlus className="h-5 w-5" />
+                  Referral History
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {loadingReferrals ? (
+                  <div className="flex justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                  </div>
+                ) : referrals.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>No referrals yet. Share your link to start earning!</p>
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Subscription</TableHead>
+                        <TableHead className="text-right">Commission</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {referrals.map((referral) => (
+                        <TableRow key={referral.id}>
+                          <TableCell className="flex items-center gap-2">
+                            <Calendar className="h-4 w-4 text-muted-foreground" />
+                            {format(new Date(referral.created_at), 'MMM d, yyyy')}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={referral.subscription_tier !== 'free' ? 'default' : 'secondary'}>
+                              {referral.subscription_tier !== 'free' ? 'Converted' : 'Pending'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="capitalize">
+                            {referral.subscription_tier || 'Free'}
+                          </TableCell>
+                          <TableCell className="text-right font-medium">
+                            ${(referral.commission_earned || 0).toFixed(2)}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
               </CardContent>
             </Card>
           </div>
