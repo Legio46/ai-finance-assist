@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Target, Users, Lightbulb, Award } from "lucide-react";
+import { Target, Users, Lightbulb, Award, Globe, Clock } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { Badge } from "@/components/ui/badge";
 
 const About = () => {
   const { t } = useLanguage();
@@ -94,20 +95,37 @@ const About = () => {
         </section>
 
         {/* Global Reach */}
-        <section>
+        <section className="mb-16">
           <div className="text-center">
+            <Globe className="w-16 h-16 mx-auto text-primary mb-6" />
             <h2 className="text-3xl font-bold mb-6">{t('globalReach')}</h2>
-            <p className="text-lg text-muted-foreground mb-8">
-              {t('currentlyServing')}
+            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+              {t('globalReachDesc')}
             </p>
-            <div className="flex justify-center gap-8 text-sm text-muted-foreground">
-              <span>🇸🇰 Slovakia</span>
-              <span>🇺🇸 United States</span>
-              <span>🇬🇧 United Kingdom</span>
-              <span>🇩🇪 Germany</span>
-              <span>🇫🇷 France</span>
+            <div className="flex justify-center">
+              <span className="text-6xl">🌍</span>
             </div>
           </div>
+        </section>
+
+        {/* Tax Optimization Coming Soon */}
+        <section>
+          <Card className="max-w-4xl mx-auto border-dashed border-2">
+            <CardHeader className="text-center">
+              <div className="flex justify-center mb-4">
+                <Badge variant="secondary" className="text-sm px-4 py-1">
+                  <Clock className="w-4 h-4 mr-2 inline" />
+                  {t('comingSoon')}
+                </Badge>
+              </div>
+              <CardTitle className="text-2xl">{t('taxOptimization')}</CardTitle>
+            </CardHeader>
+            <CardContent className="text-center">
+              <p className="text-muted-foreground">
+                {t('taxOptimizationDesc')}
+              </p>
+            </CardContent>
+          </Card>
         </section>
       </div>
     </div>
