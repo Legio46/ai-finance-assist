@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -20,6 +20,16 @@ import SecurityBadge from '@/components/SecurityBadge';
 
 const Index = () => {
   const { t } = useLanguage();
+  const [searchParams] = useSearchParams();
+  
+  // Capture referral code from URL and store it
+  useEffect(() => {
+    const refCode = searchParams.get('ref');
+    if (refCode) {
+      localStorage.setItem('referral_code', refCode);
+      console.log('Referral code captured:', refCode);
+    }
+  }, [searchParams]);
   
   return (
     <div className="min-h-screen bg-background">
