@@ -188,7 +188,7 @@ const translations: Record<string, Record<string, string>> = {
     faqChangeQ: 'Can I change or cancel my plan?',
     faqChangeA: 'Absolutely. You can upgrade, downgrade, or cancel your subscription at any time from your account settings.',
     faqCountriesQ: 'Which countries are supported?',
-    faqCountriesA: 'We currently support tax calculations and financial management for Slovakia, USA, UK, Germany, and France, with more countries coming soon.',
+    faqCountriesA: 'We serve users globally. Our platform supports multiple currencies and languages to help you manage your finances wherever you are.',
     faqSecurityQ: 'How secure is my financial data?',
     faqSecurityA: 'We use bank-grade encryption and security measures to protect your data. Your information is encrypted at rest and in transit, and we never share your data with third parties.',
     
@@ -411,7 +411,7 @@ const translations: Record<string, Record<string, string>> = {
     faqChangeQ: 'Môžem zmeniť alebo zrušiť svoj plán?',
     faqChangeA: 'Samozrejme. Môžete kedykoľvek upgradovať, downgradovať alebo zrušiť svoje predplatné v nastaveniach účtu.',
     faqCountriesQ: 'Ktoré krajiny sú podporované?',
-    faqCountriesA: 'Momentálne podporujeme daňové výpočty a finančné riadenie pre Slovensko, USA, UK, Nemecko a Francúzsko, ďalšie krajiny čoskoro pribudnú.',
+    faqCountriesA: 'Slúžime používateľom po celom svete. Naša platforma podporuje viacero mien a jazykov, aby vám pomohla spravovať vaše financie kdekoľvek ste.',
     faqSecurityQ: 'Ako bezpečné sú moje finančné údaje?',
     faqSecurityA: 'Používame bankové šifrovanie a bezpečnostné opatrenia na ochranu vašich údajov. Vaše informácie sú šifrované v pokoji aj pri prenose a nikdy ich nezdieľame s tretími stranami.',
     
@@ -634,7 +634,7 @@ const translations: Record<string, Record<string, string>> = {
     faqChangeQ: 'Kann ich meinen Plan ändern oder kündigen?',
     faqChangeA: 'Auf jeden Fall. Sie können Ihr Abonnement jederzeit in Ihren Kontoeinstellungen upgraden, downgraden oder kündigen.',
     faqCountriesQ: 'Welche Länder werden unterstützt?',
-    faqCountriesA: 'Wir unterstützen derzeit Steuerberechnungen und Finanzverwaltung für die Slowakei, USA, Großbritannien, Deutschland und Frankreich. Weitere Länder folgen in Kürze.',
+    faqCountriesA: 'Wir bedienen Benutzer weltweit. Unsere Plattform unterstützt mehrere Währungen und Sprachen, um Ihnen bei der Verwaltung Ihrer Finanzen zu helfen, wo immer Sie sind.',
     faqSecurityQ: 'Wie sicher sind meine Finanzdaten?',
     faqSecurityA: 'Wir verwenden Verschlüsselung und Sicherheitsmaßnahmen auf Bankniveau, um Ihre Daten zu schützen. Ihre Informationen werden im Ruhezustand und während der Übertragung verschlüsselt, und wir teilen Ihre Daten niemals mit Dritten.',
     
@@ -857,7 +857,7 @@ const translations: Record<string, Record<string, string>> = {
     faqChangeQ: 'Puis-je modifier ou annuler mon forfait?',
     faqChangeA: 'Absolument. Vous pouvez mettre à niveau, rétrograder ou annuler votre abonnement à tout moment depuis les paramètres de votre compte.',
     faqCountriesQ: 'Quels pays sont pris en charge?',
-    faqCountriesA: 'Nous prenons actuellement en charge les calculs fiscaux et la gestion financière pour la Slovaquie, les États-Unis, le Royaume-Uni, l\'Allemagne et la France, avec d\'autres pays à venir bientôt.',
+    faqCountriesA: 'Nous servons des utilisateurs dans le monde entier. Notre plateforme prend en charge plusieurs devises et langues pour vous aider à gérer vos finances où que vous soyez.',
     faqSecurityQ: 'Dans quelle mesure mes données financières sont-elles sécurisées?',
     faqSecurityA: 'Nous utilisons le chiffrement et des mesures de sécurité de niveau bancaire pour protéger vos données. Vos informations sont chiffrées au repos et en transit, et nous ne partageons jamais vos données avec des tiers.',
     

@@ -174,23 +174,8 @@ const Pricing = () => {
                 Notify Me
               </Button>
             </CardContent>
-          </Card>
-        </div>
-
-        {/* Free Currency Converter CTA */}
-        <Card className="max-w-4xl mx-auto mb-16 bg-gradient-to-br from-primary/10 to-accent/10 border-primary/20">
-          <CardContent className="text-center py-8">
-            <h3 className="text-2xl font-bold mb-4">
-              Need a Currency Converter? It's Free!
-            </h3>
-            <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-              Access our real-time currency converter for all major currencies and cryptocurrencies—no signup required.
-            </p>
-            <Link to="/converter">
-              <Button size="lg" variant="outline">Try Free Converter</Button>
-            </Link>
-          </CardContent>
         </Card>
+        </div>
 
         {/* FAQ Section */}
         <section className="max-w-3xl mx-auto">
