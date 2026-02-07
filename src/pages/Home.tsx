@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Link } from "react-router-dom";
 import { Calculator, TrendingUp, DollarSign, Shield, Users, Globe } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import logo from "@/assets/logo.png";
 
 const Home = () => {
   const { t } = useLanguage();
@@ -11,6 +12,7 @@ const Home = () => {
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20">
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-16 text-center">
+        <img src={logo} alt="Legio Finance" className="h-24 mx-auto mb-6" />
         <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
           {t('heroTitle')}
         </h1>
