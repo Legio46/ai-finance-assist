@@ -38,9 +38,8 @@ const Index = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              FinanceAI
+              Legio Finance
             </h1>
-            <Badge className="bg-gradient-primary text-white">Beta</Badge>
           </div>
           
           <div className="flex items-center space-x-4">
