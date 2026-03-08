@@ -27,6 +27,7 @@ import DashboardCharts from '@/components/DashboardCharts';
 import { supabase } from '@/integrations/supabase/client';
 import LanguageSelector from '@/components/LanguageSelector';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { useToast } from '@/hooks/use-toast';
 
 const Dashboard = () => {
   const { user, profile, loading, signOut } = useAuth();
