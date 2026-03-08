@@ -34,13 +34,15 @@ Deno.serve(async (req: Request) => {
 
     const token = authHeader.replace("Bearer ", "");
 
-    // Create service-role client for admin operations
-    const supabaseClient = createClient(supabaseUrl, supabaseServiceKey, {
-      auth: { persistSession: false },
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+
+    // User-context client for JWT validation
+    const userClient = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
     });
 
-    // Validate JWT by fetching user with the token
-    const { data: userData, error: userError } = await supabaseClient.auth.getUser(token);
+    // Validate JWT
+    const { data: userData, error: userError } = await userClient.auth.getUser(token);
 
     if (userError || !userData.user?.email) {
       console.error("Auth error:", userError?.message);
@@ -52,6 +54,11 @@ Deno.serve(async (req: Request) => {
 
     const user = userData.user;
     console.log("User authenticated:", user.id, user.email);
+
+    // Service-role client for DB writes (bypasses RLS)
+    const supabaseClient = createClient(supabaseUrl, supabaseServiceKey, {
+      auth: { persistSession: false },
+    });
 
     const stripe = await import("npm:stripe@14.21.0");
     const stripeClient = new stripe.default(stripeSecretKey, {
