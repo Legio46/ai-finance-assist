@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { DatePicker } from '@/components/ui/date-picker';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { CreditCard, Plus, Trash2, Edit, Lock } from 'lucide-react';
 import SecurityBadge from '@/components/SecurityBadge';
