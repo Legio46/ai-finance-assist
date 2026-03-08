@@ -83,3 +83,6 @@ verify_jwt = true
 
 [functions.ai-personal-insights]
 verify_jwt = true
+
+[functions.ai-planner-suggestions]
+verify_jwt = true
