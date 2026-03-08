@@ -465,9 +465,14 @@ const PersonalDashboard = () => {
   return (
     <div className="flex gap-0 min-h-[calc(100vh-200px)]">
       {/* Sidebar */}
-      <aside className="w-64 shrink-0 border-r border-border bg-card/50">
+      <aside
+        className={cn(
+          "shrink-0 border-r border-border bg-card/50 transition-all duration-300 overflow-hidden",
+          sidebarOpen ? "w-64" : "w-0 border-r-0"
+        )}
+      >
         <ScrollArea className="h-[calc(100vh-200px)]">
-          <div className="p-4 space-y-6">
+          <div className="p-4 space-y-6 w-64">
             {/* Overview */}
             <div>
               <button
@@ -509,6 +514,22 @@ const PersonalDashboard = () => {
 
       {/* Main Content */}
       <main className="flex-1 min-w-0 p-6 overflow-auto">
+        {/* Toggle sidebar button */}
+        <div className="mb-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="gap-2 text-muted-foreground hover:text-foreground"
+          >
+            {sidebarOpen ? (
+              <><PanelLeftClose className="w-4 h-4" /> Hide menu</>
+            ) : (
+              <><PanelLeftOpen className="w-4 h-4" /> Show menu</>
+            )}
+          </Button>
+        </div>
+
         {activeView === 'overview' ? renderOverview() : (
           <div className="space-y-6">
             {/* Section header */}
