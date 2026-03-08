@@ -654,8 +654,6 @@ const FinancialCalendar = () => {
                               event.type === 'goal' && "bg-warning/15 text-warning",
                               event.type === 'custom' && "bg-accent text-accent-foreground"
                             )}
-                            title={event.name}
-                            )}
                           >
                             <span className="truncate">{event.name}</span>
                           </div>
