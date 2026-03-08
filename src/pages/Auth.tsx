@@ -259,6 +259,14 @@ const Auth = () => {
               </TabsList>
               
               <TabsContent value="signin">
+                {isLocked && (
+                  <Alert variant="destructive" className="mb-4">
+                    <Lock className="h-4 w-4" />
+                    <AlertDescription>
+                      Account temporarily locked. Try again in {remainingLockSeconds} seconds.
+                    </AlertDescription>
+                  </Alert>
+                )}
                 <form onSubmit={handleSignIn} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="signin-email">Email</Label>
@@ -269,6 +277,8 @@ const Auth = () => {
                       value={signInData.email}
                       onChange={(e) => setSignInData({ ...signInData, email: e.target.value })}
                       required
+                      maxLength={255}
+                      disabled={isLocked}
                     />
                   </div>
                   <div className="space-y-2">
@@ -280,6 +290,8 @@ const Auth = () => {
                       value={signInData.password}
                       onChange={(e) => setSignInData({ ...signInData, password: e.target.value })}
                       required
+                      maxLength={128}
+                      disabled={isLocked}
                     />
                   </div>
                   <div className="flex items-center justify-between">
@@ -292,12 +304,15 @@ const Auth = () => {
                       />
                       <span className="text-sm text-muted-foreground">Stay signed in</span>
                     </label>
+                    {attemptsLeft < 5 && !isLocked && (
+                      <span className="text-xs text-destructive">{attemptsLeft} attempts remaining</span>
+                    )}
                   </div>
                   
                   <Button 
                     type="submit" 
                     className="w-full bg-gradient-primary hover:opacity-90"
-                    disabled={isLoading}
+                    disabled={isLoading || isLocked}
                   >
                     {isLoading ? 'Signing In...' : 'Sign In'}
                   </Button>
