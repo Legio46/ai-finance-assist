@@ -540,50 +540,75 @@ const InvestmentTracker = () => {
               {/* Allocation Pie Chart */}
               <div className="p-4 bg-muted/50 rounded-lg">
                 <h3 className="text-sm font-medium mb-3">Portfolio Allocation</h3>
-                <ResponsiveContainer width="100%" height={220}>
-                  <PieChart>
-                    <Pie
-                      data={allocationData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={50}
-                      outerRadius={80}
-                      paddingAngle={3}
-                      dataKey="value"
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    >
-                      {allocationData.map((_, index) => (
-                        <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip formatter={(value: number) => formatCurrency(value)} />
-                  </PieChart>
-                </ResponsiveContainer>
+                <div className="flex items-center gap-4">
+                  <ResponsiveContainer width="50%" height={200}>
+                    <PieChart>
+                      <Pie
+                        data={allocationData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={45}
+                        outerRadius={75}
+                        paddingAngle={3}
+                        dataKey="value"
+                      >
+                        {allocationData.map((_, index) => (
+                          <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(value: number) => formatCurrency(value)} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div className="flex flex-col gap-2">
+                    {allocationData.map((entry, index) => {
+                      const total = allocationData.reduce((s, e) => s + e.value, 0);
+                      const pct = total > 0 ? ((entry.value / total) * 100).toFixed(0) : '0';
+                      return (
+                        <div key={entry.name} className="flex items-center gap-2 text-sm">
+                          <div
+                            className="w-3 h-3 rounded-full flex-shrink-0"
+                            style={{ backgroundColor: CHART_COLORS[index % CHART_COLORS.length] }}
+                          />
+                          <span className="text-muted-foreground">{entry.name}</span>
+                          <span className="font-medium ml-auto">{pct}%</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
 
-              {/* Performance Bar Chart */}
+              {/* Performance Line Chart */}
               <div className="p-4 bg-muted/50 rounded-lg">
                 <h3 className="text-sm font-medium mb-3">Performance by Category</h3>
-                <ResponsiveContainer width="100%" height={220}>
-                  <BarChart data={performanceData} layout="vertical" margin={{ left: 20 }}>
+                <ResponsiveContainer width="100%" height={200}>
+                  <AreaChart data={performanceData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
+                    <defs>
+                      <linearGradient id="gainGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="hsl(142, 71%, 45%)" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="hsl(142, 71%, 45%)" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                    <XAxis type="number" tickFormatter={(v) => formatCurrency(v)} className="text-xs" />
-                    <YAxis type="category" dataKey="name" width={80} className="text-xs" />
+                    <XAxis dataKey="name" className="text-xs" tick={{ fontSize: 11 }} />
+                    <YAxis tickFormatter={(v) => `${v}%`} className="text-xs" tick={{ fontSize: 11 }} />
                     <Tooltip
                       formatter={(value: number, name: string) =>
-                        name === 'gain' ? formatCurrency(value) : `${value}%`
+                        name === 'Return %' ? `${value}%` : formatCurrency(value)
                       }
-                      contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }}
+                      contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
                     />
-                    <Bar dataKey="gain" name="Gain/Loss" radius={[0, 4, 4, 0]}>
-                      {performanceData.map((entry, index) => (
-                        <Cell
-                          key={index}
-                          fill={entry.gain >= 0 ? 'hsl(142, 71%, 45%)' : 'hsl(var(--destructive))'}
-                        />
-                      ))}
-                    </Bar>
-                  </BarChart>
+                    <Area
+                      type="monotone"
+                      dataKey="percentage"
+                      name="Return %"
+                      stroke="hsl(var(--primary))"
+                      fill="url(#gainGradient)"
+                      strokeWidth={2}
+                      dot={{ r: 4, fill: 'hsl(var(--primary))' }}
+                      activeDot={{ r: 6 }}
+                    />
+                  </AreaChart>
                 </ResponsiveContainer>
               </div>
             </div>
