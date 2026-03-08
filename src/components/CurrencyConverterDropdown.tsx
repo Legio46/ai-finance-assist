@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeftRight, Coins, RefreshCw } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
 
 const CurrencyConverterDropdown = () => {
   const { t } = useLanguage();
