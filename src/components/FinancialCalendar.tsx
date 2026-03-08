@@ -463,7 +463,7 @@ const FinancialCalendar = () => {
       case 'income': return <Wallet className="w-3 h-3" />;
       case 'investment': return <TrendingUp className="w-3 h-3" />;
       case 'goal': return <DollarSign className="w-3 h-3" />;
-      case 'custom': return <Calendar className="w-3 h-3" />;
+      case 'custom': return <CalendarLucide className="w-3 h-3" />;
       default: return null;
     }
   };
