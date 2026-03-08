@@ -29,7 +29,7 @@ Deno.serve(async (req: Request) => {
     );
 
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
+    if (!authHeader?.startsWith("Bearer ")) {
       return new Response(
         JSON.stringify({ error: "No authorization header provided" }),
         {
@@ -40,16 +40,36 @@ Deno.serve(async (req: Request) => {
     }
 
     const token = authHeader.replace("Bearer ", "");
-    const { data: userData, error: userError } = await supabaseClient.auth.getUser(token);
     
-    if (userError || !userData.user?.email) {
-      return new Response(
-        JSON.stringify({ error: "Authentication failed" }),
-        {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+    // Use getClaims for JWT verification (works with signing-keys)
+    const { data: claimsData, error: claimsError } = await supabaseClient.auth.getClaims(token);
+    
+    if (claimsError || !claimsData?.claims) {
+      // Fallback to getUser if getClaims fails
+      const { data: userData, error: userError } = await supabaseClient.auth.getUser(token);
+      if (userError || !userData.user?.email) {
+        return new Response(
+          JSON.stringify({ error: "Authentication failed" }),
+          {
+            status: 401,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          }
+        );
+      }
+      var user = userData.user;
+    } else {
+      // Get full user data using the validated token
+      const { data: userData, error: userError } = await supabaseClient.auth.getUser(token);
+      if (userError || !userData.user?.email) {
+        return new Response(
+          JSON.stringify({ error: "Authentication failed" }),
+          {
+            status: 401,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          }
+        );
+      }
+      var user = userData.user;
     }
 
     const user = userData.user;

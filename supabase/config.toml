@@ -55,19 +55,19 @@ double_confirm_changes = true
 enable_confirmations = false
 
 [functions]
-verify_jwt = true
+verify_jwt = false
 
 [functions.create-checkout]
-verify_jwt = true
+verify_jwt = false
 
 [functions.check-subscription]
-verify_jwt = true
+verify_jwt = false
 
 [functions.customer-portal]
-verify_jwt = true
+verify_jwt = false
 
 [functions.ai-advisor]
-verify_jwt = true
+verify_jwt = false
 
 [functions.crypto-prices]
 verify_jwt = false
@@ -79,13 +79,13 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.ai-calendar-suggestions]
-verify_jwt = true
+verify_jwt = false
 
 [functions.ai-personal-insights]
-verify_jwt = true
+verify_jwt = false
 
 [functions.ai-planner-suggestions]
-verify_jwt = true
+verify_jwt = false
 
 [functions.process-referral]
-verify_jwt = true
+verify_jwt = false
