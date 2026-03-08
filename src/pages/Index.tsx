@@ -38,9 +38,8 @@ const Index = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              FinanceAI
+              Legio Finance
             </h1>
-            <Badge className="bg-gradient-primary text-white">Beta</Badge>
           </div>
           
           <div className="flex items-center space-x-4">
@@ -133,15 +132,16 @@ const Index = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Personal Plan */}
+            {/* Personal Basic Plan */}
             <Card className="relative border-2">
               <CardHeader className="text-center pb-8">
-                <CardTitle className="text-2xl">{t('personal')}</CardTitle>
+                <CardTitle className="text-2xl">Personal Basic</CardTitle>
                 <CardDescription>{t('perfectForIndividuals')}</CardDescription>
                 <div className="mt-4">
-                  <span className="text-4xl font-bold">$29.99</span>
+                  <span className="text-4xl font-bold">€5</span>
                   <span className="text-muted-foreground">/{t('monthly')}</span>
                 </div>
+                <Badge variant="secondary" className="w-fit mx-auto mt-2">7-day free trial</Badge>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center space-x-2">
@@ -172,7 +172,7 @@ const Index = () => {
               </CardContent>
             </Card>
 
-            {/* Business Plan */}
+            {/* Personal Pro Plan */}
             <Card className="relative border-2 border-primary">
               <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                 <Badge className="bg-gradient-primary text-white px-4 py-1">
@@ -180,37 +180,38 @@ const Index = () => {
                 </Badge>
               </div>
               <CardHeader className="text-center pb-8">
-                <CardTitle className="text-2xl">{t('business')}</CardTitle>
-                <CardDescription>{t('forEntrepreneurs')}</CardDescription>
+                <CardTitle className="text-2xl">Personal Pro</CardTitle>
+                <CardDescription>For serious financial planning</CardDescription>
                 <div className="mt-4">
-                  <span className="text-4xl font-bold">$49.99</span>
+                  <span className="text-4xl font-bold">€10</span>
                   <span className="text-muted-foreground">/{t('monthly')}</span>
                 </div>
+                <Badge variant="secondary" className="w-fit mx-auto mt-2">7-day free trial</Badge>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center space-x-2">
                   <Check className="w-5 h-5 text-success" />
-                  <span>{t('everythingInPersonal')}</span>
+                  <span>Everything in Basic</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Check className="w-5 h-5 text-success" />
-                  <span>{t('multiCountryTax')}</span>
+                  <span>Recurring payment tracking</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Check className="w-5 h-5 text-success" />
-                  <span>{t('businessExpenseTracking')}</span>
+                  <span>Investment tracking (stocks, crypto, ETFs)</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Check className="w-5 h-5 text-success" />
-                  <span>{t('profitLossAnalysis')}</span>
+                  <span>Financial calendar & AI suggestions</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Check className="w-5 h-5 text-success" />
-                  <span>{t('aiFinancialAdvisor')}</span>
+                  <span>Advanced financial planner</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Check className="w-5 h-5 text-success" />
-                  <span>{t('advancedAnalytics')}</span>
+                  <span>AI personal insights</span>
                 </div>
                 <Link to="/auth" className="block">
                   <Button className="w-full mt-8 bg-gradient-primary hover:opacity-90">
@@ -235,7 +236,7 @@ const Index = () => {
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center space-x-2 mb-4">
             <h3 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              FinanceAI
+              Legio Finance
             </h3>
           </div>
           <p className="text-muted-foreground mb-6">

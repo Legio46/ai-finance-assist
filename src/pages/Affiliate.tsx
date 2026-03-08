@@ -227,12 +227,12 @@ const Affiliate = () => {
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex justify-between items-center p-3 bg-secondary/50 rounded-lg">
-                    <span>Personal Plan</span>
-                    <Badge variant="secondary">$2.99/month</Badge>
+                    <span>Personal Basic</span>
+                    <Badge variant="secondary">€5/month</Badge>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-secondary/50 rounded-lg">
-                    <span>Business Plan</span>
-                    <Badge variant="secondary">$9.99/month</Badge>
+                    <span>Personal Pro</span>
+                    <Badge variant="secondary">€10/month</Badge>
                   </div>
                   <div className="text-center p-4 bg-primary/10 rounded-lg">
                     <p className="text-sm text-muted-foreground">Your commission</p>

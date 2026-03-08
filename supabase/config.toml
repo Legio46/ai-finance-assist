@@ -86,3 +86,6 @@ verify_jwt = true
 
 [functions.ai-planner-suggestions]
 verify_jwt = true
+
+[functions.process-referral]
+verify_jwt = true

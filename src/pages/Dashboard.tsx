@@ -51,8 +51,23 @@ const Dashboard = () => {
   }
 
   const isTrialActive = profile?.trial_end && new Date(profile.trial_end) > new Date();
+  const isTrialEndsAtActive = profile?.trial_ends_at && new Date(profile.trial_ends_at) > new Date();
+  const trialActive = isTrialActive || isTrialEndsAtActive;
   const subscriptionStatus = profile?.subscription_tier || 'free';
-  const hasBusinessAccess = subscriptionStatus === 'business' || (subscriptionStatus === 'free' && isTrialActive) || isAdmin;
+  const hasActiveSubscription = profile?.subscription_status === 'active';
+  const hasBusinessAccess = subscriptionStatus === 'business' || (subscriptionStatus === 'free' && trialActive) || isAdmin;
+
+  const handleManageSubscription = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('customer-portal');
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, '_blank');
+      }
+    } catch (err) {
+      console.error('Error opening customer portal:', err);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -81,6 +96,12 @@ const Dashboard = () => {
                 </Link>
               </Button>
             )}
+            {hasActiveSubscription && (
+              <Button variant="ghost" size="sm" onClick={handleManageSubscription}>
+                <Settings className="w-4 h-4 mr-2" />
+                Manage Plan
+              </Button>
+            )}
             <ThemeToggle />
             <LanguageSelector />
             <Button variant="outline" onClick={signOut}>
@@ -91,14 +112,14 @@ const Dashboard = () => {
       </header>
 
       {/* Trial Banner */}
-      {isTrialActive && subscriptionStatus === 'free' && (
+      {trialActive && subscriptionStatus === 'free' && (
         <div className="bg-gradient-primary text-white py-2">
           <div className="container mx-auto px-4 text-center">
             <p className="text-sm">
               <Crown className="inline w-4 h-4 mr-1" />
-              Free trial active until {new Date(profile.trial_end).toLocaleDateString()} 
-              <Button variant="ghost" size="sm" className="ml-4 text-white hover:bg-white/20">
-                Upgrade Now
+              Free trial active until {new Date(profile?.trial_end || profile?.trial_ends_at).toLocaleDateString()} 
+              <Button variant="ghost" size="sm" className="ml-4 text-white hover:bg-white/20" asChild>
+                <Link to="/pricing">Upgrade Now</Link>
               </Button>
             </p>
           </div>
