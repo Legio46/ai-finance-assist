@@ -96,6 +96,12 @@ const Dashboard = () => {
                 </Link>
               </Button>
             )}
+            {hasActiveSubscription && (
+              <Button variant="ghost" size="sm" onClick={handleManageSubscription}>
+                <Settings className="w-4 h-4 mr-2" />
+                Manage Plan
+              </Button>
+            )}
             <ThemeToggle />
             <LanguageSelector />
             <Button variant="outline" onClick={signOut}>
