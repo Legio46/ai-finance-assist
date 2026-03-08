@@ -180,8 +180,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       // Process referral if user was created successfully
-      if (data.user) {
-        await processReferral(data.user.id);
+      if (data.user && data.session) {
+        await processReferral();
       }
 
       // Check if email confirmation is required

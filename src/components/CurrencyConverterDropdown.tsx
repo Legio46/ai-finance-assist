@@ -42,17 +42,13 @@ const CurrencyConverterDropdown = () => {
 
   const allCurrencies = [...fiatCurrencies, ...cryptoCurrencies];
 
-  // Fetch fiat rates from Google Finance via open API
+  // Fetch rates from APIs and edge functions
   const fetchRates = useCallback(async () => {
     setIsLoading(true);
     try {
-      // Fetch fiat rates from ExchangeRate-API (free, no key required for basic usage)
+      // Fetch fiat rates from ExchangeRate-API
       const fiatResponse = await fetch('https://open.er-api.com/v6/latest/EUR');
       const fiatData = await fiatResponse.json();
-      
-      // Fetch crypto rates from CoinGecko (free API)
-      const cryptoResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,ripple,cardano&vs_currencies=eur');
-      const cryptoData = await cryptoResponse.json();
 
       const newRates: Record<string, number> = { EUR: 1 };
       
@@ -63,18 +59,39 @@ const CurrencyConverterDropdown = () => {
         });
       }
 
-      // Add crypto rates (inverted since we get EUR per crypto)
-      if (cryptoData.bitcoin) newRates.BTC = 1 / cryptoData.bitcoin.eur;
-      if (cryptoData.ethereum) newRates.ETH = 1 / cryptoData.ethereum.eur;
-      if (cryptoData.solana) newRates.SOL = 1 / cryptoData.solana.eur;
-      if (cryptoData.ripple) newRates.XRP = 1 / cryptoData.ripple.eur;
-      if (cryptoData.cardano) newRates.ADA = 1 / cryptoData.cardano.eur;
+      // Fetch crypto rates via edge function (avoids CoinGecko rate limits)
+      try {
+        const { data: cryptoData, error: cryptoError } = await supabase.functions.invoke('crypto-prices', {
+          body: { symbols: ['BTC', 'ETH', 'SOL', 'XRP', 'ADA'] },
+        });
+
+        if (!cryptoError && cryptoData?.prices) {
+          const cryptoMap: Record<string, string> = {
+            BTC: 'BTC', ETH: 'ETH', SOL: 'SOL', XRP: 'XRP', ADA: 'ADA'
+          };
+          Object.entries(cryptoMap).forEach(([symbol]) => {
+            const price = cryptoData.prices[symbol];
+            if (price?.price_eur) {
+              newRates[symbol] = 1 / price.price_eur;
+            }
+          });
+        }
+      } catch (cryptoErr) {
+        console.warn('Crypto prices fallback:', cryptoErr);
+      }
+
+      // Apply fallback for any missing crypto rates
+      if (!newRates.BTC) newRates.BTC = 0.000011;
+      if (!newRates.ETH) newRates.ETH = 0.00029;
+      if (!newRates.SOL) newRates.SOL = 0.0052;
+      if (!newRates.XRP) newRates.XRP = 0.42;
+      if (!newRates.ADA) newRates.ADA = 1.1;
 
       setRates(newRates);
       setLastUpdated(new Date());
     } catch (error) {
       console.error('Failed to fetch rates:', error);
-      // Fallback rates
+      // Full fallback rates
       setRates({
         EUR: 1, USD: 1.09, GBP: 0.86, JPY: 163.5, CHF: 0.94,
         CAD: 1.48, AUD: 1.65, CNY: 7.92, INR: 91.2, CZK: 25.2, PLN: 4.32,

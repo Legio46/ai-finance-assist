@@ -236,7 +236,7 @@ const Index = () => {
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center space-x-2 mb-4">
             <h3 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              FinanceAI
+              Legio Finance
             </h3>
           </div>
           <p className="text-muted-foreground mb-6">
