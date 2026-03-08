@@ -244,7 +244,7 @@ const AIPersonalInsights = () => {
             </CardContent>
           </Card>
         )}
-      </div>
+      </div>}
     </div>
   );
 };
