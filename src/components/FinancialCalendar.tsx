@@ -5,12 +5,15 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar, ChevronLeft, ChevronRight, DollarSign, CreditCard, TrendingUp, Wallet, Plus, Trash2, Edit2, Sparkles, Loader2 } from 'lucide-react';
+import { Calendar as CalendarLucide, ChevronLeft, ChevronRight, DollarSign, CreditCard, TrendingUp, Wallet, Plus, Trash2, Edit2, Sparkles, Loader2, CalendarIcon } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { format, parse } from 'date-fns';
 import {
   Dialog,
   DialogContent,
@@ -460,7 +463,7 @@ const FinancialCalendar = () => {
       case 'income': return <Wallet className="w-3 h-3" />;
       case 'investment': return <TrendingUp className="w-3 h-3" />;
       case 'goal': return <DollarSign className="w-3 h-3" />;
-      case 'custom': return <Calendar className="w-3 h-3" />;
+      case 'custom': return <CalendarLucide className="w-3 h-3" />;
       default: return null;
     }
   };
@@ -491,7 +494,7 @@ const FinancialCalendar = () => {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
-                <Calendar className="w-5 h-5" />
+                <CalendarLucide className="w-5 h-5" />
                 Financial Calendar
               </CardTitle>
               <CardDescription>
@@ -842,14 +845,37 @@ const FinancialCalendar = () => {
               </div>
             </div>
             <div>
-              <Label htmlFor="event_date">Date</Label>
-              <Input
-                id="event_date"
-                type="date"
-                value={formData.event_date}
-                onChange={(e) => setFormData({ ...formData, event_date: e.target.value })}
-                required
-              />
+              <Label>Date</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !formData.event_date && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {formData.event_date
+                      ? format(new Date(formData.event_date + 'T00:00:00'), 'PPP')
+                      : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={formData.event_date ? new Date(formData.event_date + 'T00:00:00') : undefined}
+                    onSelect={(date) => {
+                      if (date) {
+                        const dateStr = format(date, 'yyyy-MM-dd');
+                        setFormData({ ...formData, event_date: dateStr });
+                      }
+                    }}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
             <div>
               <Label htmlFor="notes">Notes (Optional)</Label>
