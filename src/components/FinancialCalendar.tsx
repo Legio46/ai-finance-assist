@@ -494,7 +494,7 @@ const FinancialCalendar = () => {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
-                <Calendar className="w-5 h-5" />
+                <CalendarLucide className="w-5 h-5" />
                 Financial Calendar
               </CardTitle>
               <CardDescription>
