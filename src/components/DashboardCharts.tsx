@@ -520,7 +520,6 @@ const DashboardCharts = () => {
                             className="w-3 h-3 rounded-full ring-2 ring-offset-1 ring-offset-card transition-transform duration-200 hover:scale-150"
                             style={{ 
                               backgroundColor: COLORS[index % COLORS.length],
-                              ringColor: `${COLORS[index % COLORS.length]}40`,
                             }}
                           />
                           <span className="truncate max-w-[90px] text-xs font-medium">{cat.name}</span>
