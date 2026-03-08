@@ -33,6 +33,7 @@ const Dashboard = () => {
   const { user, profile, loading, signOut } = useAuth();
   const { isAdmin } = useAdminCheck();
   const { t, formatCurrency } = useLanguage();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('overview');
 
   // Redirect if not authenticated
