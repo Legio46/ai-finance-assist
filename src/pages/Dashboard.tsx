@@ -112,14 +112,14 @@ const Dashboard = () => {
       </header>
 
       {/* Trial Banner */}
-      {isTrialActive && subscriptionStatus === 'free' && (
+      {trialActive && subscriptionStatus === 'free' && (
         <div className="bg-gradient-primary text-white py-2">
           <div className="container mx-auto px-4 text-center">
             <p className="text-sm">
               <Crown className="inline w-4 h-4 mr-1" />
-              Free trial active until {new Date(profile.trial_end).toLocaleDateString()} 
-              <Button variant="ghost" size="sm" className="ml-4 text-white hover:bg-white/20">
-                Upgrade Now
+              Free trial active until {new Date(profile?.trial_end || profile?.trial_ends_at).toLocaleDateString()} 
+              <Button variant="ghost" size="sm" className="ml-4 text-white hover:bg-white/20" asChild>
+                <Link to="/pricing">Upgrade Now</Link>
               </Button>
             </p>
           </div>
