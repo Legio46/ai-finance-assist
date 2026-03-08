@@ -340,6 +340,7 @@ const Auth = () => {
                       value={signUpData.fullName}
                       onChange={(e) => setSignUpData({ ...signUpData, fullName: e.target.value })}
                       required
+                      maxLength={100}
                     />
                   </div>
                   <div className="space-y-2">
