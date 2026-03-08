@@ -246,11 +246,10 @@ const CreditCardTransactions: React.FC<CreditCardTransactionsProps> = ({ cardTyp
 
               <div>
                 <Label htmlFor="transaction_date">Date</Label>
-                <Input
-                  id="transaction_date"
-                  type="date"
+                <DatePicker
                   value={formData.transaction_date}
-                  onChange={(e) => setFormData({...formData, transaction_date: e.target.value})}
+                  onChange={(val) => setFormData({...formData, transaction_date: val})}
+                  placeholder="Pick transaction date"
                   required
                 />
               </div>

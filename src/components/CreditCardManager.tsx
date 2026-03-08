@@ -261,11 +261,10 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ cardType }) => {
               </div>
               <div>
                 <Label htmlFor="due_date">Due Date</Label>
-                <Input
-                  id="due_date"
-                  type="date"
+                <DatePicker
                   value={formData.due_date}
-                  onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
+                  onChange={(val) => setFormData({ ...formData, due_date: val })}
+                  placeholder="Pick due date"
                 />
               </div>
               <div>

@@ -212,10 +212,10 @@ const FinancialGoals = () => {
             </div>
             <div>
               <Label>Target Date</Label>
-              <Input
-                type="date"
+              <DatePicker
                 value={formData.target_date}
-                onChange={(e) => setFormData({...formData, target_date: e.target.value})}
+                onChange={(val) => setFormData({...formData, target_date: val})}
+                placeholder="Pick target date"
                 required
               />
             </div>

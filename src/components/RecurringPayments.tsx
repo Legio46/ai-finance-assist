@@ -327,10 +327,10 @@ const RecurringPayments = () => {
             </div>
             <div>
               <Label>Next Due Date</Label>
-              <Input
-                type="date"
+              <DatePicker
                 value={formData.next_due_date}
-                onChange={(e) => setFormData({...formData, next_due_date: e.target.value})}
+                onChange={(val) => setFormData({...formData, next_due_date: val})}
+                placeholder="Pick due date"
                 required
               />
             </div>

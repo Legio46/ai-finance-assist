@@ -785,10 +785,10 @@ const InvestmentTracker = () => {
             </div>
             <div>
               <Label>Purchase Date</Label>
-              <Input
-                type="date"
+              <DatePicker
                 value={formData.purchase_date}
-                onChange={(e) => setFormData({...formData, purchase_date: e.target.value})}
+                onChange={(val) => setFormData({...formData, purchase_date: val})}
+                placeholder="Pick purchase date"
                 required
               />
             </div>

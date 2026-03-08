@@ -258,7 +258,7 @@ const PersonalDashboard = () => {
                     </div>
                     <div>
                       <Label htmlFor="date">Date</Label>
-                      <Input id="date" type="date" value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} required />
+                      <DatePicker value={formData.date} onChange={(val) => setFormData({...formData, date: val})} placeholder="Pick a date" required />
                     </div>
                     <div>
                       <Label>Receipt Image (Optional)</Label>
