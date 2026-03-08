@@ -60,12 +60,29 @@ const Dashboard = () => {
   const handleManageSubscription = async () => {
     try {
       const { data, error } = await supabase.functions.invoke('customer-portal');
-      if (error) throw error;
+      if (error) {
+        // If no Stripe customer exists, redirect to pricing
+        toast({
+          title: "No active subscription",
+          description: "Redirecting you to our pricing page to get started.",
+        });
+        window.location.href = '/pricing';
+        return;
+      }
+      if (data?.error) {
+        toast({
+          title: "No active subscription",
+          description: "Redirecting you to our pricing page to get started.",
+        });
+        window.location.href = '/pricing';
+        return;
+      }
       if (data?.url) {
         window.open(data.url, '_blank');
       }
     } catch (err) {
       console.error('Error opening customer portal:', err);
+      window.location.href = '/pricing';
     }
   };
 
