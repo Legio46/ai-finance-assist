@@ -34,7 +34,21 @@ const Dashboard = () => {
   const { isAdmin } = useAdminCheck();
   const { t, formatCurrency } = useLanguage();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
+  const [stripeSubscribed, setStripeSubscribed] = useState(false);
+
+  useEffect(() => {
+    const checkStripe = async () => {
+      try {
+        const { data } = await supabase.functions.invoke('check-subscription');
+        setStripeSubscribed(data?.subscribed === true);
+      } catch {
+        setStripeSubscribed(false);
+      }
+    };
+    if (user) checkStripe();
+  }, [user]);
 
   // Redirect if not authenticated
   if (!loading && !user) {
@@ -62,21 +76,12 @@ const Dashboard = () => {
   const handleManageSubscription = async () => {
     try {
       const { data, error } = await supabase.functions.invoke('customer-portal');
-      if (error) {
-        // If no Stripe customer exists, redirect to pricing
+      if (error || data?.error) {
         toast({
           title: "No active subscription",
           description: "Redirecting you to our pricing page to get started.",
         });
-        window.location.href = '/pricing';
-        return;
-      }
-      if (data?.error) {
-        toast({
-          title: "No active subscription",
-          description: "Redirecting you to our pricing page to get started.",
-        });
-        window.location.href = '/pricing';
+        navigate('/pricing');
         return;
       }
       if (data?.url) {
@@ -84,10 +89,9 @@ const Dashboard = () => {
       }
     } catch (err) {
       console.error('Error opening customer portal:', err);
-      window.location.href = '/pricing';
+      navigate('/pricing');
     }
   };
-
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
