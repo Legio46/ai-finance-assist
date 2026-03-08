@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Link } from "react-router-dom";
 import { Calculator, TrendingUp, DollarSign, Shield, Users, Globe } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logo_3.png";
 
 const Home = () => {
   const { t } = useLanguage();

@@ -4,7 +4,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageSelector from "@/components/LanguageSelector";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import CurrencyConverterDropdown from "@/components/CurrencyConverterDropdown";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logo_3.png";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
