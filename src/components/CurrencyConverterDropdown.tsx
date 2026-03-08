@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { ArrowLeftRight, Coins, RefreshCw } from "lucide-react";
+import { ArrowUpDown, Coins, RefreshCw } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -42,56 +42,34 @@ const CurrencyConverterDropdown = () => {
 
   const allCurrencies = [...fiatCurrencies, ...cryptoCurrencies];
 
-  // Fetch rates from APIs and edge functions
   const fetchRates = useCallback(async () => {
     setIsLoading(true);
     try {
-      // Fetch fiat rates from ExchangeRate-API
       const fiatResponse = await fetch('https://open.er-api.com/v6/latest/EUR');
       const fiatData = await fiatResponse.json();
-
       const newRates: Record<string, number> = { EUR: 1 };
-      
-      // Add fiat rates
       if (fiatData.rates) {
-        Object.keys(fiatData.rates).forEach(code => {
-          newRates[code] = fiatData.rates[code];
-        });
+        Object.keys(fiatData.rates).forEach(code => { newRates[code] = fiatData.rates[code]; });
       }
-
-      // Fetch crypto rates via edge function (avoids CoinGecko rate limits)
       try {
         const { data: cryptoData, error: cryptoError } = await supabase.functions.invoke('crypto-prices', {
           body: { symbols: ['BTC', 'ETH', 'SOL', 'XRP', 'ADA'] },
         });
-
         if (!cryptoError && cryptoData?.prices) {
-          const cryptoMap: Record<string, string> = {
-            BTC: 'BTC', ETH: 'ETH', SOL: 'SOL', XRP: 'XRP', ADA: 'ADA'
-          };
-          Object.entries(cryptoMap).forEach(([symbol]) => {
+          Object.entries({ BTC: 'BTC', ETH: 'ETH', SOL: 'SOL', XRP: 'XRP', ADA: 'ADA' }).forEach(([symbol]) => {
             const price = cryptoData.prices[symbol];
-            if (price?.price_eur) {
-              newRates[symbol] = 1 / price.price_eur;
-            }
+            if (price?.price_eur) newRates[symbol] = 1 / price.price_eur;
           });
         }
-      } catch (cryptoErr) {
-        console.warn('Crypto prices fallback:', cryptoErr);
-      }
-
-      // Apply fallback for any missing crypto rates
+      } catch (cryptoErr) { console.warn('Crypto prices fallback:', cryptoErr); }
       if (!newRates.BTC) newRates.BTC = 0.000011;
       if (!newRates.ETH) newRates.ETH = 0.00029;
       if (!newRates.SOL) newRates.SOL = 0.0052;
       if (!newRates.XRP) newRates.XRP = 0.42;
       if (!newRates.ADA) newRates.ADA = 1.1;
-
       setRates(newRates);
       setLastUpdated(new Date());
-    } catch (error) {
-      console.error('Failed to fetch rates:', error);
-      // Full fallback rates
+    } catch {
       setRates({
         EUR: 1, USD: 1.09, GBP: 0.86, JPY: 163.5, CHF: 0.94,
         CAD: 1.48, AUD: 1.65, CNY: 7.92, INR: 91.2, CZK: 25.2, PLN: 4.32,
@@ -101,148 +79,99 @@ const CurrencyConverterDropdown = () => {
     setIsLoading(false);
   }, []);
 
-  // Fetch rates on mount and when popover opens
   useEffect(() => {
-    if (isOpen && Object.keys(rates).length === 0) {
-      fetchRates();
-    }
+    if (isOpen && Object.keys(rates).length === 0) fetchRates();
   }, [isOpen, fetchRates, rates]);
 
-  // Calculate conversion
   useEffect(() => {
     if (Object.keys(rates).length === 0) return;
     const numAmount = parseFloat(amount) || 0;
     const fromRate = rates[fromCurrency] || 1;
     const toRate = rates[toCurrency] || 1;
-    const result = (numAmount / fromRate) * toRate;
-    setConvertedAmount(result);
+    setConvertedAmount((numAmount / fromRate) * toRate);
   }, [amount, fromCurrency, toCurrency, rates]);
 
-  const swapCurrencies = () => {
-    setFromCurrency(toCurrency);
-    setToCurrency(fromCurrency);
-  };
-
-  const getCurrencySymbol = (code: string) => {
-    return allCurrencies.find((c) => c.code === code)?.symbol || code;
-  };
+  const swapCurrencies = () => { setFromCurrency(toCurrency); setToCurrency(fromCurrency); };
+  const getCurrencySymbol = (code: string) => allCurrencies.find((c) => c.code === code)?.symbol || code;
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <button
-          className={`text-foreground hover:text-primary transition-colors flex items-center gap-1 ${
-            isOpen ? 'text-primary font-medium' : ''
-          }`}
-        >
+        <button className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+          isOpen ? 'text-primary bg-primary/8' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+        }`}>
           <Coins className="w-4 h-4" />
           {t('currencyConverter')}
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-4" align="center">
-        <div className="space-y-4">
-          <h4 className="font-semibold text-lg">{t('currencyConverter')}</h4>
-          
-          {/* Amount Input */}
-          <div className="space-y-1">
+      <PopoverContent className="w-80 p-0 rounded-xl shadow-xl border-border/50" align="center">
+        <div className="p-4 border-b border-border/50">
+          <h4 className="font-semibold text-sm">{t('currencyConverter')}</h4>
+          <p className="text-xs text-muted-foreground mt-0.5">Real-time fiat & crypto rates</p>
+        </div>
+
+        <div className="p-4 space-y-3">
+          {/* Amount */}
+          <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground">Amount</label>
-            <Input
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="Enter amount"
-              className="h-10"
-            />
+            <Input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Enter amount" className="h-10 rounded-lg" />
           </div>
 
-          {/* From Currency */}
-          <div className="space-y-1">
+          {/* From */}
+          <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground">From</label>
             <Select value={fromCurrency} onValueChange={setFromCurrency}>
-              <SelectTrigger className="h-10">
-                <SelectValue />
-              </SelectTrigger>
+              <SelectTrigger className="h-10 rounded-lg"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">Currencies</div>
-                {fiatCurrencies.map((currency) => (
-                  <SelectItem key={currency.code} value={currency.code}>
-                    {currency.symbol} {currency.code}
-                  </SelectItem>
-                ))}
+                {fiatCurrencies.map((c) => (<SelectItem key={c.code} value={c.code}>{c.symbol} {c.code} — {c.name}</SelectItem>))}
                 <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground border-t mt-1 pt-2">Crypto</div>
-                {cryptoCurrencies.map((currency) => (
-                  <SelectItem key={currency.code} value={currency.code}>
-                    {currency.symbol} {currency.code}
-                  </SelectItem>
-                ))}
+                {cryptoCurrencies.map((c) => (<SelectItem key={c.code} value={c.code}>{c.symbol} {c.code} — {c.name}</SelectItem>))}
               </SelectContent>
             </Select>
           </div>
 
-          {/* Swap Button */}
+          {/* Swap */}
           <div className="flex justify-center">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={swapCurrencies}
-              className="rounded-full h-8 w-8"
-            >
-              <ArrowLeftRight className="h-4 w-4" />
+            <Button variant="ghost" size="icon" onClick={swapCurrencies} className="rounded-full h-8 w-8 bg-muted/50 hover:bg-primary/10 hover:text-primary">
+              <ArrowUpDown className="h-4 w-4" />
             </Button>
           </div>
 
-          {/* To Currency */}
-          <div className="space-y-1">
+          {/* To */}
+          <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground">To</label>
             <Select value={toCurrency} onValueChange={setToCurrency}>
-              <SelectTrigger className="h-10">
-                <SelectValue />
-              </SelectTrigger>
+              <SelectTrigger className="h-10 rounded-lg"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">Currencies</div>
-                {fiatCurrencies.map((currency) => (
-                  <SelectItem key={currency.code} value={currency.code}>
-                    {currency.symbol} {currency.code}
-                  </SelectItem>
-                ))}
+                {fiatCurrencies.map((c) => (<SelectItem key={c.code} value={c.code}>{c.symbol} {c.code} — {c.name}</SelectItem>))}
                 <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground border-t mt-1 pt-2">Crypto</div>
-                {cryptoCurrencies.map((currency) => (
-                  <SelectItem key={currency.code} value={currency.code}>
-                    {currency.symbol} {currency.code}
-                  </SelectItem>
-                ))}
+                {cryptoCurrencies.map((c) => (<SelectItem key={c.code} value={c.code}>{c.symbol} {c.code} — {c.name}</SelectItem>))}
               </SelectContent>
             </Select>
           </div>
+        </div>
 
-          {/* Result */}
-          <div className="bg-muted/50 p-3 rounded-lg">
-            <div className="flex items-center justify-between mb-1">
-              <p className="text-xs text-muted-foreground">Result</p>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={fetchRates}
-                disabled={isLoading}
-                className="h-6 w-6"
-              >
-                <RefreshCw className={`h-3 w-3 ${isLoading ? 'animate-spin' : ''}`} />
-              </Button>
-            </div>
-            <p className="text-xl font-bold text-primary">
-              {isLoading ? '...' : `${getCurrencySymbol(toCurrency)} ${convertedAmount.toLocaleString(undefined, { maximumFractionDigits: 6 })}`}
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              {rates[fromCurrency] && rates[toCurrency] 
-                ? `1 ${fromCurrency} = ${(rates[toCurrency] / rates[fromCurrency]).toFixed(4)} ${toCurrency}`
-                : 'Loading rates...'}
-            </p>
-            {lastUpdated && (
-              <p className="text-xs text-muted-foreground/60 mt-1">
-                Updated: {lastUpdated.toLocaleTimeString()}
-              </p>
-            )}
+        {/* Result */}
+        <div className="mx-4 mb-4 rounded-xl bg-gradient-to-br from-primary/10 via-accent/5 to-transparent p-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-medium text-muted-foreground">Result</span>
+            <Button variant="ghost" size="icon" onClick={fetchRates} disabled={isLoading} className="h-6 w-6 rounded-md">
+              <RefreshCw className={`h-3 w-3 ${isLoading ? 'animate-spin' : ''}`} />
+            </Button>
           </div>
+          <p className="text-2xl font-bold text-primary">
+            {isLoading ? '...' : `${getCurrencySymbol(toCurrency)} ${convertedAmount.toLocaleString(undefined, { maximumFractionDigits: 6 })}`}
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            {rates[fromCurrency] && rates[toCurrency]
+              ? `1 ${fromCurrency} = ${(rates[toCurrency] / rates[fromCurrency]).toFixed(4)} ${toCurrency}`
+              : 'Loading rates...'}
+          </p>
+          {lastUpdated && (
+            <p className="text-xs text-muted-foreground/60 mt-1">Updated: {lastUpdated.toLocaleTimeString()}</p>
+          )}
         </div>
       </PopoverContent>
     </Popover>
