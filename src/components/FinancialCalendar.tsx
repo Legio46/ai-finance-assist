@@ -655,10 +655,13 @@ const FinancialCalendar = () => {
                               event.type === 'custom' && "bg-accent text-accent-foreground"
                             )}
                             title={event.name}
-                          />
+                            )}
+                          >
+                            <span className="truncate">{event.name}</span>
+                          </div>
                         ))}
-                        {dayEvents.length > 3 && (
-                          <span className="text-[10px] text-muted-foreground">+{dayEvents.length - 3}</span>
+                        {dayEvents.length > 2 && (
+                          <span className="text-[10px] font-medium text-muted-foreground px-1">+{dayEvents.length - 2} more</span>
                         )}
                       </div>
                     </div>
