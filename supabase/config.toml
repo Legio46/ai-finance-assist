@@ -79,13 +79,13 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.ai-calendar-suggestions]
-verify_jwt = true
+verify_jwt = false
 
 [functions.ai-personal-insights]
-verify_jwt = true
+verify_jwt = false
 
 [functions.ai-planner-suggestions]
-verify_jwt = true
+verify_jwt = false
 
 [functions.process-referral]
-verify_jwt = true
+verify_jwt = false
