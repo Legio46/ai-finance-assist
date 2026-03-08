@@ -18,12 +18,14 @@ const Auth = () => {
   const { user, signIn, signUp, resetPassword, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { isLocked, remainingLockSeconds, attemptsLeft, recordAttempt, resetAttempts } = useLoginRateLimit();
   const [isLoading, setIsLoading] = useState(false);
   const [showResetPassword, setShowResetPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [isRecoveryMode, setIsRecoveryMode] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
 
   // Form states
   const [signInData, setSignInData] = useState({
