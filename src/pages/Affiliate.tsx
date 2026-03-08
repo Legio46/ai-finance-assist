@@ -253,7 +253,7 @@ const Affiliate = () => {
                     <DollarSign className="h-8 w-8 text-primary" />
                     <div className="ml-4">
                       <p className="text-sm text-muted-foreground">Total Earnings</p>
-                      <p className="text-2xl font-bold">${affiliateData.total_earnings?.toFixed(2) || '0.00'}</p>
+                      <p className="text-2xl font-bold">€{affiliateData.total_earnings?.toFixed(2) || '0.00'}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -384,7 +384,7 @@ const Affiliate = () => {
                             {referral.subscription_tier || 'Free'}
                           </TableCell>
                           <TableCell className="text-right font-medium">
-                            ${(referral.commission_earned || 0).toFixed(2)}
+                            €{(referral.commission_earned || 0).toFixed(2)}
                           </TableCell>
                         </TableRow>
                       ))}

@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { validatePassword } from '@/utils/inputSanitizer';
+import { AlertCircle } from 'lucide-react';
 
 const CreateAccount = () => {
   const { user, loading, signUp } = useAuth();
@@ -15,6 +17,7 @@ const CreateAccount = () => {
     accountType: 'personal'
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
 
   // Redirect if already authenticated
   if (user && !loading) {
@@ -23,6 +26,14 @@ const CreateAccount = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const validation = validatePassword(formData.password);
+    if (!validation.valid) {
+      setPasswordErrors(validation.errors);
+      return;
+    }
+    setPasswordErrors([]);
+    
     setIsLoading(true);
     
     const result = await signUp(
@@ -73,11 +84,27 @@ const CreateAccount = () => {
                 id="password"
                 type="password"
                 value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, password: e.target.value });
+                  if (passwordErrors.length > 0) {
+                    const v = validatePassword(e.target.value);
+                    setPasswordErrors(v.errors);
+                  }
+                }}
                 placeholder="Create a strong password"
                 required
                 maxLength={128}
               />
+              {passwordErrors.length > 0 && (
+                <div className="text-xs text-destructive space-y-0.5">
+                  <p className="font-medium">Password needs:</p>
+                  {passwordErrors.map((err, i) => (
+                    <p key={i} className="flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" /> {err}
+                    </p>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="fullName">Full Name</Label>

@@ -2,14 +2,41 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Pricing = () => {
   const { toast } = useToast();
   const { t, formatCurrency } = useLanguage();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleCheckout = (plan: string) => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in or create an account before subscribing.",
+      });
+      navigate('/auth');
+      return;
+    }
+    supabase.functions.invoke('create-checkout', {
+      body: { plan }
+    }).then(({ data, error }) => {
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to create checkout session",
+          variant: "destructive",
+        });
+      } else if (data?.url) {
+        window.open(data.url, '_blank');
+      }
+    });
+  };
   
   const basicFeatures = [
     "Track expenses and income (cash + cards)",
@@ -67,21 +94,7 @@ const Pricing = () => {
                 ))}
               </ul>
               <Button 
-                onClick={() => {
-                  supabase.functions.invoke('create-checkout', {
-                    body: { plan: 'basic' }
-                  }).then(({ data, error }) => {
-                    if (error) {
-                      toast({
-                        title: "Error",
-                        description: "Failed to create checkout session",
-                        variant: "destructive",
-                      });
-                    } else if (data?.url) {
-                      window.open(data.url, '_blank');
-                    }
-                  });
-                }}
+                onClick={() => handleCheckout('basic')}
                 className="w-full"
               >
                 {t('startFreeTrial')}
@@ -113,21 +126,7 @@ const Pricing = () => {
                 ))}
               </ul>
               <Button 
-                onClick={() => {
-                  supabase.functions.invoke('create-checkout', {
-                    body: { plan: 'pro' }
-                  }).then(({ data, error }) => {
-                    if (error) {
-                      toast({
-                        title: "Error",
-                        description: "Failed to create checkout session",
-                        variant: "destructive",
-                      });
-                    } else if (data?.url) {
-                      window.open(data.url, '_blank');
-                    }
-                  });
-                }}
+                onClick={() => handleCheckout('pro')}
                 className="w-full"
               >
                 {t('startFreeTrial')}
