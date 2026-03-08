@@ -9,17 +9,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import SecurityBadge from '@/components/SecurityBadge';
+import { useLoginRateLimit } from '@/hooks/useLoginRateLimit';
+import { validatePassword } from '@/utils/inputSanitizer';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle, Lock } from 'lucide-react';
 
 const Auth = () => {
   const { user, signIn, signUp, resetPassword, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { isLocked, remainingLockSeconds, attemptsLeft, recordAttempt, resetAttempts } = useLoginRateLimit();
   const [isLoading, setIsLoading] = useState(false);
   const [showResetPassword, setShowResetPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [isRecoveryMode, setIsRecoveryMode] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
 
   // Form states
   const [signInData, setSignInData] = useState({
@@ -62,9 +68,31 @@ const Auth = () => {
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     
-    await signIn(signInData.email, signInData.password, signInData.rememberMe);
+    if (isLocked) {
+      toast({
+        title: "Account Temporarily Locked",
+        description: `Too many failed attempts. Try again in ${remainingLockSeconds} seconds.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    const result = await signIn(signInData.email.trim().toLowerCase(), signInData.password, signInData.rememberMe);
+    
+    if (result.error) {
+      recordAttempt();
+      if (attemptsLeft <= 1) {
+        toast({
+          title: "Account Locked",
+          description: "Too many failed login attempts. Please wait 5 minutes before trying again.",
+          variant: "destructive",
+        });
+      }
+    } else {
+      resetAttempts();
+    }
     setIsLoading(false);
   };
 
@@ -72,11 +100,28 @@ const Auth = () => {
     e.preventDefault();
     
     if (signUpData.password !== signUpData.confirmPassword) {
+      toast({
+        title: "Passwords don't match",
+        description: "Please ensure both passwords match.",
+        variant: "destructive",
+      });
       return;
     }
 
+    const validation = validatePassword(signUpData.password);
+    if (!validation.valid) {
+      setPasswordErrors(validation.errors);
+      toast({
+        title: "Weak Password",
+        description: "Please fix the password requirements below.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setPasswordErrors([]);
+
     setIsLoading(true);
-    await signUp(signUpData.email, signUpData.password, signUpData.fullName, signUpData.accountType);
+    await signUp(signUpData.email.trim().toLowerCase(), signUpData.password, signUpData.fullName.trim(), signUpData.accountType);
     setIsLoading(false);
   };
 
@@ -214,6 +259,14 @@ const Auth = () => {
               </TabsList>
               
               <TabsContent value="signin">
+                {isLocked && (
+                  <Alert variant="destructive" className="mb-4">
+                    <Lock className="h-4 w-4" />
+                    <AlertDescription>
+                      Account temporarily locked. Try again in {remainingLockSeconds} seconds.
+                    </AlertDescription>
+                  </Alert>
+                )}
                 <form onSubmit={handleSignIn} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="signin-email">Email</Label>
@@ -224,6 +277,8 @@ const Auth = () => {
                       value={signInData.email}
                       onChange={(e) => setSignInData({ ...signInData, email: e.target.value })}
                       required
+                      maxLength={255}
+                      disabled={isLocked}
                     />
                   </div>
                   <div className="space-y-2">
@@ -235,6 +290,8 @@ const Auth = () => {
                       value={signInData.password}
                       onChange={(e) => setSignInData({ ...signInData, password: e.target.value })}
                       required
+                      maxLength={128}
+                      disabled={isLocked}
                     />
                   </div>
                   <div className="flex items-center justify-between">
@@ -247,12 +304,15 @@ const Auth = () => {
                       />
                       <span className="text-sm text-muted-foreground">Stay signed in</span>
                     </label>
+                    {attemptsLeft < 5 && !isLocked && (
+                      <span className="text-xs text-destructive">{attemptsLeft} attempts remaining</span>
+                    )}
                   </div>
                   
                   <Button 
                     type="submit" 
                     className="w-full bg-gradient-primary hover:opacity-90"
-                    disabled={isLoading}
+                    disabled={isLoading || isLocked}
                   >
                     {isLoading ? 'Signing In...' : 'Sign In'}
                   </Button>
@@ -280,6 +340,7 @@ const Auth = () => {
                       value={signUpData.fullName}
                       onChange={(e) => setSignUpData({ ...signUpData, fullName: e.target.value })}
                       required
+                      maxLength={100}
                     />
                   </div>
                   <div className="space-y-2">
@@ -311,11 +372,28 @@ const Auth = () => {
                     <Input
                       id="signup-password"
                       type="password"
-                      placeholder="Create a password"
+                      placeholder="Create a strong password"
                       value={signUpData.password}
-                      onChange={(e) => setSignUpData({ ...signUpData, password: e.target.value })}
+                      onChange={(e) => {
+                        setSignUpData({ ...signUpData, password: e.target.value });
+                        if (passwordErrors.length > 0) {
+                          const v = validatePassword(e.target.value);
+                          setPasswordErrors(v.errors);
+                        }
+                      }}
                       required
+                      maxLength={128}
                     />
+                    {passwordErrors.length > 0 && (
+                      <div className="text-xs text-destructive space-y-0.5">
+                        <p className="font-medium">Password needs:</p>
+                        {passwordErrors.map((err, i) => (
+                          <p key={i} className="flex items-center gap-1">
+                            <AlertCircle className="h-3 w-3" /> {err}
+                          </p>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="signup-confirm">Confirm Password</Label>

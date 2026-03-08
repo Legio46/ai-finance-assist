@@ -48,7 +48,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
 
-      console.log('Profile loaded:', data);
+      // Profile loaded successfully
       setProfile(data);
     } catch (error) {
       console.error('Error refreshing profile:', error);
