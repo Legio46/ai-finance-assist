@@ -507,6 +507,89 @@ const InvestmentTracker = () => {
           </div>
         </div>
 
+        {/* Portfolio Charts */}
+        {investments.length > 0 && (() => {
+          const CHART_COLORS = [
+            'hsl(var(--primary))',
+            'hsl(24, 95%, 53%)',     // orange
+            'hsl(142, 71%, 45%)',    // green
+            'hsl(262, 83%, 58%)',    // purple
+            'hsl(199, 89%, 48%)',    // cyan
+            'hsl(340, 75%, 55%)',    // pink
+            'hsl(47, 96%, 53%)',     // yellow
+          ];
+
+          // Allocation pie data
+          const allocationData = Object.entries(investmentsByType).map(([type, items]) => ({
+            name: type,
+            value: items.reduce((sum: number, inv: any) => sum + inv.quantity * inv.current_price, 0),
+          }));
+
+          // Performance bar data
+          const performanceData = Object.entries(investmentsByType).map(([type, items]) => {
+            const stats = getTypeStats(items);
+            return {
+              name: type,
+              gain: Number(stats.totalGainLoss.toFixed(2)),
+              percentage: Number(stats.percentage.toFixed(1)),
+            };
+          });
+
+          return (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Allocation Pie Chart */}
+              <div className="p-4 bg-muted/50 rounded-lg">
+                <h3 className="text-sm font-medium mb-3">Portfolio Allocation</h3>
+                <ResponsiveContainer width="100%" height={220}>
+                  <PieChart>
+                    <Pie
+                      data={allocationData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={50}
+                      outerRadius={80}
+                      paddingAngle={3}
+                      dataKey="value"
+                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    >
+                      {allocationData.map((_, index) => (
+                        <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value: number) => formatCurrency(value)} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Performance Bar Chart */}
+              <div className="p-4 bg-muted/50 rounded-lg">
+                <h3 className="text-sm font-medium mb-3">Performance by Category</h3>
+                <ResponsiveContainer width="100%" height={220}>
+                  <BarChart data={performanceData} layout="vertical" margin={{ left: 20 }}>
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                    <XAxis type="number" tickFormatter={(v) => formatCurrency(v)} className="text-xs" />
+                    <YAxis type="category" dataKey="name" width={80} className="text-xs" />
+                    <Tooltip
+                      formatter={(value: number, name: string) =>
+                        name === 'gain' ? formatCurrency(value) : `${value}%`
+                      }
+                      contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }}
+                    />
+                    <Bar dataKey="gain" name="Gain/Loss" radius={[0, 4, 4, 0]}>
+                      {performanceData.map((entry, index) => (
+                        <Cell
+                          key={index}
+                          fill={entry.gain >= 0 ? 'hsl(142, 71%, 45%)' : 'hsl(var(--destructive))'}
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Category Breakdown */}
         {Object.keys(investmentsByType).length > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
