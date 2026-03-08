@@ -11,7 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from '@/contexts/LanguageContext';
-import { LineChart, Line, ResponsiveContainer, Tooltip, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Legend, Area, AreaChart } from 'recharts';
+import { LineChart, Line, ResponsiveContainer, Tooltip, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
 
 interface AssetPrice {
   price_eur: number;
