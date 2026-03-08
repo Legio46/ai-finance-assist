@@ -371,11 +371,28 @@ const Auth = () => {
                     <Input
                       id="signup-password"
                       type="password"
-                      placeholder="Create a password"
+                      placeholder="Create a strong password"
                       value={signUpData.password}
-                      onChange={(e) => setSignUpData({ ...signUpData, password: e.target.value })}
+                      onChange={(e) => {
+                        setSignUpData({ ...signUpData, password: e.target.value });
+                        if (passwordErrors.length > 0) {
+                          const v = validatePassword(e.target.value);
+                          setPasswordErrors(v.errors);
+                        }
+                      }}
                       required
+                      maxLength={128}
                     />
+                    {passwordErrors.length > 0 && (
+                      <div className="text-xs text-destructive space-y-0.5">
+                        <p className="font-medium">Password needs:</p>
+                        {passwordErrors.map((err, i) => (
+                          <p key={i} className="flex items-center gap-1">
+                            <AlertCircle className="h-3 w-3" /> {err}
+                          </p>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="signup-confirm">Confirm Password</Label>
