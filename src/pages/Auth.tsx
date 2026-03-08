@@ -68,9 +68,31 @@ const Auth = () => {
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     
-    await signIn(signInData.email, signInData.password, signInData.rememberMe);
+    if (isLocked) {
+      toast({
+        title: "Account Temporarily Locked",
+        description: `Too many failed attempts. Try again in ${remainingLockSeconds} seconds.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    const result = await signIn(signInData.email.trim().toLowerCase(), signInData.password, signInData.rememberMe);
+    
+    if (result.error) {
+      recordAttempt();
+      if (attemptsLeft <= 1) {
+        toast({
+          title: "Account Locked",
+          description: "Too many failed login attempts. Please wait 5 minutes before trying again.",
+          variant: "destructive",
+        });
+      }
+    } else {
+      resetAttempts();
+    }
     setIsLoading(false);
   };
 
@@ -78,11 +100,28 @@ const Auth = () => {
     e.preventDefault();
     
     if (signUpData.password !== signUpData.confirmPassword) {
+      toast({
+        title: "Passwords don't match",
+        description: "Please ensure both passwords match.",
+        variant: "destructive",
+      });
       return;
     }
 
+    const validation = validatePassword(signUpData.password);
+    if (!validation.valid) {
+      setPasswordErrors(validation.errors);
+      toast({
+        title: "Weak Password",
+        description: "Please fix the password requirements below.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setPasswordErrors([]);
+
     setIsLoading(true);
-    await signUp(signUpData.email, signUpData.password, signUpData.fullName, signUpData.accountType);
+    await signUp(signUpData.email.trim().toLowerCase(), signUpData.password, signUpData.fullName.trim(), signUpData.accountType);
     setIsLoading(false);
   };
 
