@@ -844,36 +844,11 @@ const FinancialCalendar = () => {
             </div>
             <div>
               <Label>Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !formData.event_date && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {formData.event_date
-                      ? format(new Date(formData.event_date + 'T00:00:00'), 'PPP')
-                      : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={formData.event_date ? new Date(formData.event_date + 'T00:00:00') : undefined}
-                    onSelect={(date) => {
-                      if (date) {
-                        const dateStr = format(date, 'yyyy-MM-dd');
-                        setFormData({ ...formData, event_date: dateStr });
-                      }
-                    }}
-                    initialFocus
-                    className={cn("p-3 pointer-events-auto")}
-                  />
-                </PopoverContent>
-              </Popover>
+              <DatePicker
+                value={formData.event_date}
+                onChange={(val) => setFormData({ ...formData, event_date: val })}
+                placeholder="Pick a date"
+              />
             </div>
             <div>
               <Label htmlFor="notes">Notes (Optional)</Label>
