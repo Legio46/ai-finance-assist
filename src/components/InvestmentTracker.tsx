@@ -551,6 +551,7 @@ const InvestmentTracker = () => {
                         innerRadius={45}
                         outerRadius={75}
                         paddingAngle={3}
+                        minAngle={5}
                         dataKey="value"
                       >
                         {allocationData.map((_, index) => (
@@ -572,6 +573,7 @@ const InvestmentTracker = () => {
                           />
                           <span className="text-muted-foreground">{entry.name}</span>
                           <span className="font-medium ml-auto">{pct}%</span>
+                          <span className="text-xs text-muted-foreground">({formatCurrency(entry.value)})</span>
                         </div>
                       );
                     })}
