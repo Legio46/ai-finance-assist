@@ -55,19 +55,19 @@ double_confirm_changes = true
 enable_confirmations = false
 
 [functions]
-verify_jwt = true
+verify_jwt = false
 
 [functions.create-checkout]
-verify_jwt = true
+verify_jwt = false
 
 [functions.check-subscription]
-verify_jwt = true
+verify_jwt = false
 
 [functions.customer-portal]
-verify_jwt = true
+verify_jwt = false
 
 [functions.ai-advisor]
-verify_jwt = true
+verify_jwt = false
 
 [functions.crypto-prices]
 verify_jwt = false
