@@ -21,6 +21,7 @@ import FinancialCalendar from '@/components/FinancialCalendar';
 import ReceiptImage from '@/components/ReceiptImage';
 import FinancialPlanner from '@/components/FinancialPlanner';
 import ExportDataButton from '@/components/ExportDataButton';
+import AIPersonalInsights from '@/components/AIPersonalInsights';
 
 type CategoryView = 'overview' | 'expenses' | 'credit-cards' | 'income-budget' | 'recurring-payments' | 'investments' | 'goals' | 'calendar' | 'planner';
 
@@ -722,6 +723,9 @@ const PersonalDashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* AI Insights */}
+      <AIPersonalInsights />
 
       {/* Personal Basic Categories */}
       <div className="space-y-4">
