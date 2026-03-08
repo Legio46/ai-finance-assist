@@ -9,6 +9,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import SecurityBadge from '@/components/SecurityBadge';
+import { useLoginRateLimit } from '@/hooks/useLoginRateLimit';
+import { validatePassword } from '@/utils/inputSanitizer';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle, Lock } from 'lucide-react';
 
 const Auth = () => {
   const { user, signIn, signUp, resetPassword, loading } = useAuth();
