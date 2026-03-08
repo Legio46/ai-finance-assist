@@ -41,6 +41,7 @@ interface InsightsData {
 const AIPersonalInsights = () => {
   const [insights, setInsights] = useState<InsightsData | null>(null);
   const [loading, setLoading] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
   const { toast } = useToast();
   const { formatCurrency } = useLanguage();
