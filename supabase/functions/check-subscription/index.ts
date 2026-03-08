@@ -1,20 +1,22 @@
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from "npm:@supabase/supabase-js@2.57.0";
+import { createClient } from "npm:@supabase/supabase-js@2";
 import { getCorsHeaders, handleCors } from "../_shared/cors.ts";
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
+};
+
 Deno.serve(async (req: Request) => {
-  // Handle CORS preflight
-  const corsResponse = handleCors(req);
-  if (corsResponse) return corsResponse;
-  
-  const corsHeaders = getCorsHeaders(req);
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
 
   try {
-    const supabaseUrl = Deno.env.get("SUPABASE_URL");
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
 
-    if (!supabaseUrl || !supabaseServiceKey) {
+    if (!supabaseServiceKey) {
       throw new Error("Missing Supabase configuration");
     }
 
@@ -22,66 +24,43 @@ Deno.serve(async (req: Request) => {
       throw new Error("Missing Stripe configuration");
     }
 
-    const supabaseClient = createClient(
-      supabaseUrl,
-      supabaseServiceKey,
-      { auth: { persistSession: false } }
-    );
-
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
       return new Response(
         JSON.stringify({ error: "No authorization header provided" }),
-        {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
     const token = authHeader.replace("Bearer ", "");
-    
-    // Use getClaims for JWT verification (works with signing-keys)
-    const { data: claimsData, error: claimsError } = await supabaseClient.auth.getClaims(token);
-    
-    if (claimsError || !claimsData?.claims) {
-      // Fallback to getUser if getClaims fails
-      const { data: userData, error: userError } = await supabaseClient.auth.getUser(token);
-      if (userError || !userData.user?.email) {
-        return new Response(
-          JSON.stringify({ error: "Authentication failed" }),
-          {
-            status: 401,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
-        );
-      }
-      var user = userData.user;
-    } else {
-      // Get full user data using the validated token
-      const { data: userData, error: userError } = await supabaseClient.auth.getUser(token);
-      if (userError || !userData.user?.email) {
-        return new Response(
-          JSON.stringify({ error: "Authentication failed" }),
-          {
-            status: 401,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
-        );
-      }
-      var user = userData.user;
+
+    // Create service-role client for admin operations
+    const supabaseClient = createClient(supabaseUrl, supabaseServiceKey, {
+      auth: { persistSession: false },
+    });
+
+    // Validate JWT by fetching user with the token
+    const { data: userData, error: userError } = await supabaseClient.auth.getUser(token);
+
+    if (userError || !userData.user?.email) {
+      console.error("Auth error:", userError?.message);
+      return new Response(
+        JSON.stringify({ error: "Authentication failed" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     const user = userData.user;
+    console.log("User authenticated:", user.id, user.email);
 
     const stripe = await import("npm:stripe@14.21.0");
     const stripeClient = new stripe.default(stripeSecretKey, {
       apiVersion: "2023-10-16",
     });
 
-    const customers = await stripeClient.customers.list({ 
-      email: user.email, 
-      limit: 1 
+    const customers = await stripeClient.customers.list({
+      email: user.email,
+      limit: 1,
     });
 
     if (customers.data.length === 0) {
@@ -98,15 +77,8 @@ Deno.serve(async (req: Request) => {
       );
 
       return new Response(
-        JSON.stringify({
-          subscribed: false,
-          trial_active: false,
-          subscription_tier: null,
-        }),
-        {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
+        JSON.stringify({ subscribed: false, trial_active: false, subscription_tier: null }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -135,15 +107,14 @@ Deno.serve(async (req: Request) => {
       const price = await stripeClient.prices.retrieve(priceId);
       const amount = price.unit_amount || 0;
 
-      // Match prices from create-checkout: basic = 500 cents (€5), pro = 1000 cents (€10)
       if (amount === 500) {
         subscriptionTier = "personal_basic";
       } else if (amount === 1000) {
         subscriptionTier = "personal_pro";
       } else if (amount === 800 || amount === 1499) {
-        subscriptionTier = "personal_basic"; // Legacy price support
+        subscriptionTier = "personal_basic";
       } else if (amount === 2999) {
-        subscriptionTier = "personal_pro"; // Legacy price support
+        subscriptionTier = "personal_pro";
       }
     }
 
@@ -166,21 +137,13 @@ Deno.serve(async (req: Request) => {
         subscription_tier: subscriptionTier,
         trial_ends_at: trialEndsAt,
       }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
     console.error("Subscription check error:", error);
     return new Response(
-      JSON.stringify({ 
-        error: error instanceof Error ? error.message : "Internal server error" 
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      JSON.stringify({ error: error instanceof Error ? error.message : "Internal server error" }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 });
