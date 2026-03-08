@@ -41,8 +41,8 @@ Deno.serve(async (req: Request) => {
       global: { headers: { Authorization: authHeader } },
     });
 
-    // Validate JWT
-    const { data: userData, error: userError } = await userClient.auth.getUser(token);
+    // Validate JWT - getUser() uses the Authorization header set on the client
+    const { data: userData, error: userError } = await userClient.auth.getUser();
 
     if (userError || !userData.user?.email) {
       console.error("Auth error:", userError?.message);
