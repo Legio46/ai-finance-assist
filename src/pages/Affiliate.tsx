@@ -384,7 +384,7 @@ const Affiliate = () => {
                             {referral.subscription_tier || 'Free'}
                           </TableCell>
                           <TableCell className="text-right font-medium">
-                            ${(referral.commission_earned || 0).toFixed(2)}
+                            €{(referral.commission_earned || 0).toFixed(2)}
                           </TableCell>
                         </TableRow>
                       ))}

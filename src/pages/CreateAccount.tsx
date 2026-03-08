@@ -84,11 +84,27 @@ const CreateAccount = () => {
                 id="password"
                 type="password"
                 value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, password: e.target.value });
+                  if (passwordErrors.length > 0) {
+                    const v = validatePassword(e.target.value);
+                    setPasswordErrors(v.errors);
+                  }
+                }}
                 placeholder="Create a strong password"
                 required
                 maxLength={128}
               />
+              {passwordErrors.length > 0 && (
+                <div className="text-xs text-destructive space-y-0.5">
+                  <p className="font-medium">Password needs:</p>
+                  {passwordErrors.map((err, i) => (
+                    <p key={i} className="flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" /> {err}
+                    </p>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="fullName">Full Name</Label>
