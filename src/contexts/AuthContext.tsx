@@ -55,6 +55,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const checkSubscription = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('check-subscription');
+      if (!error && data) {
+        // Profile will be updated server-side, refresh it
+        await refreshProfile();
+      }
+    } catch (err) {
+      console.error('Error checking subscription:', err);
+    }
+  };
+
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -66,6 +78,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // Use setTimeout to avoid Supabase deadlock
           setTimeout(() => {
             refreshProfile(session.user.id);
+            // Check subscription status on login
+            if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+              checkSubscription();
+            }
           }, 0);
         } else {
           setProfile(null);
@@ -82,12 +98,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (session?.user) {
         refreshProfile(session.user.id);
+        checkSubscription();
       }
 
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    // Periodically check subscription status (every 5 minutes)
+    const interval = setInterval(() => {
+      if (user) {
+        checkSubscription();
+      }
+    }, 5 * 60 * 1000);
+
+    return () => {
+      subscription.unsubscribe();
+      clearInterval(interval);
+    };
   }, []);
 
 
