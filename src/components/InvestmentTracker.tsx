@@ -526,13 +526,41 @@ const InvestmentTracker = () => {
             value: items.reduce((sum: number, inv: any) => sum + inv.quantity * inv.current_price, 0),
           }));
 
-          // Performance bar data
-          const performanceData = Object.entries(investmentsByType).map(([type, items]) => {
+          // Performance line data - one point per category with separate lines for Stocks & Crypto
+          const categoryStats: Record<string, { gain: number; percentage: number }> = {};
+          Object.entries(investmentsByType).forEach(([type, items]) => {
             const stats = getTypeStats(items);
-            return {
-              name: type,
+            categoryStats[type] = {
               gain: Number(stats.totalGainLoss.toFixed(2)),
               percentage: Number(stats.percentage.toFixed(1)),
+            };
+          });
+
+          // Create data points for the line chart: one point per investment item
+          const performanceData = [
+            { name: 'Stocks', Stocks: categoryStats['Stocks']?.percentage ?? 0, Crypto: null as number | null },
+            { name: 'Crypto', Stocks: null as number | null, Crypto: categoryStats['Crypto']?.percentage ?? 0 },
+          ];
+
+          // Better: use a shared axis with both values at each point
+          const performanceLineData = [
+            { name: 'Value', Stocks: categoryStats['Stocks']?.percentage ?? 0, Crypto: categoryStats['Crypto']?.percentage ?? 0 },
+            { name: 'Return %', Stocks: categoryStats['Stocks']?.percentage ?? 0, Crypto: categoryStats['Crypto']?.percentage ?? 0 },
+          ];
+
+          // If there are individual investments, create per-investment data points
+          const stockItems = (investmentsByType['Stocks'] || []) as any[];
+          const cryptoItems = (investmentsByType['Crypto'] || []) as any[];
+          const allItems = [...stockItems.map((i: any) => ({ ...i, cat: 'Stocks' })), ...cryptoItems.map((i: any) => ({ ...i, cat: 'Crypto' }))];
+          
+          const lineChartData = allItems.map((item: any) => {
+            const currentVal = item.current_price * item.quantity;
+            const purchaseVal = item.purchase_price * item.quantity;
+            const returnPct = purchaseVal > 0 ? ((currentVal - purchaseVal) / purchaseVal) * 100 : 0;
+            return {
+              name: item.investment_name,
+              Stocks: item.cat === 'Stocks' ? Number(returnPct.toFixed(1)) : null,
+              Crypto: item.cat === 'Crypto' ? Number(returnPct.toFixed(1)) : null,
             };
           });
 
