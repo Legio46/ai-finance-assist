@@ -609,37 +609,38 @@ const InvestmentTracker = () => {
                 </div>
               </div>
 
-              {/* Performance Line Chart */}
+              {/* Performance Line Chart - Stocks vs Crypto */}
               <div className="p-4 bg-muted/50 rounded-lg">
                 <h3 className="text-sm font-medium mb-3">Performance by Category</h3>
                 <ResponsiveContainer width="100%" height={200}>
-                  <AreaChart data={performanceData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
-                    <defs>
-                      <linearGradient id="gainGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(142, 71%, 45%)" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="hsl(142, 71%, 45%)" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
+                  <LineChart data={lineChartData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                    <XAxis dataKey="name" className="text-xs" tick={{ fontSize: 11 }} />
+                    <XAxis dataKey="name" className="text-xs" tick={{ fontSize: 10 }} angle={-20} textAnchor="end" />
                     <YAxis tickFormatter={(v) => `${v}%`} className="text-xs" tick={{ fontSize: 11 }} />
                     <Tooltip
-                      formatter={(value: number, name: string) =>
-                        name === 'Return %' ? `${value}%` : formatCurrency(value)
-                      }
+                      formatter={(value: number) => `${value}%`}
                       contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
                     />
-                    <Area
+                    <Legend />
+                    <Line
                       type="monotone"
-                      dataKey="percentage"
-                      name="Return %"
-                      stroke="hsl(var(--primary))"
-                      fill="url(#gainGradient)"
+                      dataKey="Stocks"
+                      stroke="hsl(217, 91%, 60%)"
                       strokeWidth={2}
-                      dot={{ r: 4, fill: 'hsl(var(--primary))' }}
+                      dot={{ r: 4, fill: 'hsl(217, 91%, 60%)' }}
                       activeDot={{ r: 6 }}
+                      connectNulls={false}
                     />
-                  </AreaChart>
+                    <Line
+                      type="monotone"
+                      dataKey="Crypto"
+                      stroke="hsl(142, 71%, 45%)"
+                      strokeWidth={2}
+                      dot={{ r: 4, fill: 'hsl(142, 71%, 45%)' }}
+                      activeDot={{ r: 6 }}
+                      connectNulls={false}
+                    />
+                  </LineChart>
                 </ResponsiveContainer>
               </div>
             </div>
