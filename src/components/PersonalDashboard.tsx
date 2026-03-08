@@ -38,6 +38,7 @@ const PersonalDashboard = () => {
   const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
   const [uploadingReceipt, setUploadingReceipt] = useState(false);
   const [activeView, setActiveView] = useState<CategoryView>('overview');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   
   const isOnTrial = profile?.trial_ends_at && new Date(profile.trial_ends_at) > new Date();
   const hasBasicFeatures = Boolean(
