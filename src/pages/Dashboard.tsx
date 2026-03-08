@@ -119,7 +119,7 @@ const Dashboard = () => {
                 </Link>
               </Button>
             )}
-            {hasActiveSubscription && (
+            {stripeSubscribed && (
               <Button variant="ghost" size="sm" onClick={handleManageSubscription}>
                 <Settings className="w-4 h-4 mr-2" />
                 Manage Plan
