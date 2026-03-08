@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Brain, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, Lightbulb, RefreshCcw, Sparkles, Loader2 } from 'lucide-react';
+import { Brain, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, Lightbulb, RefreshCcw, Sparkles, Loader2, ChevronDown, ChevronUp, EyeOff } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -41,6 +41,7 @@ interface InsightsData {
 const AIPersonalInsights = () => {
   const [insights, setInsights] = useState<InsightsData | null>(null);
   const [loading, setLoading] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
   const { toast } = useToast();
   const { formatCurrency } = useLanguage();
@@ -132,13 +133,19 @@ const AIPersonalInsights = () => {
           <h2 className="text-lg font-semibold">AI Insights</h2>
           <Badge variant="secondary" className="text-xs">Powered by AI</Badge>
         </div>
-        <Button variant="ghost" size="sm" onClick={fetchInsights} disabled={loading} className="gap-1">
-          <RefreshCcw className="w-3 h-3" />
-          Refresh
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="sm" onClick={fetchInsights} disabled={loading} className="gap-1">
+            <RefreshCcw className="w-3 h-3" />
+            Refresh
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => setHidden(!hidden)} className="gap-1">
+            {hidden ? <ChevronDown className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+            {hidden ? 'Show' : 'Hide'}
+          </Button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {hidden ? null : <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Spending Insights */}
         {insights.spending_insights.length > 0 && (
           <Card>
@@ -237,7 +244,7 @@ const AIPersonalInsights = () => {
             </CardContent>
           </Card>
         )}
-      </div>
+      </div>}
     </div>
   );
 };
