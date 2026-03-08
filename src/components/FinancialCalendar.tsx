@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar as CalendarLucide, ChevronLeft, ChevronRight, DollarSign, CreditCard, TrendingUp, Wallet, Plus, Trash2, Edit2, Sparkles, Loader2, CalendarIcon } from 'lucide-react';
+import { Calendar as CalendarLucide, ChevronLeft, ChevronRight, DollarSign, CreditCard, TrendingUp, Wallet, Plus, Trash2, Edit2, Sparkles, Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
