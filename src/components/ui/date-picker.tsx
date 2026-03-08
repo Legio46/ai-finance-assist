@@ -8,6 +8,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
+  PopoverClose,
 } from "@/components/ui/popover";
 
 interface DatePickerProps {
@@ -46,6 +47,13 @@ export function DatePicker({ value, onChange, placeholder = "Pick a date", requi
           initialFocus
           className={cn("p-3 pointer-events-auto")}
         />
+        <div className="border-t p-2">
+          <PopoverClose asChild>
+            <Button size="sm" className="w-full">
+              Done
+            </Button>
+          </PopoverClose>
+        </div>
       </PopoverContent>
     </Popover>
   );
