@@ -80,3 +80,6 @@ verify_jwt = false
 
 [functions.ai-calendar-suggestions]
 verify_jwt = true
+
+[functions.ai-personal-insights]
+verify_jwt = true
