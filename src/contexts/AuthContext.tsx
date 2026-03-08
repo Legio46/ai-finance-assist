@@ -118,69 +118,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
 
-  const processReferral = async (newUserId: string) => {
+  const processReferral = async () => {
     try {
-      // Get stored referral code
       const referralCode = localStorage.getItem('referral_code');
       if (!referralCode) return;
 
-      // Find the affiliate with this code
-      const { data: affiliate, error: affiliateError } = await supabase
-        .from('affiliates')
-        .select('*')
-        .eq('affiliate_code', referralCode)
-        .maybeSingle();
+      const { error } = await supabase.functions.invoke('process-referral', {
+        body: { referralCode },
+      });
 
-      if (affiliateError || !affiliate) {
-        console.log('No valid affiliate found for code:', referralCode);
-        localStorage.removeItem('referral_code');
-        return;
+      if (error) {
+        console.error('Error processing referral:', error);
+      } else {
+        console.log('Referral processed successfully');
       }
-
-      // Don't allow self-referral
-      if (affiliate.user_id === newUserId) {
-        console.log('Self-referral not allowed');
-        localStorage.removeItem('referral_code');
-        return;
-      }
-
-      // Check if this user was already referred
-      const { data: existingReferral } = await supabase
-        .from('referrals')
-        .select('id')
-        .eq('referred_user_id', newUserId)
-        .maybeSingle();
-
-      if (existingReferral) {
-        console.log('User already has a referral');
-        localStorage.removeItem('referral_code');
-        return;
-      }
-
-      // Create the referral record
-      const { error: referralError } = await supabase
-        .from('referrals')
-        .insert({
-          affiliate_id: affiliate.id,
-          referred_user_id: newUserId,
-          commission_earned: 0, // Will be updated when user subscribes
-          subscription_tier: 'free',
-        });
-
-      if (referralError) {
-        console.error('Error creating referral:', referralError);
-        return;
-      }
-
-      // Update affiliate stats
-      await supabase
-        .from('affiliates')
-        .update({
-          referrals_count: (affiliate.referrals_count || 0) + 1,
-        })
-        .eq('id', affiliate.id);
-
-      console.log('Referral processed successfully');
+      
       localStorage.removeItem('referral_code');
     } catch (error) {
       console.error('Error processing referral:', error);
