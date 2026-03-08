@@ -51,8 +51,23 @@ const Dashboard = () => {
   }
 
   const isTrialActive = profile?.trial_end && new Date(profile.trial_end) > new Date();
+  const isTrialEndsAtActive = profile?.trial_ends_at && new Date(profile.trial_ends_at) > new Date();
+  const trialActive = isTrialActive || isTrialEndsAtActive;
   const subscriptionStatus = profile?.subscription_tier || 'free';
-  const hasBusinessAccess = subscriptionStatus === 'business' || (subscriptionStatus === 'free' && isTrialActive) || isAdmin;
+  const hasActiveSubscription = profile?.subscription_status === 'active';
+  const hasBusinessAccess = subscriptionStatus === 'business' || (subscriptionStatus === 'free' && trialActive) || isAdmin;
+
+  const handleManageSubscription = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('customer-portal');
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, '_blank');
+      }
+    } catch (err) {
+      console.error('Error opening customer portal:', err);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
