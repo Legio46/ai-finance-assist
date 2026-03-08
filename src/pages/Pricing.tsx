@@ -11,6 +11,32 @@ import { useAuth } from "@/contexts/AuthContext";
 const Pricing = () => {
   const { toast } = useToast();
   const { t, formatCurrency } = useLanguage();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleCheckout = (plan: string) => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in or create an account before subscribing.",
+      });
+      navigate('/auth');
+      return;
+    }
+    supabase.functions.invoke('create-checkout', {
+      body: { plan }
+    }).then(({ data, error }) => {
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to create checkout session",
+          variant: "destructive",
+        });
+      } else if (data?.url) {
+        window.open(data.url, '_blank');
+      }
+    });
+  };
   
   const basicFeatures = [
     "Track expenses and income (cash + cards)",
