@@ -5,15 +5,13 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar as CalendarLucide, ChevronLeft, ChevronRight, DollarSign, CreditCard, TrendingUp, Wallet, Plus, Trash2, Edit2, Sparkles, Loader2, CalendarIcon } from 'lucide-react';
+import { Calendar as CalendarLucide, ChevronLeft, ChevronRight, DollarSign, CreditCard, TrendingUp, Wallet, Plus, Trash2, Edit2, Sparkles, Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { format, parse } from 'date-fns';
+import { DatePicker } from '@/components/ui/date-picker';
 import {
   Dialog,
   DialogContent,
@@ -846,36 +844,11 @@ const FinancialCalendar = () => {
             </div>
             <div>
               <Label>Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !formData.event_date && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {formData.event_date
-                      ? format(new Date(formData.event_date + 'T00:00:00'), 'PPP')
-                      : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={formData.event_date ? new Date(formData.event_date + 'T00:00:00') : undefined}
-                    onSelect={(date) => {
-                      if (date) {
-                        const dateStr = format(date, 'yyyy-MM-dd');
-                        setFormData({ ...formData, event_date: dateStr });
-                      }
-                    }}
-                    initialFocus
-                    className={cn("p-3 pointer-events-auto")}
-                  />
-                </PopoverContent>
-              </Popover>
+              <DatePicker
+                value={formData.event_date}
+                onChange={(val) => setFormData({ ...formData, event_date: val })}
+                placeholder="Pick a date"
+              />
             </div>
             <div>
               <Label htmlFor="notes">Notes (Optional)</Label>

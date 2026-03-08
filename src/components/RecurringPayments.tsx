@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Calendar, AlertCircle, Trash2, Check, RotateCcw } from 'lucide-react';
+import { DatePicker } from '@/components/ui/date-picker';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/hooks/use-toast";
@@ -326,10 +327,10 @@ const RecurringPayments = () => {
             </div>
             <div>
               <Label>Next Due Date</Label>
-              <Input
-                type="date"
+              <DatePicker
                 value={formData.next_due_date}
-                onChange={(e) => setFormData({...formData, next_due_date: e.target.value})}
+                onChange={(val) => setFormData({...formData, next_due_date: val})}
+                placeholder="Pick due date"
                 required
               />
             </div>

@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, DollarSign, Trash2 } from 'lucide-react';
+import { DatePicker } from '@/components/ui/date-picker';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/hooks/use-toast";
@@ -226,10 +227,10 @@ const IncomeTracker = () => {
             </div>
             <div>
               <Label>Start Date</Label>
-              <Input
-                type="date"
+              <DatePicker
                 value={formData.start_date}
-                onChange={(e) => setFormData({...formData, start_date: e.target.value})}
+                onChange={(val) => setFormData({...formData, start_date: val})}
+                placeholder="Pick start date"
                 required
               />
             </div>

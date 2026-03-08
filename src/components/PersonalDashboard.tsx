@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Plus, CreditCard, TrendingUp, TrendingDown, PieChart, Camera, Upload, X, Eye, Wallet, Target, Calendar, LineChart, RefreshCcw, Lock, Calculator, LayoutDashboard, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { DatePicker } from '@/components/ui/date-picker';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/hooks/use-toast";
@@ -257,7 +258,7 @@ const PersonalDashboard = () => {
                     </div>
                     <div>
                       <Label htmlFor="date">Date</Label>
-                      <Input id="date" type="date" value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} required />
+                      <DatePicker value={formData.date} onChange={(val) => setFormData({...formData, date: val})} placeholder="Pick a date" required />
                     </div>
                     <div>
                       <Label>Receipt Image (Optional)</Label>

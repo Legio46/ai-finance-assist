@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Target, Trash2 } from 'lucide-react';
+import { DatePicker } from '@/components/ui/date-picker';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/hooks/use-toast";
@@ -211,10 +212,10 @@ const FinancialGoals = () => {
             </div>
             <div>
               <Label>Target Date</Label>
-              <Input
-                type="date"
+              <DatePicker
                 value={formData.target_date}
-                onChange={(e) => setFormData({...formData, target_date: e.target.value})}
+                onChange={(val) => setFormData({...formData, target_date: val})}
+                placeholder="Pick target date"
                 required
               />
             </div>

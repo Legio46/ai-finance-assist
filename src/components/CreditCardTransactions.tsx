@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import { DatePicker } from '@/components/ui/date-picker';
 import { Plus, Calendar, DollarSign, Tag } from 'lucide-react';
 import { format } from 'date-fns';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -245,11 +246,10 @@ const CreditCardTransactions: React.FC<CreditCardTransactionsProps> = ({ cardTyp
 
               <div>
                 <Label htmlFor="transaction_date">Date</Label>
-                <Input
-                  id="transaction_date"
-                  type="date"
+                <DatePicker
                   value={formData.transaction_date}
-                  onChange={(e) => setFormData({...formData, transaction_date: e.target.value})}
+                  onChange={(val) => setFormData({...formData, transaction_date: val})}
+                  placeholder="Pick transaction date"
                   required
                 />
               </div>
