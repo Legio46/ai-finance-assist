@@ -132,15 +132,16 @@ const Index = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Personal Plan */}
+            {/* Personal Basic Plan */}
             <Card className="relative border-2">
               <CardHeader className="text-center pb-8">
-                <CardTitle className="text-2xl">{t('personal')}</CardTitle>
+                <CardTitle className="text-2xl">Personal Basic</CardTitle>
                 <CardDescription>{t('perfectForIndividuals')}</CardDescription>
                 <div className="mt-4">
-                  <span className="text-4xl font-bold">$29.99</span>
+                  <span className="text-4xl font-bold">€5</span>
                   <span className="text-muted-foreground">/{t('monthly')}</span>
                 </div>
+                <Badge variant="secondary" className="w-fit mx-auto mt-2">7-day free trial</Badge>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center space-x-2">
