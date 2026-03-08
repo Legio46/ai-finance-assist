@@ -551,6 +551,7 @@ const InvestmentTracker = () => {
                         innerRadius={45}
                         outerRadius={75}
                         paddingAngle={3}
+                        minAngle={5}
                         dataKey="value"
                       >
                         {allocationData.map((_, index) => (
