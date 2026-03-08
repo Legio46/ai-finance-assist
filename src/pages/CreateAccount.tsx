@@ -26,6 +26,14 @@ const CreateAccount = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const validation = validatePassword(formData.password);
+    if (!validation.valid) {
+      setPasswordErrors(validation.errors);
+      return;
+    }
+    setPasswordErrors([]);
+    
     setIsLoading(true);
     
     const result = await signUp(
