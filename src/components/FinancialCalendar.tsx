@@ -629,31 +629,37 @@ const FinancialCalendar = () => {
                       key={day}
                       onClick={() => setSelectedDate(isSelected ? null : dateStr)}
                       className={cn(
-                        "h-16 md:h-20 border rounded-md p-1 cursor-pointer transition-colors hover:bg-accent/50",
-                        isToday(day) && "border-primary bg-primary/5",
-                        isSelected && "border-primary bg-primary/10",
+                        "min-h-[4.5rem] md:min-h-[5.5rem] border rounded-md p-1 cursor-pointer transition-colors hover:bg-accent/50",
+                        isToday(day) && "border-primary border-2 bg-primary/5",
+                        isSelected && "border-primary border-2 bg-primary/10 ring-2 ring-primary/20",
+                        dayEvents.length > 0 && "bg-accent/10",
                         "flex flex-col"
                       )}
                     >
                       <span className={cn(
-                        "text-xs font-medium",
+                        "text-xs font-semibold mb-0.5",
                         isToday(day) && "text-primary"
                       )}>
                         {day}
                       </span>
-                      <div className="flex flex-wrap gap-0.5 mt-1 overflow-hidden">
-                        {dayEvents.slice(0, 3).map(event => (
+                      <div className="flex flex-col gap-0.5 overflow-hidden flex-1">
+                        {dayEvents.slice(0, 2).map(event => (
                           <div
                             key={event.id}
                             className={cn(
-                              "w-2 h-2 rounded-full",
-                              getEventColor(event.type)
+                              "flex items-center gap-1 rounded px-1 py-0.5 text-[10px] md:text-xs font-medium leading-tight truncate",
+                              event.type === 'bill' && "bg-destructive/15 text-destructive",
+                              event.type === 'income' && "bg-success/15 text-success",
+                              event.type === 'investment' && "bg-primary/15 text-primary",
+                              event.type === 'goal' && "bg-warning/15 text-warning",
+                              event.type === 'custom' && "bg-accent text-accent-foreground"
                             )}
-                            title={event.name}
-                          />
+                          >
+                            <span className="truncate">{event.name}</span>
+                          </div>
                         ))}
-                        {dayEvents.length > 3 && (
-                          <span className="text-[10px] text-muted-foreground">+{dayEvents.length - 3}</span>
+                        {dayEvents.length > 2 && (
+                          <span className="text-[10px] font-medium text-muted-foreground px-1">+{dayEvents.length - 2} more</span>
                         )}
                       </div>
                     </div>
