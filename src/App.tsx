@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Layout from "@/components/Layout";
 import Index from "./pages/Index";
 import Home from "./pages/Home";
@@ -19,8 +20,14 @@ import CreateAccount from "./pages/CreateAccount";
 import NotFound from "./pages/NotFound";
 import Affiliate from "./pages/Affiliate";
 import CurrencyConverter from "./pages/CurrencyConverter";
+import { useSessionTimeout } from "@/hooks/useSessionTimeout";
 
 const queryClient = new QueryClient();
+
+const SessionTimeoutWrapper = ({ children }: { children: React.ReactNode }) => {
+  useSessionTimeout();
+  return <>{children}</>;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -29,21 +36,23 @@ const App = () => (
       <Sonner />
         <BrowserRouter>
           <AuthProvider>
-            <Routes>
-              <Route path="/" element={<Layout><Home /></Layout>} />
-              <Route path="/about" element={<Layout><About /></Layout>} />
-              <Route path="/pricing" element={<Layout><Pricing /></Layout>} />
-              <Route path="/contact" element={<Layout><Contact /></Layout>} />
-              <Route path="/privacy" element={<Layout><PrivacyPolicy /></Layout>} />
-              <Route path="/terms" element={<Layout><TermsOfService /></Layout>} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/create-account" element={<CreateAccount />} />
-              <Route path="/affiliate" element={<Affiliate />} />
-              <Route path="/converter" element={<CurrencyConverter />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <SessionTimeoutWrapper>
+              <Routes>
+                <Route path="/" element={<Layout><Home /></Layout>} />
+                <Route path="/about" element={<Layout><About /></Layout>} />
+                <Route path="/pricing" element={<Layout><Pricing /></Layout>} />
+                <Route path="/contact" element={<Layout><Contact /></Layout>} />
+                <Route path="/privacy" element={<Layout><PrivacyPolicy /></Layout>} />
+                <Route path="/terms" element={<Layout><TermsOfService /></Layout>} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>} />
+                <Route path="/create-account" element={<CreateAccount />} />
+                <Route path="/affiliate" element={<ProtectedRoute><Affiliate /></ProtectedRoute>} />
+                <Route path="/converter" element={<CurrencyConverter />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </SessionTimeoutWrapper>
           </AuthProvider>
         </BrowserRouter>
     </TooltipProvider>

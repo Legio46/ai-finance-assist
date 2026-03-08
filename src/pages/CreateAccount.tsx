@@ -9,10 +9,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 const CreateAccount = () => {
   const { user, loading, signUp } = useAuth();
   const [formData, setFormData] = useState({
-    email: 'legiox46@gmail.com',
-    password: 'Legioxlegio',
-    fullName: 'Admin User',
-    accountType: 'business'
+    email: '',
+    password: '',
+    fullName: '',
+    accountType: 'personal'
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -26,15 +26,11 @@ const CreateAccount = () => {
     setIsLoading(true);
     
     const result = await signUp(
-      formData.email, 
+      formData.email.trim().toLowerCase(), 
       formData.password, 
-      formData.fullName, 
+      formData.fullName.trim(), 
       formData.accountType
     );
-    
-    if (!result.error) {
-      console.log('Account created successfully');
-    }
     
     setIsLoading(false);
   };
@@ -54,8 +50,8 @@ const CreateAccount = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Create Admin Account</CardTitle>
-          <CardDescription>Create the admin account for legiox46@gmail.com</CardDescription>
+          <CardTitle>Create Account</CardTitle>
+          <CardDescription>Create a new account to get started</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -66,8 +62,9 @@ const CreateAccount = () => {
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                placeholder="Enter your email"
                 required
-                disabled
+                maxLength={255}
               />
             </div>
             <div className="space-y-2">
@@ -77,7 +74,9 @@ const CreateAccount = () => {
                 type="password"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                placeholder="Create a strong password"
                 required
+                maxLength={128}
               />
             </div>
             <div className="space-y-2">
@@ -87,7 +86,9 @@ const CreateAccount = () => {
                 type="text"
                 value={formData.fullName}
                 onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                placeholder="Enter your full name"
                 required
+                maxLength={100}
               />
             </div>
             <Button 
