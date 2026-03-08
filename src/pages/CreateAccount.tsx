@@ -17,6 +17,7 @@ const CreateAccount = () => {
     accountType: 'personal'
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
 
   // Redirect if already authenticated
   if (user && !loading) {
