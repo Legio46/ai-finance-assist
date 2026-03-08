@@ -133,10 +133,16 @@ const AIPersonalInsights = () => {
           <h2 className="text-lg font-semibold">AI Insights</h2>
           <Badge variant="secondary" className="text-xs">Powered by AI</Badge>
         </div>
-        <Button variant="ghost" size="sm" onClick={fetchInsights} disabled={loading} className="gap-1">
-          <RefreshCcw className="w-3 h-3" />
-          Refresh
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="sm" onClick={fetchInsights} disabled={loading} className="gap-1">
+            <RefreshCcw className="w-3 h-3" />
+            Refresh
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => setHidden(!hidden)} className="gap-1">
+            {hidden ? <ChevronDown className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+            {hidden ? 'Show' : 'Hide'}
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
