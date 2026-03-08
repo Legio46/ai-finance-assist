@@ -172,7 +172,7 @@ const Index = () => {
               </CardContent>
             </Card>
 
-            {/* Business Plan */}
+            {/* Personal Pro Plan */}
             <Card className="relative border-2 border-primary">
               <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                 <Badge className="bg-gradient-primary text-white px-4 py-1">
@@ -180,37 +180,38 @@ const Index = () => {
                 </Badge>
               </div>
               <CardHeader className="text-center pb-8">
-                <CardTitle className="text-2xl">{t('business')}</CardTitle>
-                <CardDescription>{t('forEntrepreneurs')}</CardDescription>
+                <CardTitle className="text-2xl">Personal Pro</CardTitle>
+                <CardDescription>For serious financial planning</CardDescription>
                 <div className="mt-4">
-                  <span className="text-4xl font-bold">$49.99</span>
+                  <span className="text-4xl font-bold">€10</span>
                   <span className="text-muted-foreground">/{t('monthly')}</span>
                 </div>
+                <Badge variant="secondary" className="w-fit mx-auto mt-2">7-day free trial</Badge>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center space-x-2">
                   <Check className="w-5 h-5 text-success" />
-                  <span>{t('everythingInPersonal')}</span>
+                  <span>Everything in Basic</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Check className="w-5 h-5 text-success" />
-                  <span>{t('multiCountryTax')}</span>
+                  <span>Recurring payment tracking</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Check className="w-5 h-5 text-success" />
-                  <span>{t('businessExpenseTracking')}</span>
+                  <span>Investment tracking (stocks, crypto, ETFs)</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Check className="w-5 h-5 text-success" />
-                  <span>{t('profitLossAnalysis')}</span>
+                  <span>Financial calendar & AI suggestions</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Check className="w-5 h-5 text-success" />
-                  <span>{t('aiFinancialAdvisor')}</span>
+                  <span>Advanced financial planner</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Check className="w-5 h-5 text-success" />
-                  <span>{t('advancedAnalytics')}</span>
+                  <span>AI personal insights</span>
                 </div>
                 <Link to="/auth" className="block">
                   <Button className="w-full mt-8 bg-gradient-primary hover:opacity-90">
