@@ -27,11 +27,13 @@ import DashboardCharts from '@/components/DashboardCharts';
 import { supabase } from '@/integrations/supabase/client';
 import LanguageSelector from '@/components/LanguageSelector';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { useToast } from '@/hooks/use-toast';
 
 const Dashboard = () => {
   const { user, profile, loading, signOut } = useAuth();
   const { isAdmin } = useAdminCheck();
   const { t, formatCurrency } = useLanguage();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('overview');
 
   // Redirect if not authenticated
@@ -60,12 +62,29 @@ const Dashboard = () => {
   const handleManageSubscription = async () => {
     try {
       const { data, error } = await supabase.functions.invoke('customer-portal');
-      if (error) throw error;
+      if (error) {
+        // If no Stripe customer exists, redirect to pricing
+        toast({
+          title: "No active subscription",
+          description: "Redirecting you to our pricing page to get started.",
+        });
+        window.location.href = '/pricing';
+        return;
+      }
+      if (data?.error) {
+        toast({
+          title: "No active subscription",
+          description: "Redirecting you to our pricing page to get started.",
+        });
+        window.location.href = '/pricing';
+        return;
+      }
       if (data?.url) {
         window.open(data.url, '_blank');
       }
     } catch (err) {
       console.error('Error opening customer portal:', err);
+      window.location.href = '/pricing';
     }
   };
 
