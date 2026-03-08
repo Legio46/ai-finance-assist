@@ -94,21 +94,7 @@ const Pricing = () => {
                 ))}
               </ul>
               <Button 
-                onClick={() => {
-                  supabase.functions.invoke('create-checkout', {
-                    body: { plan: 'basic' }
-                  }).then(({ data, error }) => {
-                    if (error) {
-                      toast({
-                        title: "Error",
-                        description: "Failed to create checkout session",
-                        variant: "destructive",
-                      });
-                    } else if (data?.url) {
-                      window.open(data.url, '_blank');
-                    }
-                  });
-                }}
+                onClick={() => handleCheckout('basic')}
                 className="w-full"
               >
                 {t('startFreeTrial')}
