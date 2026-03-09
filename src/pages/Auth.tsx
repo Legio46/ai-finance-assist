@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import SecurityBadge from '@/components/SecurityBadge';
+import OAuthButtons from '@/components/OAuthButtons';
 import { useLoginRateLimit } from '@/hooks/useLoginRateLimit';
 import { validatePassword } from '@/utils/inputSanitizer';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -327,6 +328,9 @@ const Auth = () => {
                     </button>
                   </div>
                 </form>
+                <div className="mt-4">
+                  <OAuthButtons mode="signin" />
+                </div>
               </TabsContent>
               
               <TabsContent value="signup">
@@ -414,6 +418,9 @@ const Auth = () => {
                     {isLoading ? 'Creating Account...' : 'Create Account'}
                   </Button>
                 </form>
+                <div className="mt-4">
+                  <OAuthButtons mode="signup" />
+                </div>
               </TabsContent>
             </Tabs>
           </CardContent>

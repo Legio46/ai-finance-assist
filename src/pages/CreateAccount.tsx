@@ -9,6 +9,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { validatePassword } from '@/utils/inputSanitizer';
 import { AlertCircle, ArrowLeft, ArrowRight, CheckCircle2, User, Target } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import OAuthButtons from '@/components/OAuthButtons';
 
 const ONBOARDING_QUESTIONS = [
   {
@@ -204,6 +205,7 @@ const CreateAccount = () => {
               <Button type="submit" className="w-full gap-2">
                 Continue <ArrowRight className="h-4 w-4" />
               </Button>
+              <OAuthButtons mode="signup" />
             </form>
           ) : (
             <div className="space-y-5">
