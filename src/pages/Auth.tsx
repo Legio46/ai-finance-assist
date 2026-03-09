@@ -328,6 +328,9 @@ const Auth = () => {
                     </button>
                   </div>
                 </form>
+                <div className="mt-4">
+                  <OAuthButtons mode="signin" />
+                </div>
               </TabsContent>
               
               <TabsContent value="signup">
