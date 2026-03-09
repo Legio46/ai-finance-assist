@@ -418,6 +418,9 @@ const Auth = () => {
                     {isLoading ? 'Creating Account...' : 'Create Account'}
                   </Button>
                 </form>
+                <div className="mt-4">
+                  <OAuthButtons mode="signup" />
+                </div>
               </TabsContent>
             </Tabs>
           </CardContent>
