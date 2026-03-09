@@ -205,6 +205,7 @@ const CreateAccount = () => {
               <Button type="submit" className="w-full gap-2">
                 Continue <ArrowRight className="h-4 w-4" />
               </Button>
+              <OAuthButtons mode="signup" />
             </form>
           ) : (
             <div className="space-y-5">
