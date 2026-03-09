@@ -54,6 +54,7 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </SessionTimeoutWrapper>
+            <CookieConsent />
           </AuthProvider>
         </BrowserRouter>
     </TooltipProvider>
