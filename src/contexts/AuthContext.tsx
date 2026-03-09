@@ -3,6 +3,8 @@ import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
+type OAuthProvider = 'google' | 'apple';
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
@@ -10,6 +12,7 @@ interface AuthContextType {
   loading: boolean;
   signUp: (email: string, password: string, fullName: string, accountType?: string) => Promise<{ error?: any }>;
   signIn: (email: string, password: string, rememberMe?: boolean) => Promise<{ error?: any }>;
+  signInWithOAuth: (provider: OAuthProvider) => Promise<{ error?: any }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error?: any }>;
   refreshProfile: () => Promise<void>;
