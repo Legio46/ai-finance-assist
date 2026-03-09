@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import SecurityBadge from '@/components/SecurityBadge';
+import OAuthButtons from '@/components/OAuthButtons';
 import { useLoginRateLimit } from '@/hooks/useLoginRateLimit';
 import { validatePassword } from '@/utils/inputSanitizer';
 import { Alert, AlertDescription } from '@/components/ui/alert';
