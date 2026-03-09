@@ -21,6 +21,7 @@ import NotFound from "./pages/NotFound";
 import Affiliate from "./pages/Affiliate";
 import CurrencyConverter from "./pages/CurrencyConverter";
 import { useSessionTimeout } from "@/hooks/useSessionTimeout";
+import CookieConsent from "@/components/CookieConsent";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +54,7 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </SessionTimeoutWrapper>
+            <CookieConsent />
           </AuthProvider>
         </BrowserRouter>
     </TooltipProvider>
