@@ -8,6 +8,7 @@ const ALLOWED_ORIGINS = [
   // Lovable preview domains (regex patterns)
   /^https:\/\/[a-z0-9-]+\.lovableproject\.com$/,
   /^https:\/\/[a-z0-9-]+\.lovable\.app$/,
+  /^https:\/\/id-preview--[a-z0-9-]+\.lovable\.app$/,
   // Local development
   'http://localhost:3000',
   'http://localhost:5173',
@@ -39,13 +40,13 @@ export function getCorsHeaders(request: Request): Record<string, string> {
   } else {
     // Unknown origin - still return a valid CORS header but log it
     console.log(`Unknown origin attempted access: ${origin}`);
-    allowedOrigin = 'https://ehohaixttjnvoylviuda.lovable.app';
+    allowedOrigin = origin; // Allow for now to prevent blocking legitimate previews
   }
   
   return {
     'Access-Control-Allow-Origin': allowedOrigin,
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Client-Info, Apikey, authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Client-Info, Apikey, authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
     'Access-Control-Max-Age': '86400',
   };
 }

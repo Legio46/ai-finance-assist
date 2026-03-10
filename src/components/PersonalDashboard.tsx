@@ -64,30 +64,19 @@ const PersonalDashboard = () => {
   });
 
   const expenseCategories = [
-    'Food & Dining',
-    'Transportation',
-    'Shopping',
-    'Entertainment',
-    'Bills & Utilities',
-    'Healthcare',
-    'Travel',
-    'Education',
-    'Other'
+    'Food & Dining', 'Transportation', 'Shopping', 'Entertainment',
+    'Bills & Utilities', 'Healthcare', 'Travel', 'Education', 'Other'
   ];
 
   useEffect(() => {
-    if (user) {
-      fetchExpenses();
-    }
+    if (user) fetchExpenses();
   }, [user]);
 
   const fetchExpenses = async () => {
     if (!user) return;
     try {
       const { data, error } = await supabase
-        .from('personal_expenses')
-        .select('*')
-        .eq('user_id', user.id)
+        .from('personal_expenses').select('*').eq('user_id', user.id)
         .order('date', { ascending: false });
       if (error) { console.error('Error fetching expenses:', error); return; }
       setExpenses(data || []);
@@ -126,57 +115,32 @@ const PersonalDashboard = () => {
       try {
         const { data: newExpense, error } = await supabase
           .from('personal_expenses')
-          .insert([{
-            user_id: user.id,
-            category: formData.category,
-            amount: parseFloat(formData.amount),
-            description: formData.description,
-            date: formData.date,
-            is_recurring: formData.is_recurring,
-          }])
-          .select()
-          .single();
-        if (error) {
-          toast({ title: "Error", description: "Failed to add expense", variant: "destructive" });
-          return;
-        }
+          .insert([{ user_id: user.id, category: formData.category, amount: parseFloat(formData.amount), description: formData.description, date: formData.date, is_recurring: formData.is_recurring }])
+          .select().single();
+        if (error) { toast({ title: "Error", description: "Failed to add expense", variant: "destructive" }); return; }
         if (receiptFile && newExpense) {
           const receiptUrl = await uploadReceipt(newExpense.id);
-          if (receiptUrl) {
-            await supabase.from('personal_expenses').update({ receipt_image_url: receiptUrl }).eq('id', newExpense.id);
-          }
+          if (receiptUrl) { await supabase.from('personal_expenses').update({ receipt_image_url: receiptUrl }).eq('id', newExpense.id); }
         }
         toast({ title: "Expense Added", description: receiptFile ? "Expense and receipt saved successfully." : "Your expense has been recorded successfully." });
         setFormData({ category: '', amount: '', description: '', date: new Date().toISOString().split('T')[0], is_recurring: false });
-        removeReceipt();
-        setShowAddForm(false);
-        fetchExpenses();
-      } catch (error) {
-        toast({ title: "Error", description: "An unexpected error occurred", variant: "destructive" });
-      } finally { setUploadingReceipt(false); }
+        removeReceipt(); setShowAddForm(false); fetchExpenses();
+      } catch (error) { toast({ title: "Error", description: "An unexpected error occurred", variant: "destructive" }); }
+      finally { setUploadingReceipt(false); }
     }
   };
 
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
-  const currentMonthExpenses = expenses.filter(expense => {
-    const d = new Date(expense.date);
-    return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
-  });
+  const currentMonthExpenses = expenses.filter(expense => { const d = new Date(expense.date); return d.getMonth() === currentMonth && d.getFullYear() === currentYear; });
   const currentMonthTotal = currentMonthExpenses.reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
   const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
   const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
-  const lastMonthExpenses = expenses.filter(expense => {
-    const d = new Date(expense.date);
-    return d.getMonth() === lastMonth && d.getFullYear() === lastMonthYear;
-  });
+  const lastMonthExpenses = expenses.filter(expense => { const d = new Date(expense.date); return d.getMonth() === lastMonth && d.getFullYear() === lastMonthYear; });
   const lastMonthTotal = lastMonthExpenses.reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
   const monthlyChange = lastMonthTotal > 0 ? ((currentMonthTotal - lastMonthTotal) / lastMonthTotal) * 100 : 0;
-  const categoryTotals = currentMonthExpenses.reduce((acc, expense) => {
-    acc[expense.category] = (acc[expense.category] || 0) + parseFloat(expense.amount);
-    return acc;
-  }, {});
+  const categoryTotals = currentMonthExpenses.reduce((acc, expense) => { acc[expense.category] = (acc[expense.category] || 0) + parseFloat(expense.amount); return acc; }, {});
   const topCategories = Object.entries(categoryTotals).sort(([,a], [,b]) => Number(b) - Number(a)).slice(0, 5);
 
   if (loading) {
@@ -222,133 +186,40 @@ const PersonalDashboard = () => {
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>Personal Expenses</CardTitle>
-                    <CardDescription>Track your personal spending and get insights</CardDescription>
-                  </div>
-                  <Button onClick={() => setShowAddForm(!showAddForm)} className="bg-gradient-primary hover:opacity-90">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Expense
-                  </Button>
+                  <div><CardTitle>Personal Expenses</CardTitle><CardDescription>Track your personal spending and get insights</CardDescription></div>
+                  <Button onClick={() => setShowAddForm(!showAddForm)} className="bg-gradient-primary hover:opacity-90"><Plus className="w-4 h-4 mr-2" />Add Expense</Button>
                 </div>
               </CardHeader>
               {showAddForm && (
                 <CardContent className="border-t pt-6">
                   <form onSubmit={addExpense} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="category">Category</Label>
-                        <Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})}>
-                          <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
-                          <SelectContent>
-                            {expenseCategories.map((category) => (
-                              <SelectItem key={category} value={category}>{category}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <Label htmlFor="amount">Amount</Label>
-                        <Input id="amount" type="number" step="0.01" value={formData.amount} onChange={(e) => setFormData({...formData, amount: e.target.value})} required />
-                      </div>
+                      <div><Label htmlFor="category">Category</Label><Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})}><SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger><SelectContent>{expenseCategories.map((category) => (<SelectItem key={category} value={category}>{category}</SelectItem>))}</SelectContent></Select></div>
+                      <div><Label htmlFor="amount">Amount</Label><Input id="amount" type="number" step="0.01" value={formData.amount} onChange={(e) => setFormData({...formData, amount: e.target.value})} required /></div>
                     </div>
-                    <div>
-                      <Label htmlFor="description">Description</Label>
-                      <Input id="description" value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} placeholder="Optional description" />
-                    </div>
-                    <div>
-                      <Label htmlFor="date">Date</Label>
-                      <DatePicker value={formData.date} onChange={(val) => setFormData({...formData, date: val})} placeholder="Pick a date" required />
-                    </div>
+                    <div><Label htmlFor="description">Description</Label><Input id="description" value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} placeholder="Optional description" /></div>
+                    <div><Label htmlFor="date">Date</Label><DatePicker value={formData.date} onChange={(val) => setFormData({...formData, date: val})} placeholder="Pick a date" required /></div>
                     <div>
                       <Label>Receipt Image (Optional)</Label>
                       <div className="flex gap-2 mt-2">
-                        <label htmlFor="camera-input" className="flex-1">
-                          <div className="flex items-center justify-center gap-2 px-4 py-2 border border-input rounded-md cursor-pointer hover:bg-accent transition-colors">
-                            <Camera className="w-4 h-4" /><span className="text-sm">Camera</span>
-                          </div>
-                          <input id="camera-input" type="file" accept="image/*" capture="environment" onChange={handleReceiptCapture} className="hidden" />
-                        </label>
-                        <label htmlFor="file-input" className="flex-1">
-                          <div className="flex items-center justify-center gap-2 px-4 py-2 border border-input rounded-md cursor-pointer hover:bg-accent transition-colors">
-                            <Upload className="w-4 h-4" /><span className="text-sm">Upload</span>
-                          </div>
-                          <input id="file-input" type="file" accept="image/*" onChange={handleReceiptCapture} className="hidden" />
-                        </label>
+                        <label htmlFor="camera-input" className="flex-1"><div className="flex items-center justify-center gap-2 px-4 py-2 border border-input rounded-md cursor-pointer hover:bg-accent transition-colors"><Camera className="w-4 h-4" /><span className="text-sm">Camera</span></div><input id="camera-input" type="file" accept="image/*" capture="environment" onChange={handleReceiptCapture} className="hidden" /></label>
+                        <label htmlFor="file-input" className="flex-1"><div className="flex items-center justify-center gap-2 px-4 py-2 border border-input rounded-md cursor-pointer hover:bg-accent transition-colors"><Upload className="w-4 h-4" /><span className="text-sm">Upload</span></div><input id="file-input" type="file" accept="image/*" onChange={handleReceiptCapture} className="hidden" /></label>
                       </div>
-                      {receiptPreview && (
-                        <div className="mt-2 relative">
-                          <img src={receiptPreview} alt="Receipt preview" className="w-full h-32 object-cover rounded-md border border-input" />
-                          <Button type="button" variant="destructive" size="sm" className="absolute top-2 right-2" onClick={removeReceipt}><X className="w-4 h-4" /></Button>
-                        </div>
-                      )}
+                      {receiptPreview && (<div className="mt-2 relative"><img src={receiptPreview} alt="Receipt preview" className="w-full h-32 object-cover rounded-md border border-input" /><Button type="button" variant="destructive" size="sm" className="absolute top-2 right-2" onClick={removeReceipt}><X className="w-4 h-4" /></Button></div>)}
                     </div>
-                    <Button type="submit" className="w-full" disabled={uploadingReceipt}>
-                      {uploadingReceipt ? "Saving..." : "Add Expense"}
-                    </Button>
+                    <Button type="submit" className="w-full" disabled={uploadingReceipt}>{uploadingReceipt ? "Saving..." : "Add Expense"}</Button>
                   </form>
                 </CardContent>
               )}
             </Card>
             {topCategories.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Spending Breakdown</CardTitle>
-                  <CardDescription>Your top spending categories this month</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {topCategories.map(([category, amount]) => (
-                      <div key={category} className="flex items-center justify-between">
-                        <span className="text-sm font-medium">{category}</span>
-                        <div className="flex items-center space-x-2">
-                          <div className="w-24 bg-secondary rounded-full h-2">
-                            <div className="bg-primary h-2 rounded-full" style={{ width: `${(Number(amount) / currentMonthTotal) * 100}%` }}></div>
-                          </div>
-                          <span className="text-sm font-bold">{formatCurrency(Number(amount))}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+              <Card><CardHeader><CardTitle>Spending Breakdown</CardTitle><CardDescription>Your top spending categories this month</CardDescription></CardHeader><CardContent><div className="space-y-4">{topCategories.map(([category, amount]) => (<div key={category} className="flex items-center justify-between"><span className="text-sm font-medium">{category}</span><div className="flex items-center space-x-2"><div className="w-24 bg-secondary rounded-full h-2"><div className="bg-primary h-2 rounded-full" style={{ width: `${(Number(amount) / currentMonthTotal) * 100}%` }}></div></div><span className="text-sm font-bold">{formatCurrency(Number(amount))}</span></div></div>))}</div></CardContent></Card>
             )}
             {expenses.length > 0 && (
-              <Card>
-                <CardHeader><CardTitle>Recent Expenses</CardTitle><CardDescription>Your latest spending activity</CardDescription></CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {expenses.slice(0, 10).map((expense) => (
-                      <div key={expense.id} className="flex justify-between items-center gap-4 py-2 border-b border-border last:border-0">
-                        <div className="flex items-center gap-3 flex-1">
-                          {expense.receipt_image_url && (
-                            <ReceiptImage filePath={expense.receipt_image_url} className="w-12 h-12 object-cover rounded border border-input cursor-pointer" showHoverOverlay={true} />
-                          )}
-                          <div>
-                            <div className="font-medium">{expense.category}</div>
-                            <div className="text-sm text-muted-foreground">{expense.description || 'No description'}</div>
-                            <div className="text-xs text-muted-foreground">{new Date(expense.date).toLocaleDateString()}</div>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-bold">{formatCurrency(expense.amount)}</div>
-                          {expense.is_recurring && <Badge variant="secondary" className="text-xs">Recurring</Badge>}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+              <Card><CardHeader><CardTitle>Recent Expenses</CardTitle><CardDescription>Your latest spending activity</CardDescription></CardHeader><CardContent><div className="space-y-4">{expenses.slice(0, 10).map((expense) => (<div key={expense.id} className="flex justify-between items-center gap-4 py-2 border-b border-border last:border-0"><div className="flex items-center gap-3 flex-1">{expense.receipt_image_url && (<ReceiptImage filePath={expense.receipt_image_url} className="w-12 h-12 object-cover rounded border border-input cursor-pointer" showHoverOverlay={true} />)}<div><div className="font-medium">{expense.category}</div><div className="text-sm text-muted-foreground">{expense.description || 'No description'}</div><div className="text-xs text-muted-foreground">{new Date(expense.date).toLocaleDateString()}</div></div></div><div className="text-right"><div className="font-bold">{formatCurrency(expense.amount)}</div>{expense.is_recurring && <Badge variant="secondary" className="text-xs">Recurring</Badge>}</div></div>))}</div></CardContent></Card>
             )}
             {expenses.length === 0 && (
-              <Card>
-                <CardContent className="text-center py-12">
-                  <CreditCard className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">No Expenses Yet</h3>
-                  <p className="text-muted-foreground mb-6">Start tracking your expenses to get AI-powered insights</p>
-                  <Button onClick={() => setShowAddForm(true)} className="bg-gradient-primary hover:opacity-90">Add Your First Expense</Button>
-                </CardContent>
-              </Card>
+              <Card><CardContent className="text-center py-12"><CreditCard className="w-16 h-16 mx-auto text-muted-foreground mb-4" /><h3 className="text-xl font-semibold mb-2">No Expenses Yet</h3><p className="text-muted-foreground mb-6">Start tracking your expenses to get AI-powered insights</p><Button onClick={() => setShowAddForm(true)} className="bg-gradient-primary hover:opacity-90">Add Your First Expense</Button></CardContent></Card>
             )}
           </div>
         );
@@ -371,7 +242,7 @@ const PersonalDashboard = () => {
     }
   };
 
-  // Overview content
+  // Overview content - now includes Financial Calendar under AI Insights
   const renderOverview = () => (
     <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -408,7 +279,21 @@ const PersonalDashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* AI Personal Insights */}
       <AIPersonalInsights />
+
+      {/* Financial Calendar on Overview */}
+      {hasProFeatures && (
+        <div>
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Calendar className="w-5 h-5 text-primary" />
+            Financial Calendar
+          </h2>
+          <FinancialCalendar />
+        </div>
+      )}
+
       {!hasProFeatures && (
         <Card className="border-2 border-primary/20">
           <CardHeader>
@@ -433,7 +318,6 @@ const PersonalDashboard = () => {
     </div>
   );
 
-  // Sidebar menu item
   const SidebarItem = ({ category, isActive }: { category: typeof basicCategories[0]; isActive: boolean }) => {
     const Icon = category.icon;
     return (
@@ -441,115 +325,53 @@ const PersonalDashboard = () => {
         onClick={() => handleCategoryClick(category)}
         className={cn(
           "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all text-sm",
-          isActive && !category.locked
-            ? "bg-primary text-primary-foreground shadow-sm"
-            : category.locked
-            ? "text-muted-foreground/60 cursor-not-allowed hover:bg-muted/30"
+          isActive && !category.locked ? "bg-primary text-primary-foreground shadow-sm"
+            : category.locked ? "text-muted-foreground/60 cursor-not-allowed hover:bg-muted/30"
             : "text-foreground hover:bg-muted"
         )}
       >
-        {category.locked ? (
-          <Lock className="w-4 h-4 shrink-0" />
-        ) : (
-          <Icon className="w-4 h-4 shrink-0" />
-        )}
+        {category.locked ? <Lock className="w-4 h-4 shrink-0" /> : <Icon className="w-4 h-4 shrink-0" />}
         <span className="truncate font-medium">{category.title}</span>
-        {category.locked && (
-          <Badge variant="outline" className="ml-auto text-[10px] px-1.5 py-0 h-4 border-muted-foreground/30">
-            Pro
-          </Badge>
-        )}
+        {category.locked && <Badge variant="outline" className="ml-auto text-[10px] px-1.5 py-0 h-4 border-muted-foreground/30">Pro</Badge>}
       </button>
     );
   };
 
   return (
     <div className="flex gap-0 min-h-[calc(100vh-200px)]">
-      {/* Sidebar */}
-      <aside
-        className={cn(
-          "shrink-0 border-r border-border bg-card/50 transition-all duration-300 overflow-hidden",
-          sidebarOpen ? "w-64" : "w-0 border-r-0"
-        )}
-      >
+      <aside className={cn("shrink-0 border-r border-border bg-card/50 transition-all duration-300 overflow-hidden", sidebarOpen ? "w-64" : "w-0 border-r-0")}>
         <ScrollArea className="h-[calc(100vh-200px)]">
           <div className="p-4 space-y-6 w-64">
-            {/* Overview */}
             <div>
-              <button
-                onClick={() => setActiveView('overview')}
-                className={cn(
-                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all text-sm",
-                  activeView === 'overview'
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-foreground hover:bg-muted"
-                )}
-              >
-                <LayoutDashboard className="w-4 h-4 shrink-0" />
-                <span className="font-medium">Overview</span>
+              <button onClick={() => setActiveView('overview')} className={cn("w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all text-sm", activeView === 'overview' ? "bg-primary text-primary-foreground shadow-sm" : "text-foreground hover:bg-muted")}>
+                <LayoutDashboard className="w-4 h-4 shrink-0" /><span className="font-medium">Overview</span>
               </button>
             </div>
-
-            {/* Personal Basic */}
             <div className="space-y-1">
-              <div className="px-3 pb-1">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Personal Basic</p>
-              </div>
-              {basicCategories.map((cat) => (
-                <SidebarItem key={cat.id} category={cat} isActive={activeView === cat.id} />
-              ))}
+              <div className="px-3 pb-1"><p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Personal Basic</p></div>
+              {basicCategories.map((cat) => <SidebarItem key={cat.id} category={cat} isActive={activeView === cat.id} />)}
             </div>
-
-            {/* Personal Pro */}
             <div className="space-y-1">
-              <div className="px-3 pb-1">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Personal Pro</p>
-              </div>
-              {proCategories.map((cat) => (
-                <SidebarItem key={cat.id} category={cat} isActive={activeView === cat.id} />
-              ))}
+              <div className="px-3 pb-1"><p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Personal Pro</p></div>
+              {proCategories.map((cat) => <SidebarItem key={cat.id} category={cat} isActive={activeView === cat.id} />)}
             </div>
           </div>
         </ScrollArea>
       </aside>
-
-      {/* Main Content */}
       <main className="flex-1 min-w-0 p-6 overflow-auto">
-        {/* Toggle sidebar button */}
         <div className="mb-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="gap-2 text-muted-foreground hover:text-foreground"
-          >
-            {sidebarOpen ? (
-              <><PanelLeftClose className="w-4 h-4" /> Hide menu</>
-            ) : (
-              <><PanelLeftOpen className="w-4 h-4" /> Show menu</>
-            )}
+          <Button variant="ghost" size="sm" onClick={() => setSidebarOpen(!sidebarOpen)} className="gap-2 text-muted-foreground hover:text-foreground">
+            {sidebarOpen ? <><PanelLeftClose className="w-4 h-4" /> Hide menu</> : <><PanelLeftOpen className="w-4 h-4" /> Show menu</>}
           </Button>
         </div>
-
         {activeView === 'overview' ? renderOverview() : (
           <div className="space-y-6">
-            {/* Section header */}
             <div className="flex items-center gap-3 pb-2 border-b border-border">
               {(() => {
                 const allCats = [...basicCategories, ...proCategories];
                 const current = allCats.find(c => c.id === activeView);
                 const Icon = current?.icon || Wallet;
-                return (
-                  <>
-                    <div className="p-2 rounded-lg bg-primary/10">
-                      <Icon className="w-5 h-5 text-primary" />
-                    </div>
-                    <div>
-                      <h1 className="text-xl font-semibold">{current?.title}</h1>
-                      <p className="text-sm text-muted-foreground">{current?.description}</p>
-                    </div>
-                  </>
-                );
+                return (<><div className="p-2 rounded-lg bg-primary/10"><Icon className="w-5 h-5 text-primary" /></div><div><h1 className="text-xl font-semibold">{current?.title}</h1><p className="text-sm text-muted-foreground">{current?.description}</p></div></>);
               })()}
             </div>
             {renderActiveView()}

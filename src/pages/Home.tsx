@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { Calculator, TrendingUp, DollarSign, Shield, Users, Globe, ArrowRight, Sparkles, ChevronRight } from "lucide-react";
+import { TrendingUp, DollarSign, Shield, Users, Globe, ArrowRight, Sparkles, ChevronRight, PieChart } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import logo from "@/assets/logo_3.png";
 
@@ -12,7 +12,6 @@ const Home = () => {
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="relative overflow-hidden">
-        {/* Background decorations */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
         <div className="absolute top-20 -left-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
         <div className="absolute bottom-10 -right-40 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
@@ -53,8 +52,8 @@ const Home = () => {
         </div>
         <div className="grid md:grid-cols-3 gap-6">
           {[
-            { icon: Calculator, title: t('smartTaxCalculator'), desc: t('taxCalculatorDesc') },
-            { icon: TrendingUp, title: t('expenseTracking'), desc: t('expenseTrackingDesc') },
+            { icon: PieChart, title: t('expenseTracking'), desc: t('expenseTrackingDesc') },
+            { icon: TrendingUp, title: "Smart Budgeting", desc: "Set budgets, track progress, and get AI-powered recommendations to optimize your spending habits." },
             { icon: DollarSign, title: t('financialAdvisor'), desc: t('financialAdvisorDesc') },
           ].map((feature, idx) => (
             <Card key={idx} className="group border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">

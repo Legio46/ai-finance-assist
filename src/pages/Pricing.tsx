@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,12 +9,27 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 const Pricing = () => {
   const { toast } = useToast();
   const { t, formatCurrency } = useLanguage();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [isAnnual, setIsAnnual] = useState(false);
+
+  // Monthly prices
+  const basicMonthly = 5;
+  const proMonthly = 10;
+  // Annual prices with discounts
+  const basicAnnualMonthly = basicMonthly * 0.9; // 10% off = €4.50/mo
+  const proAnnualMonthly = proMonthly * 0.8; // 20% off = €8/mo
+  const basicAnnualTotal = basicAnnualMonthly * 12; // €54/yr
+  const proAnnualTotal = proAnnualMonthly * 12; // €96/yr
+
+  const currentBasicPrice = isAnnual ? basicAnnualMonthly : basicMonthly;
+  const currentProPrice = isAnnual ? proAnnualMonthly : proMonthly;
 
   const handleCheckout = (plan: string) => {
     if (!user) {
@@ -21,7 +37,8 @@ const Pricing = () => {
       navigate('/auth');
       return;
     }
-    supabase.functions.invoke('create-checkout', { body: { plan } }).then(({ data, error }) => {
+    const billingPeriod = isAnnual ? 'annual' : 'monthly';
+    supabase.functions.invoke('create-checkout', { body: { plan, billingPeriod } }).then(({ data, error }) => {
       if (error) {
         toast({ title: "Error", description: "Failed to create checkout session", variant: "destructive" });
       } else if (data?.url) {
@@ -71,9 +88,27 @@ const Pricing = () => {
             Simple pricing
           </Badge>
           <h1 className="text-4xl lg:text-5xl font-bold mb-4">{t('simpleTransparentPricing')}</h1>
-          <p className="text-lg text-muted-foreground max-w-lg mx-auto">
+          <p className="text-lg text-muted-foreground max-w-lg mx-auto mb-8">
             Choose the perfect plan for your financial needs
           </p>
+
+          {/* Annual/Monthly Toggle */}
+          <div className="flex items-center justify-center gap-3">
+            <Label htmlFor="billing-toggle" className={`text-sm font-medium ${!isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>
+              Monthly
+            </Label>
+            <Switch
+              id="billing-toggle"
+              checked={isAnnual}
+              onCheckedChange={setIsAnnual}
+            />
+            <Label htmlFor="billing-toggle" className={`text-sm font-medium ${isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>
+              Annually
+            </Label>
+            {isAnnual && (
+              <Badge className="bg-success/15 text-success border-success/30 ml-2">Save up to 20%</Badge>
+            )}
+          </div>
         </div>
       </section>
 
@@ -86,10 +121,18 @@ const Pricing = () => {
               <CardTitle className="text-xl">Personal Basic</CardTitle>
               <CardDescription>Perfect for individuals starting out</CardDescription>
               <div className="mt-5">
-                <span className="text-4xl font-bold">{formatCurrency(5)}</span>
+                <span className="text-4xl font-bold">{formatCurrency(currentBasicPrice)}</span>
                 <span className="text-muted-foreground text-sm ml-1">/{t('monthly')}</span>
               </div>
-              <Badge variant="outline" className="w-fit mx-auto mt-3 text-xs">{t('dayFreeTrial')}</Badge>
+              {isAnnual && (
+                <div className="mt-2 space-y-1">
+                  <p className="text-xs text-muted-foreground line-through">{formatCurrency(basicMonthly)}/mo</p>
+                  <Badge variant="outline" className="text-xs border-success/30 text-success">10% off — {formatCurrency(basicAnnualTotal)}/year</Badge>
+                </div>
+              )}
+              {!isAnnual && (
+                <Badge variant="outline" className="w-fit mx-auto mt-3 text-xs">{t('dayFreeTrial')}</Badge>
+              )}
             </CardHeader>
             <CardContent className="flex-1 flex flex-col">
               <ul className="space-y-3 mb-8 flex-1">
@@ -120,10 +163,18 @@ const Pricing = () => {
               <CardTitle className="text-xl">Personal Pro</CardTitle>
               <CardDescription>For serious financial planning</CardDescription>
               <div className="mt-5">
-                <span className="text-4xl font-bold text-primary">{formatCurrency(10)}</span>
+                <span className="text-4xl font-bold text-primary">{formatCurrency(currentProPrice)}</span>
                 <span className="text-muted-foreground text-sm ml-1">/{t('monthly')}</span>
               </div>
-              <Badge variant="outline" className="w-fit mx-auto mt-3 text-xs border-primary/30 text-primary">{t('dayFreeTrial')}</Badge>
+              {isAnnual && (
+                <div className="mt-2 space-y-1">
+                  <p className="text-xs text-muted-foreground line-through">{formatCurrency(proMonthly)}/mo</p>
+                  <Badge variant="outline" className="text-xs border-primary/30 text-primary">20% off — {formatCurrency(proAnnualTotal)}/year</Badge>
+                </div>
+              )}
+              {!isAnnual && (
+                <Badge variant="outline" className="w-fit mx-auto mt-3 text-xs border-primary/30 text-primary">{t('dayFreeTrial')}</Badge>
+              )}
             </CardHeader>
             <CardContent className="flex-1 flex flex-col">
               <ul className="space-y-3 mb-8 flex-1">
@@ -156,7 +207,7 @@ const Pricing = () => {
             </CardHeader>
             <CardContent className="flex-1 flex flex-col">
               <ul className="space-y-3 mb-8 flex-1">
-                {["Multi-entity management", "Advanced tax planning", "Team collaboration", "Priority support"].map((f, i) => (
+                {["Multi-entity management", "Advanced planning", "Team collaboration", "Priority support"].map((f, i) => (
                   <li key={i} className="flex items-start gap-2.5">
                     <div className="w-5 h-5 rounded-full bg-muted flex items-center justify-center flex-shrink-0 mt-0.5">
                       <Check className="w-3 h-3 text-muted-foreground" />

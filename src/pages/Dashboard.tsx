@@ -13,7 +13,6 @@ import {
   BarChart3, 
   TrendingUp, 
   PiggyBank, 
-  Calculator, 
   CreditCard, 
   Building2,
   User,
@@ -50,7 +49,6 @@ const Dashboard = () => {
     if (user) checkStripe();
   }, [user]);
 
-  // Redirect if not authenticated
   if (!loading && !user) {
     return <Navigate to="/auth" replace />;
   }
@@ -92,6 +90,7 @@ const Dashboard = () => {
       navigate('/pricing');
     }
   };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -170,7 +169,7 @@ const Dashboard = () => {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <Card className="hover:shadow-lg transition-shadow">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Monthly Expenses</CardTitle>
@@ -193,19 +192,6 @@ const Dashboard = () => {
                   <div className="text-2xl font-bold">{formatCurrency(8500)}</div>
                   <p className="text-xs text-muted-foreground">
                     <span className="text-success">+23%</span> of yearly goal
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-lg transition-shadow">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Tax Estimate</CardTitle>
-                  <Calculator className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{formatCurrency(12340)}</div>
-                  <p className="text-xs text-muted-foreground">
-                    For current fiscal year
                   </p>
                 </CardContent>
               </Card>
@@ -282,7 +268,7 @@ const Dashboard = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <p className="text-muted-foreground">
-                    Unlock advanced business features including multi-country tax calculations, 
+                    Unlock advanced business features including multi-country calculations, 
                     business expense management, and advanced analytics.
                   </p>
                   <Button asChild>
