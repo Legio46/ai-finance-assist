@@ -15,7 +15,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   const navLinks = [
     { to: "/", label: t('home') },
-    { to: "/about", label: t('about') },
     { to: "/pricing", label: t('pricing') },
     { to: "/contact", label: t('contact') },
   ];
@@ -108,8 +107,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       {/* Footer */}
       <footer className="bg-card border-t border-border/50">
         <div className="container mx-auto px-4 py-14">
-          <div className="grid md:grid-cols-5 gap-10">
-            <div className="md:col-span-1">
+          <div className="grid md:grid-cols-4 gap-10">
+            <div>
               <Link to="/" className="flex items-center gap-2 text-lg font-bold text-primary mb-3">
                 <div className="w-7 h-7 rounded-lg overflow-hidden">
                   <img src={logo} alt="Legio" className="w-full h-full object-cover" />
@@ -142,16 +141,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               <h4 className="font-semibold text-sm text-foreground mb-4">{t('productTitle')}</h4>
               <ul className="space-y-2.5 text-sm">
                 <li><Link to="/pricing" className="text-muted-foreground hover:text-primary transition-colors">{t('pricing')}</Link></li>
-                <li><Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">{t('about')}</Link></li>
                 <li><Link to="/auth" className="text-muted-foreground hover:text-primary transition-colors">{t('getStarted')}</Link></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold text-sm text-foreground mb-4">{t('supportTitle')}</h4>
-              <ul className="space-y-2.5 text-sm">
-                <li><Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">{t('contact')}</Link></li>
-                <li><a href="mailto:help@legio.financial" className="text-muted-foreground hover:text-primary transition-colors">{t('helpCenter')}</a></li>
               </ul>
             </div>
 
@@ -164,10 +154,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             </div>
 
             <div>
-              <h4 className="font-semibold text-sm text-foreground mb-4">{t('partnershipTitle')}</h4>
+              <h4 className="font-semibold text-sm text-foreground mb-4">{t('supportTitle')}</h4>
               <ul className="space-y-2.5 text-sm">
+                <li><Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">{t('contact')}</Link></li>
+                <li><a href="mailto:help@legio.financial" className="text-muted-foreground hover:text-primary transition-colors">{t('helpCenter')}</a></li>
                 <li><Link to="/affiliate" className="text-muted-foreground hover:text-primary transition-colors">{t('affiliateProgram')}</Link></li>
-                <li><a href="mailto:partnerships@legio.financial" className="text-muted-foreground hover:text-primary transition-colors">{t('partnerWithUs')}</a></li>
               </ul>
             </div>
           </div>

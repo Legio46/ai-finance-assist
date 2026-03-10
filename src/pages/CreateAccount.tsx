@@ -7,11 +7,26 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { validatePassword } from '@/utils/inputSanitizer';
-import { AlertCircle, ArrowLeft, ArrowRight, CheckCircle2, User, Target } from 'lucide-react';
+import { AlertCircle, ArrowLeft, ArrowRight, CheckCircle2, User, Target, Phone } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import OAuthButtons from '@/components/OAuthButtons';
 
 const ONBOARDING_QUESTIONS = [
+  {
+    key: 'age',
+    question: 'How old are you?',
+    options: ['Under 18', '18-24', '25-34', '35-44', '45-54', '55+'],
+  },
+  {
+    key: 'region',
+    question: 'Where are you from?',
+    options: ['Europe', 'North America', 'South America', 'Asia', 'Australia', 'Africa'],
+  },
+  {
+    key: 'financial_situation',
+    question: 'What\'s your financial situation?',
+    options: ['Very bad', 'Bad', 'Okay', 'Good', 'Very Good'],
+  },
   {
     key: 'financial_goal',
     question: 'What is your main financial goal right now?',
@@ -51,12 +66,12 @@ const ONBOARDING_QUESTIONS = [
 
 const CreateAccount = () => {
   const { user, loading, signUp } = useAuth();
-  const [step, setStep] = useState(1); // 1 = credentials, 2 = onboarding
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     fullName: '',
-    accountType: 'personal',
+    phoneNumber: '',
   });
   const [onboardingAnswers, setOnboardingAnswers] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -85,13 +100,14 @@ const CreateAccount = () => {
       formData.email.trim().toLowerCase(),
       formData.password,
       formData.fullName.trim(),
-      formData.accountType,
+      'personal',
     );
 
-    // Store onboarding preferences in localStorage for now
-    // Can be synced to a profile_preferences table later
     if (!result.error) {
-      localStorage.setItem('onboarding_preferences', JSON.stringify(onboardingAnswers));
+      localStorage.setItem('onboarding_preferences', JSON.stringify({
+        ...onboardingAnswers,
+        phone_number: formData.phoneNumber,
+      }));
     }
 
     setIsLoading(false);
@@ -101,7 +117,7 @@ const CreateAccount = () => {
     setOnboardingAnswers(prev => ({ ...prev, [key]: value }));
   };
 
-  const progress = step === 1 ? 15 : 15 + ((currentQuestion + 1) / ONBOARDING_QUESTIONS.length) * 85;
+  const progress = step === 1 ? 10 : 10 + ((currentQuestion + 1) / ONBOARDING_QUESTIONS.length) * 90;
 
   if (loading) {
     return (
@@ -120,31 +136,27 @@ const CreateAccount = () => {
         <CardHeader className="space-y-3">
           <Progress value={progress} className="h-1.5" />
           {step === 1 ? (
-            <>
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <User className="h-4 w-4 text-primary" />
-                </div>
-                <div>
-                  <CardTitle className="text-xl">Create Account</CardTitle>
-                  <CardDescription>Step 1 of 2 — Your credentials</CardDescription>
-                </div>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                <User className="h-4 w-4 text-primary" />
               </div>
-            </>
+              <div>
+                <CardTitle className="text-xl">Create Account</CardTitle>
+                <CardDescription>Step 1 of 2 — Your credentials</CardDescription>
+              </div>
+            </div>
           ) : (
-            <>
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Target className="h-4 w-4 text-primary" />
-                </div>
-                <div>
-                  <CardTitle className="text-xl">Personalize Your Experience</CardTitle>
-                  <CardDescription>
-                    Question {currentQuestion + 1} of {ONBOARDING_QUESTIONS.length}
-                  </CardDescription>
-                </div>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                <Target className="h-4 w-4 text-primary" />
               </div>
-            </>
+              <div>
+                <CardTitle className="text-xl">Personalize Your Experience</CardTitle>
+                <CardDescription>
+                  Question {currentQuestion + 1} of {ONBOARDING_QUESTIONS.length}
+                </CardDescription>
+              </div>
+            </div>
           )}
         </CardHeader>
         <CardContent>
@@ -173,6 +185,22 @@ const CreateAccount = () => {
                   required
                   maxLength={255}
                 />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phoneNumber">Phone Number</Label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="phoneNumber"
+                    type="tel"
+                    value={formData.phoneNumber}
+                    onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                    placeholder="+1 (555) 000-0000"
+                    className="pl-10"
+                    maxLength={20}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">Optional — for account recovery and notifications</p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
@@ -247,11 +275,8 @@ const CreateAccount = () => {
                 <Button
                   variant="outline"
                   onClick={() => {
-                    if (currentQuestion === 0) {
-                      setStep(1);
-                    } else {
-                      setCurrentQuestion((q) => q - 1);
-                    }
+                    if (currentQuestion === 0) setStep(1);
+                    else setCurrentQuestion((q) => q - 1);
                   }}
                   className="gap-1.5"
                 >
