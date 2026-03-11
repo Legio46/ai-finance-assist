@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { getCorsHeaders, handleCors } from "../_shared/cors.ts";
+import { checkRateLimit, getRateLimitKey, STRICT_RATE_LIMIT } from "../_shared/rateLimit.ts";
 
 serve(async (req) => {
   const corsResponse = handleCors(req);
@@ -7,18 +8,38 @@ serve(async (req) => {
   
   const corsHeaders = getCorsHeaders(req);
 
+  // Rate limiting - 10 requests per minute per user
+  const rateLimitKey = getRateLimitKey(req, 'ai-advisor');
+  const rateLimitResponse = checkRateLimit(rateLimitKey, STRICT_RATE_LIMIT, corsHeaders);
+  if (rateLimitResponse) return rateLimitResponse;
+
   try {
-    const { message, context, language = 'en', mode = 'personal' } = await req.json();
+    const { message, context, mode = 'personal' } = await req.json();
+    
+    // Input validation
+    if (!message || typeof message !== 'string') {
+      return new Response(
+        JSON.stringify({ error: "Message is required and must be a string" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (message.length > 2000) {
+      return new Response(
+        JSON.stringify({ error: "Message must be less than 2000 characters" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    console.log("AI Advisor request received:", { message, context, language, mode });
+    console.log("AI Advisor request received:", { messageLength: message.length, mode });
 
-    const personalPrompts: Record<string, string> = {
-      en: `You are a friendly personal finance AI assistant for Legio Financial.
+    const personalPrompt = `You are a friendly personal finance AI assistant for Legio Financial.
 Your expertise includes:
 - Personal budgeting and expense management
 - Savings strategies and goal planning
@@ -30,44 +51,9 @@ Your expertise includes:
 Provide clear, actionable personal finance advice. Be supportive and encouraging.
 If the user's context includes financial data, use it to give personalized recommendations.
 Keep responses concise (2-3 paragraphs) unless asked for detailed explanations.
-Respond in English.`,
-      sk: `Si priateľský osobný finančný AI asistent pre Legio Financial.
-Tvoja odbornosť zahŕňa:
-- Osobný rozpočet a správa výdavkov
-- Stratégie sporenia a plánovanie cieľov
-- Základy investovania a poradenstvo k portfóliu
-- Analýza a optimalizácia vzorcov míňania
-- Sledovanie príjmov a hodnotenie finančného zdravia
-- Správa dlhov a stratégie splácania
+Respond in English.`;
 
-Poskytuj jasné, použiteľné rady o osobných financiách. Buď podporný a povzbudzujúci.
-Odpovedaj po slovensky.`,
-      de: `Sie sind ein freundlicher persönlicher Finanz-KI-Assistent für Legio Financial.
-Ihre Expertise umfasst:
-- Persönliche Budgetierung und Ausgabenverwaltung
-- Sparstrategien und Zielplanung
-- Investitionsgrundlagen und Portfolio-Beratung
-- Analyse und Optimierung von Ausgabemustern
-- Einkommensverfolgung und Bewertung der finanziellen Gesundheit
-- Schuldenmanagement und Rückzahlungsstrategien
-
-Geben Sie klare, umsetzbare Ratschläge zu persönlichen Finanzen.
-Antworten Sie auf Deutsch.`,
-      fr: `Vous êtes un assistant IA amical en finances personnelles pour Legio Financial.
-Votre expertise comprend:
-- Budget personnel et gestion des dépenses
-- Stratégies d'épargne et planification d'objectifs
-- Bases de l'investissement et conseil en portefeuille
-- Analyse et optimisation des habitudes de dépenses
-- Suivi des revenus et évaluation de la santé financière
-- Gestion des dettes et stratégies de remboursement
-
-Fournissez des conseils clairs et exploitables sur les finances personnelles.
-Répondez en français.`
-    };
-
-    const supportPrompts: Record<string, string> = {
-      en: `You are a helpful customer support AI assistant for Legio Financial platform.
+    const supportPrompt = `You are a helpful customer support AI assistant for Legio Financial platform.
 Your role is to help users with:
 - Navigating the Legio platform (dashboard, features, settings)
 - Understanding subscription plans (Personal Basic at €5/month, Personal Pro at €10/month, Business coming soon)
@@ -80,37 +66,9 @@ Your role is to help users with:
 - The platform serves users globally and supports multiple currencies
 
 Be helpful, patient, and guide users step by step. If you don't know something specific about the platform, say so honestly.
-Respond in English.`,
-      sk: `Si nápomocný AI asistent zákazníckej podpory pre platformu Legio Financial.
-Tvoja úloha je pomáhať používateľom s:
-- Navigáciou na platforme Legio (dashboard, funkcie, nastavenia)
-- Pochopením predplatných plánov (Personal Basic za 5€/mesiac, Personal Pro za 10€/mesiac, Business čoskoro)
-- Správou účtu, bezpečnostnými nastaveniami
-- Technickými problémami a riešením problémov
-- Otázkami o affiliate programe
-- Platforma slúži používateľom globálne
+Respond in English.`;
 
-Buď nápomocný a trpezlivý. Odpovedaj po slovensky.`,
-      de: `Sie sind ein hilfreicher Kundensupport-KI-Assistent für die Legio Financial Plattform.
-Ihre Rolle ist es, Benutzern zu helfen mit:
-- Navigation auf der Legio-Plattform
-- Verständnis der Abonnementpläne (Personal Basic 5€/Monat, Personal Pro 10€/Monat, Business kommt bald)
-- Kontoverwaltung und Sicherheitseinstellungen
-- Technischen Problemen und Fehlerbehebung
-
-Seien Sie hilfsbereit und geduldig. Antworten Sie auf Deutsch.`,
-      fr: `Vous êtes un assistant IA de support client utile pour la plateforme Legio Financial.
-Votre rôle est d'aider les utilisateurs avec:
-- La navigation sur la plateforme Legio
-- La compréhension des plans d'abonnement (Personal Basic 5€/mois, Personal Pro 10€/mois, Business bientôt)
-- La gestion de compte et les paramètres de sécurité
-- Les problèmes techniques et le dépannage
-
-Soyez utile et patient. Répondez en français.`
-    };
-
-    const prompts = mode === 'support' ? supportPrompts : personalPrompts;
-    const systemPrompt = prompts[language as keyof typeof prompts] || prompts.en;
+    const systemPrompt = mode === 'support' ? supportPrompt : personalPrompt;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

@@ -55,7 +55,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
             <div className="flex items-center gap-1.5">
               <ThemeToggle />
-              <LanguageSelector />
               <Button asChild size="sm" className="ml-1 rounded-lg shadow-md hidden sm:inline-flex">
                 <Link to="/auth">{t('getStarted')}</Link>
               </Button>
