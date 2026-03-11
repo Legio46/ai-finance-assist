@@ -40,7 +40,7 @@ const Auth = () => {
     password: '',
     fullName: '',
     confirmPassword: '',
-    accountType: 'personal', // New field
+    phoneNumber: '',
   });
 
   // Check for password recovery mode
