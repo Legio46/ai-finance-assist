@@ -122,7 +122,7 @@ const Auth = () => {
     setPasswordErrors([]);
 
     setIsLoading(true);
-    await signUp(signUpData.email.trim().toLowerCase(), signUpData.password, signUpData.fullName.trim(), signUpData.accountType);
+    await signUp(signUpData.email.trim().toLowerCase(), signUpData.password, signUpData.fullName.trim(), 'personal');
     setIsLoading(false);
   };
 
