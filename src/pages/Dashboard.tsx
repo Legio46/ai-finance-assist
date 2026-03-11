@@ -124,7 +124,6 @@ const Dashboard = () => {
               </Button>
             )}
             <ThemeToggle />
-            <LanguageSelector />
             <Button variant="outline" onClick={signOut}>
               Sign out
             </Button>

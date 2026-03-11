@@ -1,11 +1,17 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.57.0";
 import { getCorsHeaders, handleCors } from "../_shared/cors.ts";
+import { checkRateLimit, getRateLimitKey, DEFAULT_RATE_LIMIT } from "../_shared/rateLimit.ts";
 
 Deno.serve(async (req: Request) => {
   const corsResponse = handleCors(req);
   if (corsResponse) return corsResponse;
   const corsHeaders = getCorsHeaders(req);
+
+  // Rate limiting
+  const rateLimitKey = getRateLimitKey(req, 'create-checkout');
+  const rateLimitResponse = checkRateLimit(rateLimitKey, DEFAULT_RATE_LIMIT, corsHeaders);
+  if (rateLimitResponse) return rateLimitResponse;
 
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
