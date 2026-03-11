@@ -348,17 +348,16 @@ const Auth = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="account-type">Account Type</Label>
-                    <select
-                      id="account-type"
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                      value={signUpData.accountType}
-                      onChange={(e) => setSignUpData({ ...signUpData, accountType: e.target.value })}
-                      required
-                    >
-                      <option value="personal">Personal</option>
-                      <option value="business">Business</option>
-                    </select>
+                    <Label htmlFor="signup-phone">Phone Number</Label>
+                    <Input
+                      id="signup-phone"
+                      type="tel"
+                      placeholder="+1 (555) 000-0000"
+                      value={signUpData.phoneNumber}
+                      onChange={(e) => setSignUpData({ ...signUpData, phoneNumber: e.target.value })}
+                      maxLength={20}
+                    />
+                    <p className="text-xs text-muted-foreground">Optional — for account recovery</p>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="signup-email">Email</Label>
