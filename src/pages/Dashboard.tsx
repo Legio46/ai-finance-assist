@@ -24,7 +24,6 @@ import PersonalDashboard from '@/components/PersonalDashboard';
 import AIAdvisor from '@/components/AIAdvisor';
 import DashboardCharts from '@/components/DashboardCharts';
 import { supabase } from '@/integrations/supabase/client';
-import LanguageSelector from '@/components/LanguageSelector';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useToast } from '@/hooks/use-toast';
 
