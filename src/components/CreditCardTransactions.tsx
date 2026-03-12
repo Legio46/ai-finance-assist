@@ -12,6 +12,7 @@ import { DatePicker } from '@/components/ui/date-picker';
 import { Plus, Calendar, DollarSign, Tag } from 'lucide-react';
 import { format } from 'date-fns';
 import { useLanguage } from '@/contexts/LanguageContext';
+import SpendingInsights from '@/components/SpendingInsights';
 
 interface CreditCard {
   id: string;
