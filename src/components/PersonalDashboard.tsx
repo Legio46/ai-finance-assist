@@ -226,7 +226,7 @@ const PersonalDashboard = () => {
           </div>
         );
       case 'credit-cards':
-        return (<div className="space-y-6"><CreditCardManager cardType="personal" /><CreditCardTransactions cardType="personal" /></div>);
+        return (<div className="space-y-6"><CreditCardManager cardType="personal" /><CreditCardTransactions cardType="personal" showInsights /></div>);
       case 'income-budget':
         return (<div className="space-y-6"><IncomeTracker /><BudgetManager /></div>);
       case 'recurring-payments':
