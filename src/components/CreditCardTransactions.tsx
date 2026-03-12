@@ -176,9 +176,13 @@ const CreditCardTransactions: React.FC<CreditCardTransactionsProps> = ({ cardTyp
     );
   }
 
+  const insightData = transactions.map(t => ({ amount: t.amount, date: t.transaction_date, category: t.category }));
+
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      {showInsights && insightData.length > 0 && (
+        <SpendingInsights expenses={insightData} title="Credit Card Insights" />
+      )}
         <h3 className="text-lg font-semibold">Credit Card Transactions</h3>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
