@@ -23,6 +23,7 @@ import ReceiptImage from '@/components/ReceiptImage';
 import FinancialPlanner from '@/components/FinancialPlanner';
 import ExportDataButton from '@/components/ExportDataButton';
 import AIPersonalInsights from '@/components/AIPersonalInsights';
+import SpendingInsights from '@/components/SpendingInsights';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 
@@ -183,6 +184,7 @@ const PersonalDashboard = () => {
       case 'expenses':
         return (
           <div className="space-y-6">
+            <SpendingInsights expenses={expenses} title="Expense Insights" />
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
@@ -224,7 +226,7 @@ const PersonalDashboard = () => {
           </div>
         );
       case 'credit-cards':
-        return (<div className="space-y-6"><CreditCardManager cardType="personal" /><CreditCardTransactions cardType="personal" /></div>);
+        return (<div className="space-y-6"><CreditCardManager cardType="personal" /><CreditCardTransactions cardType="personal" showInsights /></div>);
       case 'income-budget':
         return (<div className="space-y-6"><IncomeTracker /><BudgetManager /></div>);
       case 'recurring-payments':

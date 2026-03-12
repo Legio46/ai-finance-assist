@@ -26,6 +26,7 @@ import DashboardCharts from '@/components/DashboardCharts';
 import { supabase } from '@/integrations/supabase/client';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useToast } from '@/hooks/use-toast';
+import AccountSwitcher from '@/components/AccountSwitcher';
 
 const Dashboard = () => {
   const { user, profile, loading, signOut } = useAuth();
@@ -105,10 +106,8 @@ const Dashboard = () => {
             <SecurityBadge variant="compact" />
           </div>
           
-          <div className="flex items-center space-x-4">
-            <span className="text-sm text-muted-foreground">
-              Welcome, {profile?.full_name || user?.email}
-            </span>
+          <div className="flex items-center space-x-3">
+            <AccountSwitcher />
             {isAdmin && (
               <Button variant="ghost" asChild>
                 <Link to="/admin">

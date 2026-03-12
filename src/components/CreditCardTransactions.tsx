@@ -12,6 +12,7 @@ import { DatePicker } from '@/components/ui/date-picker';
 import { Plus, Calendar, DollarSign, Tag } from 'lucide-react';
 import { format } from 'date-fns';
 import { useLanguage } from '@/contexts/LanguageContext';
+import SpendingInsights from '@/components/SpendingInsights';
 
 interface CreditCard {
   id: string;
@@ -32,9 +33,10 @@ interface Transaction {
 
 interface CreditCardTransactionsProps {
   cardType: 'personal' | 'business';
+  showInsights?: boolean;
 }
 
-const CreditCardTransactions: React.FC<CreditCardTransactionsProps> = ({ cardType }) => {
+const CreditCardTransactions: React.FC<CreditCardTransactionsProps> = ({ cardType, showInsights = false }) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const { formatCurrency } = useLanguage();
@@ -174,8 +176,13 @@ const CreditCardTransactions: React.FC<CreditCardTransactionsProps> = ({ cardTyp
     );
   }
 
+  const insightData = transactions.map(t => ({ amount: t.amount, date: t.transaction_date, category: t.category }));
+
   return (
     <div className="space-y-4">
+      {showInsights && insightData.length > 0 && (
+        <SpendingInsights expenses={insightData} title="Credit Card Insights" />
+      )}
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Credit Card Transactions</h3>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

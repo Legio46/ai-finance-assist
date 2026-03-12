@@ -11,6 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from '@/contexts/LanguageContext';
+import { ServiceLogo, SERVICE_DATABASE, POPULAR_SERVICES, getServiceCategory, CATEGORY_ICONS } from '@/components/ServiceLogos';
 
 const RecurringPayments = () => {
   const { user } = useAuth();
@@ -28,7 +29,7 @@ const RecurringPayments = () => {
     next_due_date: '',
   });
 
-  const categories = ['Rent/Mortgage', 'Utilities', 'Subscriptions', 'Loan Payment', 'Insurance', 'School Fees', 'Other'];
+  const categories = ['Streaming Services', 'Music', 'Gaming Services', 'Rent/Mortgage', 'Utilities', 'Subscriptions', 'Loan Payment', 'Insurance', 'School Fees', 'Internet', 'Phone Bill', 'Other'];
   const frequencies = ['weekly', 'bi-weekly', 'monthly', 'quarterly', 'annually'];
 
   useEffect(() => {
@@ -279,11 +280,29 @@ const RecurringPayments = () => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>Payment Name</Label>
+                <Select value={formData.payment_name} onValueChange={(value) => {
+                  const autoCategory = getServiceCategory(value);
+                  setFormData({...formData, payment_name: value, category: autoCategory !== 'Other' ? autoCategory : formData.category });
+                }}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select or type a service" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {POPULAR_SERVICES.map((service) => (
+                      <SelectItem key={service} value={service}>
+                        <div className="flex items-center gap-2">
+                          <ServiceLogo name={service} size="sm" />
+                          <span>{service}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <Input
-                  value={formData.payment_name}
+                  value={POPULAR_SERVICES.includes(formData.payment_name) ? '' : formData.payment_name}
                   onChange={(e) => setFormData({...formData, payment_name: e.target.value})}
-                  placeholder="e.g., Rent, Netflix"
-                  required
+                  placeholder="Or type custom name"
+                  className="mt-2"
                 />
               </div>
               <div>
@@ -346,15 +365,19 @@ const RecurringPayments = () => {
             
             return (
               <div key={payment.id} className="flex justify-between items-center p-4 border rounded-lg">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-medium">{payment.payment_name}</span>
-                    {getDueBadge(daysUntil)}
-                  </div>
-                  <div className="text-sm text-muted-foreground flex items-center gap-2">
-                    <Calendar className="w-3 h-3" />
-                    Due: {new Date(payment.next_due_date).toLocaleDateString()} 
-                    <span>• {payment.frequency}</span>
+              <div className="flex items-center gap-3 flex-1">
+                  <ServiceLogo name={payment.payment_name} size="md" />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-medium">{payment.payment_name}</span>
+                      {getDueBadge(daysUntil)}
+                    </div>
+                    <div className="text-sm text-muted-foreground flex items-center gap-2">
+                      <Calendar className="w-3 h-3" />
+                      Due: {new Date(payment.next_due_date).toLocaleDateString()} 
+                      <span>• {payment.frequency}</span>
+                      {payment.category && <Badge variant="outline" className="text-xs">{payment.category}</Badge>}
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
