@@ -106,10 +106,8 @@ const Dashboard = () => {
             <SecurityBadge variant="compact" />
           </div>
           
-          <div className="flex items-center space-x-4">
-            <span className="text-sm text-muted-foreground">
-              Welcome, {profile?.full_name || user?.email}
-            </span>
+          <div className="flex items-center space-x-3">
+            <AccountSwitcher />
             {isAdmin && (
               <Button variant="ghost" asChild>
                 <Link to="/admin">

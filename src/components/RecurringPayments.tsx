@@ -365,15 +365,19 @@ const RecurringPayments = () => {
             
             return (
               <div key={payment.id} className="flex justify-between items-center p-4 border rounded-lg">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-medium">{payment.payment_name}</span>
-                    {getDueBadge(daysUntil)}
-                  </div>
-                  <div className="text-sm text-muted-foreground flex items-center gap-2">
-                    <Calendar className="w-3 h-3" />
-                    Due: {new Date(payment.next_due_date).toLocaleDateString()} 
-                    <span>• {payment.frequency}</span>
+              <div className="flex items-center gap-3 flex-1">
+                  <ServiceLogo name={payment.payment_name} size="md" />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-medium">{payment.payment_name}</span>
+                      {getDueBadge(daysUntil)}
+                    </div>
+                    <div className="text-sm text-muted-foreground flex items-center gap-2">
+                      <Calendar className="w-3 h-3" />
+                      Due: {new Date(payment.next_due_date).toLocaleDateString()} 
+                      <span>• {payment.frequency}</span>
+                      {payment.category && <Badge variant="outline" className="text-xs">{payment.category}</Badge>}
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
