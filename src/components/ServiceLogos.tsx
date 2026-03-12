@@ -6,34 +6,49 @@ import {
   Newspaper, BookOpen, Coffee, UtensilsCrossed
 } from 'lucide-react';
 
+// Logo imports
+import netflixLogo from '@/assets/logos/netflix.png';
+import spotifyLogo from '@/assets/logos/spotify.png';
+import disneyLogo from '@/assets/logos/disney.png';
+import hboLogo from '@/assets/logos/hbomax.png';
+import huluLogo from '@/assets/logos/hulu.png';
+import youtubeLogo from '@/assets/logos/youtube.png';
+import appleMusicLogo from '@/assets/logos/applemusic.png';
+import appleTvLogo from '@/assets/logos/appletv.png';
+import espnLogo from '@/assets/logos/espn.png';
+import paramountLogo from '@/assets/logos/paramount.png';
+import playstationLogo from '@/assets/logos/playstation.png';
+import xboxLogo from '@/assets/logos/xbox.png';
+import amazonLogo from '@/assets/logos/amazon.png';
+
 export interface ServiceInfo {
   name: string;
   category: string;
   color: string;
-  icon: React.ReactNode;
+  logo: string;
 }
 
 const LOGO_SIZE = "w-5 h-5";
 
 export const SERVICE_DATABASE: Record<string, ServiceInfo> = {
   // Streaming Services
-  'Netflix': { name: 'Netflix', category: 'Streaming Services', color: '#E50914', icon: <Tv className={LOGO_SIZE} style={{ color: '#E50914' }} /> },
-  'Disney+': { name: 'Disney+', category: 'Streaming Services', color: '#113CCF', icon: <Tv className={LOGO_SIZE} style={{ color: '#113CCF' }} /> },
-  'HBO Max': { name: 'HBO Max', category: 'Streaming Services', color: '#5822B4', icon: <Tv className={LOGO_SIZE} style={{ color: '#5822B4' }} /> },
-  'Hulu': { name: 'Hulu', category: 'Streaming Services', color: '#1CE783', icon: <Tv className={LOGO_SIZE} style={{ color: '#1CE783' }} /> },
-  'Apple TV+': { name: 'Apple TV+', category: 'Streaming Services', color: '#000000', icon: <Tv className={LOGO_SIZE} style={{ color: '#555' }} /> },
-  'Paramount+': { name: 'Paramount+', category: 'Streaming Services', color: '#0064FF', icon: <Tv className={LOGO_SIZE} style={{ color: '#0064FF' }} /> },
-  'Amazon Prime': { name: 'Amazon Prime', category: 'Streaming Services', color: '#00A8E1', icon: <Tv className={LOGO_SIZE} style={{ color: '#00A8E1' }} /> },
-  'ESPN+': { name: 'ESPN+', category: 'Streaming Services', color: '#D00', icon: <Tv className={LOGO_SIZE} style={{ color: '#D00' }} /> },
-  'YouTube Premium': { name: 'YouTube Premium', category: 'Streaming Services', color: '#FF0000', icon: <Tv className={LOGO_SIZE} style={{ color: '#FF0000' }} /> },
+  'Netflix': { name: 'Netflix', category: 'Streaming Services', color: '#E50914', logo: netflixLogo },
+  'Disney+': { name: 'Disney+', category: 'Streaming Services', color: '#113CCF', logo: disneyLogo },
+  'HBO Max': { name: 'HBO Max', category: 'Streaming Services', color: '#5822B4', logo: hboLogo },
+  'Hulu': { name: 'Hulu', category: 'Streaming Services', color: '#1CE783', logo: huluLogo },
+  'Apple TV+': { name: 'Apple TV+', category: 'Streaming Services', color: '#000000', logo: appleTvLogo },
+  'Paramount+': { name: 'Paramount+', category: 'Streaming Services', color: '#0064FF', logo: paramountLogo },
+  'Amazon Prime': { name: 'Amazon Prime', category: 'Streaming Services', color: '#00A8E1', logo: amazonLogo },
+  'ESPN+': { name: 'ESPN+', category: 'Streaming Services', color: '#D00', logo: espnLogo },
+  'YouTube Premium': { name: 'YouTube Premium', category: 'Streaming Services', color: '#FF0000', logo: youtubeLogo },
 
   // Music
-  'Spotify': { name: 'Spotify', category: 'Music', color: '#1DB954', icon: <Music className={LOGO_SIZE} style={{ color: '#1DB954' }} /> },
-  'Apple Music': { name: 'Apple Music', category: 'Music', color: '#FA243C', icon: <Music className={LOGO_SIZE} style={{ color: '#FA243C' }} /> },
+  'Spotify': { name: 'Spotify', category: 'Music', color: '#1DB954', logo: spotifyLogo },
+  'Apple Music': { name: 'Apple Music', category: 'Music', color: '#FA243C', logo: appleMusicLogo },
 
   // Gaming Services
-  'PlayStation Plus': { name: 'PlayStation Plus', category: 'Gaming Services', color: '#003791', icon: <Gamepad2 className={LOGO_SIZE} style={{ color: '#003791' }} /> },
-  'Xbox Game Pass': { name: 'Xbox Game Pass', category: 'Gaming Services', color: '#107C10', icon: <Gamepad2 className={LOGO_SIZE} style={{ color: '#107C10' }} /> },
+  'PlayStation Plus': { name: 'PlayStation Plus', category: 'Gaming Services', color: '#003791', logo: playstationLogo },
+  'Xbox Game Pass': { name: 'Xbox Game Pass', category: 'Gaming Services', color: '#107C10', logo: xboxLogo },
 };
 
 export const CATEGORY_ICONS: Record<string, { icon: React.ReactNode; color: string }> = {
@@ -70,15 +85,19 @@ interface ServiceLogoProps {
 export const ServiceLogo: React.FC<ServiceLogoProps> = ({ name, size = 'md', showName = false }) => {
   const service = SERVICE_DATABASE[name];
   const sizeClasses = { sm: 'w-7 h-7', md: 'w-9 h-9', lg: 'w-11 h-11' };
+  const imgSizes = { sm: 'w-5 h-5', md: 'w-7 h-7', lg: 'w-9 h-9' };
 
   if (service) {
     return (
       <div className="flex items-center gap-2">
         <div
-          className={`${sizeClasses[size]} rounded-lg flex items-center justify-center`}
-          style={{ backgroundColor: `${service.color}15` }}
+          className={`${sizeClasses[size]} rounded-lg flex items-center justify-center overflow-hidden bg-card border border-border`}
         >
-          {service.icon}
+          <img 
+            src={service.logo} 
+            alt={service.name} 
+            className={`${imgSizes[size]} object-contain`}
+          />
         </div>
         {showName && <span className="text-sm font-medium">{service.name}</span>}
       </div>
