@@ -33,9 +33,10 @@ interface Transaction {
 
 interface CreditCardTransactionsProps {
   cardType: 'personal' | 'business';
+  showInsights?: boolean;
 }
 
-const CreditCardTransactions: React.FC<CreditCardTransactionsProps> = ({ cardType }) => {
+const CreditCardTransactions: React.FC<CreditCardTransactionsProps> = ({ cardType, showInsights = false }) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const { formatCurrency } = useLanguage();
