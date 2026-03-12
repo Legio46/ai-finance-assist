@@ -183,7 +183,7 @@ const CreditCardTransactions: React.FC<CreditCardTransactionsProps> = ({ cardTyp
       {showInsights && insightData.length > 0 && (
         <SpendingInsights expenses={insightData} title="Credit Card Insights" />
       )}
-        <h3 className="text-lg font-semibold">Credit Card Transactions</h3>
+        <div className="flex justify-between items-center">
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button disabled={creditCards.length === 0}>
