@@ -11,6 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from '@/contexts/LanguageContext';
+import { ServiceLogo, SERVICE_DATABASE, POPULAR_SERVICES, getServiceCategory, CATEGORY_ICONS } from '@/components/ServiceLogos';
 
 const RecurringPayments = () => {
   const { user } = useAuth();
