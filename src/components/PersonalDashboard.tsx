@@ -23,6 +23,7 @@ import ReceiptImage from '@/components/ReceiptImage';
 import FinancialPlanner from '@/components/FinancialPlanner';
 import ExportDataButton from '@/components/ExportDataButton';
 import AIPersonalInsights from '@/components/AIPersonalInsights';
+import SpendingInsights from '@/components/SpendingInsights';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 
