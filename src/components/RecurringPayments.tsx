@@ -29,7 +29,7 @@ const RecurringPayments = () => {
     next_due_date: '',
   });
 
-  const categories = ['Rent/Mortgage', 'Utilities', 'Subscriptions', 'Loan Payment', 'Insurance', 'School Fees', 'Other'];
+  const categories = ['Streaming Services', 'Music', 'Gaming Services', 'Rent/Mortgage', 'Utilities', 'Subscriptions', 'Loan Payment', 'Insurance', 'School Fees', 'Internet', 'Phone Bill', 'Other'];
   const frequencies = ['weekly', 'bi-weekly', 'monthly', 'quarterly', 'annually'];
 
   useEffect(() => {
