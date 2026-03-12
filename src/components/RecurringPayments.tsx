@@ -280,11 +280,29 @@ const RecurringPayments = () => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>Payment Name</Label>
+                <Select value={formData.payment_name} onValueChange={(value) => {
+                  const autoCategory = getServiceCategory(value);
+                  setFormData({...formData, payment_name: value, category: autoCategory !== 'Other' ? autoCategory : formData.category });
+                }}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select or type a service" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {POPULAR_SERVICES.map((service) => (
+                      <SelectItem key={service} value={service}>
+                        <div className="flex items-center gap-2">
+                          <ServiceLogo name={service} size="sm" />
+                          <span>{service}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <Input
-                  value={formData.payment_name}
+                  value={POPULAR_SERVICES.includes(formData.payment_name) ? '' : formData.payment_name}
                   onChange={(e) => setFormData({...formData, payment_name: e.target.value})}
-                  placeholder="e.g., Rent, Netflix"
-                  required
+                  placeholder="Or type custom name"
+                  className="mt-2"
                 />
               </div>
               <div>
