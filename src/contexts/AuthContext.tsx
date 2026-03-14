@@ -216,7 +216,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async (email: string, password: string, rememberMe: boolean = false) => {
     try {
-      // Set session persistence based on rememberMe option
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -245,6 +244,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { error };
       }
 
+      // Check if MFA is required
+      const { data: factorsData } = await supabase.auth.mfa.listFactors();
+      const verifiedFactors = factorsData?.totp?.filter((f: any) => f.status === 'verified') || [];
+      
+      if (verifiedFactors.length > 0) {
+        setMfaChallenge({ factorId: verifiedFactors[0].id });
+        return { mfaRequired: true };
+      }
+
       toast({
         title: "Welcome back!",
         description: "You have successfully signed in.",
@@ -255,6 +263,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       toast({
         title: "Sign In Error",
         description: error.message,
+        variant: "destructive",
+      });
+      return { error };
+    }
+  };
+
+  const verifyMfa = async (code: string) => {
+    if (!mfaChallenge) return { error: new Error('No MFA challenge active') };
+    
+    try {
+      const { data: challengeData, error: challengeError } = await supabase.auth.mfa.challenge({
+        factorId: mfaChallenge.factorId,
+      });
+      if (challengeError) throw challengeError;
+
+      const { error: verifyError } = await supabase.auth.mfa.verify({
+        factorId: mfaChallenge.factorId,
+        challengeId: challengeData.id,
+        code,
+      });
+      if (verifyError) throw verifyError;
+
+      setMfaChallenge(null);
+      toast({
+        title: "Welcome back!",
+        description: "You have successfully signed in.",
+      });
+      return {};
+    } catch (error: any) {
+      toast({
+        title: "Invalid Code",
+        description: "The authenticator code is incorrect. Please try again.",
         variant: "destructive",
       });
       return { error };
