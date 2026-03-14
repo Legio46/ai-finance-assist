@@ -43,6 +43,22 @@ const SecuritySettings = () => {
     if (profile?.phone_number) setPhoneNumber(profile.phone_number);
   }, [profile]);
 
+  // Load MFA factors
+  useEffect(() => {
+    loadMfaFactors();
+  }, [user]);
+
+  const loadMfaFactors = async () => {
+    try {
+      const { data, error } = await supabase.auth.mfa.listFactors();
+      if (error) throw error;
+      const verified = data?.totp?.filter((f: any) => f.status === 'verified') || [];
+      setMfaFactors(verified);
+    } catch (err) {
+      console.error('Error loading MFA factors:', err);
+    }
+  };
+
   // Security score calculation
   const getSecurityScore = () => {
     let score = 0;
