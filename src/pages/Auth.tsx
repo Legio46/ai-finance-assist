@@ -28,6 +28,9 @@ const Auth = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
+  const [phoneVerificationStep, setPhoneVerificationStep] = useState<'none' | 'sending' | 'sent' | 'verified'>('none');
+  const [phoneTranId, setPhoneTranId] = useState('');
+  const [phoneOtp, setPhoneOtp] = useState('');
 
   // Form states
   const [signInData, setSignInData] = useState({
