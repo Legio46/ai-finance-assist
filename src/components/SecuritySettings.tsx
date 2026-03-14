@@ -188,6 +188,8 @@ const SecuritySettings = () => {
     navigator.clipboard.writeText(text);
     toast({ title: "Copied!", description: "Secret key copied to clipboard." });
   };
+
+  const validatePassword = (password: string): { valid: boolean; message: string; strength: number } => {
     let strength = 0;
     if (password.length >= 8) strength += 20;
     if (password.length >= 12) strength += 10;
