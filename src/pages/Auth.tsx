@@ -101,6 +101,49 @@ const Auth = () => {
     setIsLoading(false);
   };
 
+  const sendPhoneVerification = async () => {
+    if (!signUpData.phoneNumber) {
+      toast({ title: "Phone Required", description: "Enter a phone number to verify.", variant: "destructive" });
+      return;
+    }
+    setPhoneVerificationStep('sending');
+    try {
+      const { data, error } = await supabase.functions.invoke('phone-verification', {
+        body: { action: 'send', phone_number: signUpData.phoneNumber },
+      });
+      if (error || !data?.success) throw new Error(data?.error || error?.message || 'Failed to send OTP');
+      setPhoneTranId(data.tran_id);
+      setPhoneVerificationStep('sent');
+      toast({ title: "Code Sent", description: "A verification code has been sent to your phone." });
+    } catch (err: any) {
+      console.error('Phone verification send error:', err);
+      setPhoneVerificationStep('none');
+      toast({ title: "Verification Failed", description: err.message, variant: "destructive" });
+    }
+  };
+
+  const verifyPhoneOtp = async () => {
+    if (!phoneOtp || phoneOtp.length < 6) {
+      toast({ title: "Enter Code", description: "Please enter the 6-digit code.", variant: "destructive" });
+      return;
+    }
+    try {
+      const { data, error } = await supabase.functions.invoke('phone-verification', {
+        body: { action: 'verify', tran_id: phoneTranId, otp: phoneOtp },
+      });
+      if (error || !data?.success) throw new Error(data?.error || error?.message || 'Verification failed');
+      if (data.verified) {
+        setPhoneVerificationStep('verified');
+        toast({ title: "Phone Verified", description: "Your phone number has been verified!" });
+      } else {
+        toast({ title: "Invalid Code", description: "The code you entered is incorrect. Please try again.", variant: "destructive" });
+      }
+    } catch (err: any) {
+      console.error('Phone verification error:', err);
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    }
+  };
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -124,6 +167,16 @@ const Auth = () => {
       return;
     }
     setPasswordErrors([]);
+
+    // If phone number is provided but not verified, block signup
+    if (signUpData.phoneNumber && phoneVerificationStep !== 'verified') {
+      toast({
+        title: "Phone Not Verified",
+        description: "Please verify your phone number before signing up, or remove it.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setIsLoading(true);
     await signUp(signUpData.email.trim().toLowerCase(), signUpData.password, signUpData.fullName.trim(), 'personal');
