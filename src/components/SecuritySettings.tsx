@@ -105,22 +105,89 @@ const SecuritySettings = () => {
     }
   };
 
-  const handleToggle2FA = async (enabled: boolean) => {
-    if (!user) return;
-    setLoading(true);
+  const handleEnroll2FA = async () => {
+    setTotpLoading(true);
     try {
-      const { error } = await supabase.from('profiles').update({ two_factor_enabled: enabled }).eq('user_id', user.id);
+      const { data, error } = await supabase.auth.mfa.enroll({
+        factorType: 'totp',
+        friendlyName: 'Authenticator App',
+      });
       if (error) throw error;
-      toast({ title: enabled ? "2FA Enabled" : "2FA Disabled", description: enabled ? "Two-factor authentication is now active." : "Two-factor authentication has been disabled." });
-      refreshProfile();
-    } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      
+      setTotpQrUri(data.totp.qr_code);
+      setTotpSecret(data.totp.secret);
+      setTotpFactorId(data.id);
+      setTotpStep('qr');
+      setTotpCode('');
+      setShow2FADialog(true);
+    } catch (err: any) {
+      console.error('MFA enroll error:', err);
+      toast({ title: "Error", description: err.message || "Failed to start 2FA setup", variant: "destructive" });
     } finally {
-      setLoading(false);
+      setTotpLoading(false);
     }
   };
 
-  const validatePassword = (password: string): { valid: boolean; message: string; strength: number } => {
+  const handleVerify2FA = async () => {
+    if (totpCode.length < 6) return;
+    setTotpLoading(true);
+    try {
+      const { data: challengeData, error: challengeError } = await supabase.auth.mfa.challenge({
+        factorId: totpFactorId,
+      });
+      if (challengeError) throw challengeError;
+
+      const { error: verifyError } = await supabase.auth.mfa.verify({
+        factorId: totpFactorId,
+        challengeId: challengeData.id,
+        code: totpCode,
+      });
+      if (verifyError) throw verifyError;
+
+      // Update profile
+      await supabase.from('profiles').update({ two_factor_enabled: true }).eq('user_id', user!.id);
+      
+      setTotpStep('done');
+      await loadMfaFactors();
+      refreshProfile();
+      toast({ title: "2FA Enabled!", description: "Your authenticator app is now linked." });
+    } catch (err: any) {
+      console.error('MFA verify error:', err);
+      toast({ title: "Verification Failed", description: err.message || "Invalid code. Please try again.", variant: "destructive" });
+    } finally {
+      setTotpLoading(false);
+    }
+  };
+
+  const handleDisable2FA = async () => {
+    if (!mfaFactors.length) return;
+    setTotpLoading(true);
+    try {
+      // Unenroll all TOTP factors
+      for (const factor of mfaFactors) {
+        const { error } = await supabase.auth.mfa.unenroll({ factorId: factor.id });
+        if (error) throw error;
+      }
+      
+      await supabase.from('profiles').update({ two_factor_enabled: false }).eq('user_id', user!.id);
+      
+      setMfaFactors([]);
+      setShowDisable2FADialog(false);
+      setDisable2FACode('');
+      refreshProfile();
+      toast({ title: "2FA Disabled", description: "Two-factor authentication has been removed." });
+    } catch (err: any) {
+      console.error('MFA unenroll error:', err);
+      toast({ title: "Error", description: err.message || "Failed to disable 2FA", variant: "destructive" });
+    } finally {
+      setTotpLoading(false);
+    }
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast({ title: "Copied!", description: "Secret key copied to clipboard." });
+  };
     let strength = 0;
     if (password.length >= 8) strength += 20;
     if (password.length >= 12) strength += 10;
