@@ -10,8 +10,10 @@ interface AuthContextType {
   session: Session | null;
   profile: any | null;
   loading: boolean;
+  mfaChallenge: { factorId: string } | null;
   signUp: (email: string, password: string, fullName: string, accountType?: string) => Promise<{ error?: any }>;
-  signIn: (email: string, password: string, rememberMe?: boolean) => Promise<{ error?: any }>;
+  signIn: (email: string, password: string, rememberMe?: boolean) => Promise<{ error?: any; mfaRequired?: boolean }>;
+  verifyMfa: (code: string) => Promise<{ error?: any }>;
   signInWithOAuth: (provider: OAuthProvider) => Promise<{ error?: any }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error?: any }>;
