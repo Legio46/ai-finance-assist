@@ -17,7 +17,7 @@ import { AlertCircle, Lock, Phone, CheckCircle2, Loader2 } from 'lucide-react';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 
 const Auth = () => {
-  const { user, signIn, signUp, resetPassword, loading } = useAuth();
+  const { user, signIn, signUp, resetPassword, verifyMfa, mfaChallenge, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isLocked, remainingLockSeconds, attemptsLeft, recordAttempt, resetAttempts } = useLoginRateLimit();
