@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Target, AlertCircle } from 'lucide-react';
+import { Plus, Target, Pencil, Trash2, Check, X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/hooks/use-toast";
@@ -15,10 +15,12 @@ const BudgetManager = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const { formatCurrency } = useLanguage();
-  const [budgets, setBudgets] = useState([]);
-  const [expenses, setExpenses] = useState([]);
+  const [budgets, setBudgets] = useState<any[]>([]);
+  const [expenses, setExpenses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editAmount, setEditAmount] = useState('');
   const [formData, setFormData] = useState({
     category: '',
     amount: '',
@@ -26,15 +28,8 @@ const BudgetManager = () => {
   });
 
   const expenseCategories = [
-    'Food & Dining',
-    'Transportation',
-    'Shopping',
-    'Entertainment',
-    'Bills & Utilities',
-    'Healthcare',
-    'Travel',
-    'Education',
-    'Other'
+    'Food & Dining', 'Transportation', 'Shopping', 'Entertainment',
+    'Bills & Utilities', 'Healthcare', 'Travel', 'Education', 'Other'
   ];
 
   useEffect(() => {
@@ -46,14 +41,12 @@ const BudgetManager = () => {
 
   const fetchBudgets = async () => {
     if (!user) return;
-
     try {
       const { data, error } = await (supabase as any)
         .from('budgets')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
-
       if (error) throw error;
       setBudgets(data || []);
     } catch (error) {
@@ -65,17 +58,14 @@ const BudgetManager = () => {
 
   const fetchExpenses = async () => {
     if (!user) return;
-
     try {
       const currentDate = new Date();
       const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-      
       const { data, error } = await supabase
         .from('personal_expenses')
         .select('*')
         .eq('user_id', user.id)
         .gte('date', firstDayOfMonth.toISOString());
-
       if (error) throw error;
       setExpenses(data || []);
     } catch (error) {
@@ -86,41 +76,65 @@ const BudgetManager = () => {
   const addBudget = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
-
     try {
       const { error } = await (supabase as any)
         .from('budgets')
-        .insert([
-          {
-            user_id: user.id,
-            category: formData.category,
-            amount: parseFloat(formData.amount),
-            period: formData.period,
-          }
-        ]);
-
+        .insert([{
+          user_id: user.id,
+          category: formData.category,
+          amount: parseFloat(formData.amount),
+          period: formData.period,
+        }]);
       if (error) throw error;
-
-      toast({
-        title: "Budget Created",
-        description: "Your budget has been set successfully.",
-      });
-
-      setFormData({
-        category: '',
-        amount: '',
-        period: 'monthly',
-      });
+      toast({ title: "Budget Created", description: "Your budget has been set successfully." });
+      setFormData({ category: '', amount: '', period: 'monthly' });
       setShowAddForm(false);
       fetchBudgets();
     } catch (error) {
       console.error('Error adding budget:', error);
-      toast({
-        title: "Error",
-        description: "Failed to create budget",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: "Failed to create budget", variant: "destructive" });
     }
+  };
+
+  const updateBudget = async (budgetId: string) => {
+    if (!user || !editAmount) return;
+    try {
+      const { error } = await (supabase as any)
+        .from('budgets')
+        .update({ amount: parseFloat(editAmount) })
+        .eq('id', budgetId)
+        .eq('user_id', user.id);
+      if (error) throw error;
+      toast({ title: "Budget Updated", description: "Your budget has been updated successfully." });
+      setEditingId(null);
+      setEditAmount('');
+      fetchBudgets();
+    } catch (error) {
+      console.error('Error updating budget:', error);
+      toast({ title: "Error", description: "Failed to update budget", variant: "destructive" });
+    }
+  };
+
+  const deleteBudget = async (budgetId: string) => {
+    if (!user) return;
+    try {
+      const { error } = await (supabase as any)
+        .from('budgets')
+        .delete()
+        .eq('id', budgetId)
+        .eq('user_id', user.id);
+      if (error) throw error;
+      toast({ title: "Budget Deleted", description: "Your budget has been removed." });
+      fetchBudgets();
+    } catch (error) {
+      console.error('Error deleting budget:', error);
+      toast({ title: "Error", description: "Failed to delete budget", variant: "destructive" });
+    }
+  };
+
+  const startEditing = (budget: any) => {
+    setEditingId(budget.id);
+    setEditAmount(budget.amount.toString());
   };
 
   const getSpentAmount = (category: string) => {
@@ -132,10 +146,9 @@ const BudgetManager = () => {
   const getBudgetStatus = (budget: any) => {
     const spent = getSpentAmount(budget.category);
     const percentage = (spent / budget.amount) * 100;
-    
     if (percentage >= 100) return { color: 'text-destructive', status: 'Over budget' };
     if (percentage >= 80) return { color: 'text-orange-500', status: 'Near limit' };
-    return { color: 'text-success', status: 'On track' };
+    return { color: 'text-green-500', status: 'On track' };
   };
 
   if (loading) {
@@ -199,22 +212,53 @@ const BudgetManager = () => {
             const spent = getSpentAmount(budget.category);
             const percentage = Math.min((spent / budget.amount) * 100, 100);
             const status = getBudgetStatus(budget);
-            
+            const isEditing = editingId === budget.id;
+
             return (
               <div key={budget.id} className="p-4 border rounded-lg space-y-2">
                 <div className="flex justify-between items-start">
                   <div>
                     <div className="font-medium">{budget.category}</div>
-                    <div className="text-sm text-muted-foreground">Monthly budget</div>
+                    <div className="text-sm text-muted-foreground capitalize">{budget.period} budget</div>
                   </div>
-                  <div className="text-right">
-                    <div className="font-bold">{formatCurrency(spent)} / {formatCurrency(budget.amount)}</div>
-                    <div className={`text-sm ${status.color}`}>{status.status}</div>
+                  <div className="flex items-center gap-2">
+                    {isEditing ? (
+                      <div className="flex items-center gap-1">
+                        <Input
+                          type="number"
+                          step="0.01"
+                          value={editAmount}
+                          onChange={(e) => setEditAmount(e.target.value)}
+                          className="w-28 h-8 text-sm"
+                        />
+                        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => updateBudget(budget.id)}>
+                          <Check className="h-4 w-4 text-green-500" />
+                        </Button>
+                        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => { setEditingId(null); setEditAmount(''); }}>
+                          <X className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="text-right">
+                          <div className="font-bold">{formatCurrency(spent)} / {formatCurrency(budget.amount)}</div>
+                          <div className={`text-sm ${status.color}`}>{status.status}</div>
+                        </div>
+                        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => startEditing(budget)}>
+                          <Pencil className="h-4 w-4 text-muted-foreground" />
+                        </Button>
+                        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => deleteBudget(budget.id)}>
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
                 <Progress value={percentage} className="h-2" />
                 <div className="text-xs text-muted-foreground">
-                  {formatCurrency(budget.amount - spent)} remaining
+                  {budget.amount - spent > 0
+                    ? `${formatCurrency(budget.amount - spent)} remaining`
+                    : `${formatCurrency(spent - budget.amount)} over budget`}
                 </div>
               </div>
             );
