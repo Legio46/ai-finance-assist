@@ -13,7 +13,8 @@ import OAuthButtons from '@/components/OAuthButtons';
 import { useLoginRateLimit } from '@/hooks/useLoginRateLimit';
 import { validatePassword } from '@/utils/inputSanitizer';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, Lock } from 'lucide-react';
+import { AlertCircle, Lock, Phone, CheckCircle2, Loader2 } from 'lucide-react';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 
 const Auth = () => {
   const { user, signIn, signUp, resetPassword, loading } = useAuth();
