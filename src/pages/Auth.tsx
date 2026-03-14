@@ -406,15 +406,67 @@ const Auth = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="signup-phone">Phone Number</Label>
-                    <Input
-                      id="signup-phone"
-                      type="tel"
-                      placeholder="+1 (555) 000-0000"
-                      value={signUpData.phoneNumber}
-                      onChange={(e) => setSignUpData({ ...signUpData, phoneNumber: e.target.value })}
-                      maxLength={20}
-                    />
-                    <p className="text-xs text-muted-foreground">Optional — for account recovery</p>
+                    <div className="flex gap-2">
+                      <Input
+                        id="signup-phone"
+                        type="tel"
+                        placeholder="+1 (555) 000-0000"
+                        value={signUpData.phoneNumber}
+                        onChange={(e) => {
+                          setSignUpData({ ...signUpData, phoneNumber: e.target.value });
+                          if (phoneVerificationStep === 'verified') setPhoneVerificationStep('none');
+                        }}
+                        maxLength={20}
+                        disabled={phoneVerificationStep === 'verified'}
+                        className="flex-1"
+                      />
+                      {phoneVerificationStep === 'verified' ? (
+                        <div className="flex items-center gap-1 text-green-500 text-sm px-2">
+                          <CheckCircle2 className="h-4 w-4" />
+                          Verified
+                        </div>
+                      ) : (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={sendPhoneVerification}
+                          disabled={!signUpData.phoneNumber || phoneVerificationStep === 'sending'}
+                          className="whitespace-nowrap"
+                        >
+                          {phoneVerificationStep === 'sending' ? (
+                            <><Loader2 className="h-4 w-4 mr-1 animate-spin" />Sending</>
+                          ) : phoneVerificationStep === 'sent' ? (
+                            'Resend'
+                          ) : (
+                            <><Phone className="h-4 w-4 mr-1" />Verify</>
+                          )}
+                        </Button>
+                      )}
+                    </div>
+                    {phoneVerificationStep === 'sent' && (
+                      <div className="space-y-2 mt-2 p-3 border rounded-lg bg-muted/50">
+                        <p className="text-sm text-muted-foreground">Enter the 6-digit code sent to your phone:</p>
+                        <div className="flex items-center gap-2">
+                          <InputOTP maxLength={6} value={phoneOtp} onChange={setPhoneOtp}>
+                            <InputOTPGroup>
+                              <InputOTPSlot index={0} />
+                              <InputOTPSlot index={1} />
+                              <InputOTPSlot index={2} />
+                              <InputOTPSlot index={3} />
+                              <InputOTPSlot index={4} />
+                              <InputOTPSlot index={5} />
+                            </InputOTPGroup>
+                          </InputOTP>
+                          <Button type="button" size="sm" onClick={verifyPhoneOtp} disabled={phoneOtp.length < 6}>
+                            Confirm
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                    {phoneVerificationStep === 'none' && (
+                      <p className="text-xs text-muted-foreground">Optional — for account recovery & security</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="signup-email">Email</Label>
