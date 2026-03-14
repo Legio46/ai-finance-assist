@@ -96,6 +96,8 @@ const Auth = () => {
           variant: "destructive",
         });
       }
+    } else if (result.mfaRequired) {
+      // MFA challenge is set in context, UI will switch
     } else {
       resetAttempts();
     }
