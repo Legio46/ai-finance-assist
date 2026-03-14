@@ -13,7 +13,8 @@ import OAuthButtons from '@/components/OAuthButtons';
 import { useLoginRateLimit } from '@/hooks/useLoginRateLimit';
 import { validatePassword } from '@/utils/inputSanitizer';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, Lock } from 'lucide-react';
+import { AlertCircle, Lock, Phone, CheckCircle2, Loader2 } from 'lucide-react';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 
 const Auth = () => {
   const { user, signIn, signUp, resetPassword, loading } = useAuth();
@@ -27,6 +28,9 @@ const Auth = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
+  const [phoneVerificationStep, setPhoneVerificationStep] = useState<'none' | 'sending' | 'sent' | 'verified'>('none');
+  const [phoneTranId, setPhoneTranId] = useState('');
+  const [phoneOtp, setPhoneOtp] = useState('');
 
   // Form states
   const [signInData, setSignInData] = useState({
@@ -97,6 +101,49 @@ const Auth = () => {
     setIsLoading(false);
   };
 
+  const sendPhoneVerification = async () => {
+    if (!signUpData.phoneNumber) {
+      toast({ title: "Phone Required", description: "Enter a phone number to verify.", variant: "destructive" });
+      return;
+    }
+    setPhoneVerificationStep('sending');
+    try {
+      const { data, error } = await supabase.functions.invoke('phone-verification', {
+        body: { action: 'send', phone_number: signUpData.phoneNumber },
+      });
+      if (error || !data?.success) throw new Error(data?.error || error?.message || 'Failed to send OTP');
+      setPhoneTranId(data.tran_id);
+      setPhoneVerificationStep('sent');
+      toast({ title: "Code Sent", description: "A verification code has been sent to your phone." });
+    } catch (err: any) {
+      console.error('Phone verification send error:', err);
+      setPhoneVerificationStep('none');
+      toast({ title: "Verification Failed", description: err.message, variant: "destructive" });
+    }
+  };
+
+  const verifyPhoneOtp = async () => {
+    if (!phoneOtp || phoneOtp.length < 6) {
+      toast({ title: "Enter Code", description: "Please enter the 6-digit code.", variant: "destructive" });
+      return;
+    }
+    try {
+      const { data, error } = await supabase.functions.invoke('phone-verification', {
+        body: { action: 'verify', tran_id: phoneTranId, otp: phoneOtp },
+      });
+      if (error || !data?.success) throw new Error(data?.error || error?.message || 'Verification failed');
+      if (data.verified) {
+        setPhoneVerificationStep('verified');
+        toast({ title: "Phone Verified", description: "Your phone number has been verified!" });
+      } else {
+        toast({ title: "Invalid Code", description: "The code you entered is incorrect. Please try again.", variant: "destructive" });
+      }
+    } catch (err: any) {
+      console.error('Phone verification error:', err);
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    }
+  };
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -120,6 +167,16 @@ const Auth = () => {
       return;
     }
     setPasswordErrors([]);
+
+    // If phone number is provided but not verified, block signup
+    if (signUpData.phoneNumber && phoneVerificationStep !== 'verified') {
+      toast({
+        title: "Phone Not Verified",
+        description: "Please verify your phone number before signing up, or remove it.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setIsLoading(true);
     await signUp(signUpData.email.trim().toLowerCase(), signUpData.password, signUpData.fullName.trim(), 'personal');
@@ -349,15 +406,67 @@ const Auth = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="signup-phone">Phone Number</Label>
-                    <Input
-                      id="signup-phone"
-                      type="tel"
-                      placeholder="+1 (555) 000-0000"
-                      value={signUpData.phoneNumber}
-                      onChange={(e) => setSignUpData({ ...signUpData, phoneNumber: e.target.value })}
-                      maxLength={20}
-                    />
-                    <p className="text-xs text-muted-foreground">Optional — for account recovery</p>
+                    <div className="flex gap-2">
+                      <Input
+                        id="signup-phone"
+                        type="tel"
+                        placeholder="+1 (555) 000-0000"
+                        value={signUpData.phoneNumber}
+                        onChange={(e) => {
+                          setSignUpData({ ...signUpData, phoneNumber: e.target.value });
+                          if (phoneVerificationStep === 'verified') setPhoneVerificationStep('none');
+                        }}
+                        maxLength={20}
+                        disabled={phoneVerificationStep === 'verified'}
+                        className="flex-1"
+                      />
+                      {phoneVerificationStep === 'verified' ? (
+                        <div className="flex items-center gap-1 text-green-500 text-sm px-2">
+                          <CheckCircle2 className="h-4 w-4" />
+                          Verified
+                        </div>
+                      ) : (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={sendPhoneVerification}
+                          disabled={!signUpData.phoneNumber || phoneVerificationStep === 'sending'}
+                          className="whitespace-nowrap"
+                        >
+                          {phoneVerificationStep === 'sending' ? (
+                            <><Loader2 className="h-4 w-4 mr-1 animate-spin" />Sending</>
+                          ) : phoneVerificationStep === 'sent' ? (
+                            'Resend'
+                          ) : (
+                            <><Phone className="h-4 w-4 mr-1" />Verify</>
+                          )}
+                        </Button>
+                      )}
+                    </div>
+                    {phoneVerificationStep === 'sent' && (
+                      <div className="space-y-2 mt-2 p-3 border rounded-lg bg-muted/50">
+                        <p className="text-sm text-muted-foreground">Enter the 6-digit code sent to your phone:</p>
+                        <div className="flex items-center gap-2">
+                          <InputOTP maxLength={6} value={phoneOtp} onChange={setPhoneOtp}>
+                            <InputOTPGroup>
+                              <InputOTPSlot index={0} />
+                              <InputOTPSlot index={1} />
+                              <InputOTPSlot index={2} />
+                              <InputOTPSlot index={3} />
+                              <InputOTPSlot index={4} />
+                              <InputOTPSlot index={5} />
+                            </InputOTPGroup>
+                          </InputOTP>
+                          <Button type="button" size="sm" onClick={verifyPhoneOtp} disabled={phoneOtp.length < 6}>
+                            Confirm
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                    {phoneVerificationStep === 'none' && (
+                      <p className="text-xs text-muted-foreground">Optional — for account recovery & security</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="signup-email">Email</Label>
