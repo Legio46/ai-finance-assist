@@ -89,3 +89,6 @@ verify_jwt = false
 
 [functions.process-referral]
 verify_jwt = false
+
+[functions.phone-verification]
+verify_jwt = false
