@@ -31,7 +31,8 @@ const Auth = () => {
   const [phoneVerificationStep, setPhoneVerificationStep] = useState<'none' | 'sending' | 'sent' | 'verified'>('none');
   const [phoneTranId, setPhoneTranId] = useState('');
   const [phoneOtp, setPhoneOtp] = useState('');
-
+  const [mfaCode, setMfaCode] = useState('');
+  const [mfaLoading, setMfaLoading] = useState(false);
   // Form states
   const [signInData, setSignInData] = useState({
     email: '',
