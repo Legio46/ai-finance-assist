@@ -27,6 +27,18 @@ const SecuritySettings = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
+  // TOTP 2FA states
+  const [show2FADialog, setShow2FADialog] = useState(false);
+  const [totpStep, setTotpStep] = useState<'qr' | 'verify' | 'done'>('qr');
+  const [totpQrUri, setTotpQrUri] = useState('');
+  const [totpSecret, setTotpSecret] = useState('');
+  const [totpFactorId, setTotpFactorId] = useState('');
+  const [totpCode, setTotpCode] = useState('');
+  const [totpLoading, setTotpLoading] = useState(false);
+  const [mfaFactors, setMfaFactors] = useState<any[]>([]);
+  const [showDisable2FADialog, setShowDisable2FADialog] = useState(false);
+  const [disable2FACode, setDisable2FACode] = useState('');
+
   useEffect(() => {
     if (profile?.phone_number) setPhoneNumber(profile.phone_number);
   }, [profile]);
