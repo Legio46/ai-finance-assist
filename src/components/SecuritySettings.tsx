@@ -8,10 +8,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Shield, Phone, Mail, Key, AlertCircle, Lock, CheckCircle, Eye, EyeOff, ShieldCheck } from 'lucide-react';
+import { Shield, Phone, Mail, Key, AlertCircle, Lock, CheckCircle, Eye, EyeOff, ShieldCheck, Smartphone, Loader2, Copy } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 
 const SecuritySettings = () => {
   const { user, profile, refreshProfile } = useAuth();
