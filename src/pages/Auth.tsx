@@ -17,7 +17,7 @@ import { AlertCircle, Lock, Phone, CheckCircle2, Loader2 } from 'lucide-react';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 
 const Auth = () => {
-  const { user, signIn, signUp, resetPassword, loading } = useAuth();
+  const { user, signIn, signUp, resetPassword, verifyMfa, mfaChallenge, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isLocked, remainingLockSeconds, attemptsLeft, recordAttempt, resetAttempts } = useLoginRateLimit();
@@ -31,7 +31,8 @@ const Auth = () => {
   const [phoneVerificationStep, setPhoneVerificationStep] = useState<'none' | 'sending' | 'sent' | 'verified'>('none');
   const [phoneTranId, setPhoneTranId] = useState('');
   const [phoneOtp, setPhoneOtp] = useState('');
-
+  const [mfaCode, setMfaCode] = useState('');
+  const [mfaLoading, setMfaLoading] = useState(false);
   // Form states
   const [signInData, setSignInData] = useState({
     email: '',
@@ -95,6 +96,8 @@ const Auth = () => {
           variant: "destructive",
         });
       }
+    } else if (result.mfaRequired) {
+      // MFA challenge is set in context, UI will switch
     } else {
       resetAttempts();
     }
@@ -286,6 +289,67 @@ const Auth = () => {
             </form>
           </CardContent>
         </Card>
+      </div>
+    );
+  }
+
+  // Show MFA challenge screen
+  if (mfaChallenge) {
+    const handleMfaSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setMfaLoading(true);
+      const result = await verifyMfa(mfaCode);
+      if (!result.error) {
+        resetAttempts();
+      }
+      setMfaLoading(false);
+    };
+
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
+        <div className="w-full max-w-md space-y-6">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">Legio</h1>
+          </div>
+          <Card className="shadow-lg border-0 bg-card/50 backdrop-blur">
+            <CardHeader className="text-center space-y-2">
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+                <Lock className="h-8 w-8 text-primary" />
+              </div>
+              <CardTitle className="text-xl">Two-Factor Authentication</CardTitle>
+              <CardDescription>
+                Enter the 6-digit code from your authenticator app
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleMfaSubmit} className="space-y-6">
+                <div className="flex justify-center">
+                  <InputOTP maxLength={6} value={mfaCode} onChange={setMfaCode}>
+                    <InputOTPGroup>
+                      <InputOTPSlot index={0} />
+                      <InputOTPSlot index={1} />
+                      <InputOTPSlot index={2} />
+                      <InputOTPSlot index={3} />
+                      <InputOTPSlot index={4} />
+                      <InputOTPSlot index={5} />
+                    </InputOTPGroup>
+                  </InputOTP>
+                </div>
+                <Button
+                  type="submit"
+                  className="w-full bg-gradient-primary hover:opacity-90"
+                  disabled={mfaCode.length < 6 || mfaLoading}
+                >
+                  {mfaLoading ? 'Verifying...' : 'Verify'}
+                </Button>
+              </form>
+              <p className="text-xs text-muted-foreground text-center mt-4">
+                Open your authenticator app (Google Authenticator, Microsoft Authenticator, etc.) and enter the code shown.
+              </p>
+            </CardContent>
+          </Card>
+          <SecurityBadge variant="compact" className="justify-center" />
+        </div>
       </div>
     );
   }

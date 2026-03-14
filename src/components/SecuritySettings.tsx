@@ -8,10 +8,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Shield, Phone, Mail, Key, AlertCircle, Lock, CheckCircle, Eye, EyeOff, ShieldCheck } from 'lucide-react';
+import { Shield, Phone, Mail, Key, AlertCircle, Lock, CheckCircle, Eye, EyeOff, ShieldCheck, Smartphone, Loader2, Copy } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 
 const SecuritySettings = () => {
   const { user, profile, refreshProfile } = useAuth();
@@ -26,9 +27,37 @@ const SecuritySettings = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
+  // TOTP 2FA states
+  const [show2FADialog, setShow2FADialog] = useState(false);
+  const [totpStep, setTotpStep] = useState<'qr' | 'verify' | 'done'>('qr');
+  const [totpQrUri, setTotpQrUri] = useState('');
+  const [totpSecret, setTotpSecret] = useState('');
+  const [totpFactorId, setTotpFactorId] = useState('');
+  const [totpCode, setTotpCode] = useState('');
+  const [totpLoading, setTotpLoading] = useState(false);
+  const [mfaFactors, setMfaFactors] = useState<any[]>([]);
+  const [showDisable2FADialog, setShowDisable2FADialog] = useState(false);
+  const [disable2FACode, setDisable2FACode] = useState('');
+
   useEffect(() => {
     if (profile?.phone_number) setPhoneNumber(profile.phone_number);
   }, [profile]);
+
+  // Load MFA factors
+  useEffect(() => {
+    loadMfaFactors();
+  }, [user]);
+
+  const loadMfaFactors = async () => {
+    try {
+      const { data, error } = await supabase.auth.mfa.listFactors();
+      if (error) throw error;
+      const verified = data?.totp?.filter((f: any) => f.status === 'verified') || [];
+      setMfaFactors(verified);
+    } catch (err) {
+      console.error('Error loading MFA factors:', err);
+    }
+  };
 
   // Security score calculation
   const getSecurityScore = () => {
@@ -76,19 +105,88 @@ const SecuritySettings = () => {
     }
   };
 
-  const handleToggle2FA = async (enabled: boolean) => {
-    if (!user) return;
-    setLoading(true);
+  const handleEnroll2FA = async () => {
+    setTotpLoading(true);
     try {
-      const { error } = await supabase.from('profiles').update({ two_factor_enabled: enabled }).eq('user_id', user.id);
+      const { data, error } = await supabase.auth.mfa.enroll({
+        factorType: 'totp',
+        friendlyName: 'Authenticator App',
+      });
       if (error) throw error;
-      toast({ title: enabled ? "2FA Enabled" : "2FA Disabled", description: enabled ? "Two-factor authentication is now active." : "Two-factor authentication has been disabled." });
-      refreshProfile();
-    } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      
+      setTotpQrUri(data.totp.qr_code);
+      setTotpSecret(data.totp.secret);
+      setTotpFactorId(data.id);
+      setTotpStep('qr');
+      setTotpCode('');
+      setShow2FADialog(true);
+    } catch (err: any) {
+      console.error('MFA enroll error:', err);
+      toast({ title: "Error", description: err.message || "Failed to start 2FA setup", variant: "destructive" });
     } finally {
-      setLoading(false);
+      setTotpLoading(false);
     }
+  };
+
+  const handleVerify2FA = async () => {
+    if (totpCode.length < 6) return;
+    setTotpLoading(true);
+    try {
+      const { data: challengeData, error: challengeError } = await supabase.auth.mfa.challenge({
+        factorId: totpFactorId,
+      });
+      if (challengeError) throw challengeError;
+
+      const { error: verifyError } = await supabase.auth.mfa.verify({
+        factorId: totpFactorId,
+        challengeId: challengeData.id,
+        code: totpCode,
+      });
+      if (verifyError) throw verifyError;
+
+      // Update profile
+      await supabase.from('profiles').update({ two_factor_enabled: true }).eq('user_id', user!.id);
+      
+      setTotpStep('done');
+      await loadMfaFactors();
+      refreshProfile();
+      toast({ title: "2FA Enabled!", description: "Your authenticator app is now linked." });
+    } catch (err: any) {
+      console.error('MFA verify error:', err);
+      toast({ title: "Verification Failed", description: err.message || "Invalid code. Please try again.", variant: "destructive" });
+    } finally {
+      setTotpLoading(false);
+    }
+  };
+
+  const handleDisable2FA = async () => {
+    if (!mfaFactors.length) return;
+    setTotpLoading(true);
+    try {
+      // Unenroll all TOTP factors
+      for (const factor of mfaFactors) {
+        const { error } = await supabase.auth.mfa.unenroll({ factorId: factor.id });
+        if (error) throw error;
+      }
+      
+      await supabase.from('profiles').update({ two_factor_enabled: false }).eq('user_id', user!.id);
+      
+      setMfaFactors([]);
+      setShowDisable2FADialog(false);
+      setDisable2FACode('');
+      refreshProfile();
+      toast({ title: "2FA Disabled", description: "Two-factor authentication has been removed." });
+    } catch (err: any) {
+      console.error('MFA unenroll error:', err);
+      toast({ title: "Error", description: err.message || "Failed to disable 2FA", variant: "destructive" });
+    } finally {
+      setTotpLoading(false);
+    }
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast({ title: "Copied!", description: "Secret key copied to clipboard." });
   };
 
   const validatePassword = (password: string): { valid: boolean; message: string; strength: number } => {
@@ -233,34 +331,152 @@ const SecuritySettings = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                <Key className="h-5 w-5 text-primary" />
+                <Smartphone className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <CardTitle className="text-base">Two-Factor Authentication</CardTitle>
-                <CardDescription className="text-xs">Add an extra layer of security</CardDescription>
+                <CardTitle className="text-base">Authenticator App (2FA)</CardTitle>
+                <CardDescription className="text-xs">Google Authenticator, Microsoft Authenticator, etc.</CardDescription>
               </div>
             </div>
-            <Switch
-              checked={profile?.two_factor_enabled || false}
-              onCheckedChange={handleToggle2FA}
-              disabled={loading}
-            />
+            {mfaFactors.length > 0 ? (
+              <Badge variant="outline" className="text-success border-success/30 text-[10px] gap-1">
+                <CheckCircle className="h-3 w-3" />
+                Active
+              </Badge>
+            ) : (
+              <Badge variant="outline" className="text-muted-foreground text-[10px]">Not set up</Badge>
+            )}
           </div>
         </CardHeader>
-        <CardContent className="pt-0">
-          {profile?.two_factor_enabled ? (
-            <div className="flex items-center gap-2 p-3 rounded-xl bg-success/5 border border-success/15">
-              <ShieldCheck className="h-4 w-4 text-success flex-shrink-0" />
-              <p className="text-xs text-success">Two-factor authentication is active. Your account has enhanced protection.</p>
-            </div>
+        <CardContent className="pt-0 space-y-3">
+          {mfaFactors.length > 0 ? (
+            <>
+              <div className="flex items-center gap-2 p-3 rounded-xl bg-success/5 border border-success/15">
+                <ShieldCheck className="h-4 w-4 text-success flex-shrink-0" />
+                <p className="text-xs text-success">Two-factor authentication is active via authenticator app.</p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full rounded-xl text-destructive hover:text-destructive"
+                onClick={() => setShowDisable2FADialog(true)}
+              >
+                Disable 2FA
+              </Button>
+            </>
           ) : (
-            <div className="flex items-center gap-2 p-3 rounded-xl bg-warning/5 border border-warning/15">
-              <AlertCircle className="h-4 w-4 text-warning flex-shrink-0" />
-              <p className="text-xs text-muted-foreground">Enable 2FA to significantly improve your account security.</p>
-            </div>
+            <>
+              <div className="flex items-center gap-2 p-3 rounded-xl bg-warning/5 border border-warning/15">
+                <AlertCircle className="h-4 w-4 text-warning flex-shrink-0" />
+                <p className="text-xs text-muted-foreground">Enable 2FA with an authenticator app for enhanced security.</p>
+              </div>
+              <Button
+                className="w-full rounded-xl"
+                size="sm"
+                onClick={handleEnroll2FA}
+                disabled={totpLoading}
+              >
+                {totpLoading ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Setting up...</> : <><Smartphone className="h-4 w-4 mr-2" />Set Up Authenticator App</>}
+              </Button>
+            </>
           )}
         </CardContent>
       </Card>
+
+      {/* 2FA Setup Dialog */}
+      <Dialog open={show2FADialog} onOpenChange={(open) => { if (!open && totpStep !== 'done') { /* allow close */ } setShow2FADialog(open); }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              {totpStep === 'qr' && 'Set Up Authenticator App'}
+              {totpStep === 'verify' && 'Verify Setup'}
+              {totpStep === 'done' && '2FA Enabled!'}
+            </DialogTitle>
+            <DialogDescription>
+              {totpStep === 'qr' && 'Scan this QR code with your authenticator app (Google Authenticator, Microsoft Authenticator, Authy, etc.)'}
+              {totpStep === 'verify' && 'Enter the 6-digit code from your authenticator app'}
+              {totpStep === 'done' && 'Your account is now protected with two-factor authentication'}
+            </DialogDescription>
+          </DialogHeader>
+
+          {totpStep === 'qr' && (
+            <div className="space-y-4">
+              <div className="flex justify-center p-4 bg-white rounded-xl">
+                <img src={totpQrUri} alt="TOTP QR Code" className="w-48 h-48" />
+              </div>
+              <div className="space-y-2">
+                <p className="text-xs text-muted-foreground text-center">Can't scan? Enter this key manually:</p>
+                <div className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                  <code className="text-xs font-mono flex-1 break-all select-all">{totpSecret}</code>
+                  <Button variant="ghost" size="icon" className="h-7 w-7 flex-shrink-0" onClick={() => copyToClipboard(totpSecret)}>
+                    <Copy className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </div>
+              <Button className="w-full" onClick={() => setTotpStep('verify')}>
+                I've scanned the code → Next
+              </Button>
+            </div>
+          )}
+
+          {totpStep === 'verify' && (
+            <div className="space-y-4">
+              <div className="flex justify-center">
+                <InputOTP maxLength={6} value={totpCode} onChange={setTotpCode}>
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                    <InputOTPSlot index={3} />
+                    <InputOTPSlot index={4} />
+                    <InputOTPSlot index={5} />
+                  </InputOTPGroup>
+                </InputOTP>
+              </div>
+              <Button className="w-full" onClick={handleVerify2FA} disabled={totpCode.length < 6 || totpLoading}>
+                {totpLoading ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Verifying...</> : 'Verify & Enable 2FA'}
+              </Button>
+              <Button variant="ghost" className="w-full" onClick={() => setTotpStep('qr')}>
+                ← Back to QR code
+              </Button>
+            </div>
+          )}
+
+          {totpStep === 'done' && (
+            <div className="space-y-4 text-center">
+              <div className="w-16 h-16 rounded-full bg-success/10 flex items-center justify-center mx-auto">
+                <CheckCircle className="h-8 w-8 text-success" />
+              </div>
+              <p className="text-sm text-muted-foreground">You'll now be asked for a code from your authenticator app each time you sign in.</p>
+              <Button className="w-full" onClick={() => setShow2FADialog(false)}>Done</Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Disable 2FA Dialog */}
+      <Dialog open={showDisable2FADialog} onOpenChange={setShowDisable2FADialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Disable Two-Factor Authentication</DialogTitle>
+            <DialogDescription>This will remove the authenticator app from your account. Your account will be less secure.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription className="text-xs">
+                Warning: Disabling 2FA reduces your account security. Only proceed if necessary.
+              </AlertDescription>
+            </Alert>
+            <div className="flex gap-2">
+              <Button variant="outline" className="flex-1" onClick={() => setShowDisable2FADialog(false)}>Cancel</Button>
+              <Button variant="destructive" className="flex-1" onClick={handleDisable2FA} disabled={totpLoading}>
+                {totpLoading ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Removing...</> : 'Disable 2FA'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Phone Number */}
       <Card className="border-0 shadow-lg">
