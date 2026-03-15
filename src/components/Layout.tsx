@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import CurrencyConverterDropdown from "@/components/CurrencyConverterDropdown";
-import logo from "@/assets/logo_3.png";
+import logo from "@/assets/shield-logo.png";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 

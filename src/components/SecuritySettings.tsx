@@ -108,11 +108,28 @@ const SecuritySettings = () => {
   const handleEnroll2FA = async () => {
     setTotpLoading(true);
     try {
+      // First unenroll any unverified factors to avoid conflicts
+      const { data: existingFactors } = await supabase.auth.mfa.listFactors();
+      const unverified = existingFactors?.totp?.filter((f: any) => f.status === 'unverified') || [];
+      for (const factor of unverified) {
+        await supabase.auth.mfa.unenroll({ factorId: factor.id });
+      }
+
       const { data, error } = await supabase.auth.mfa.enroll({
         factorType: 'totp',
         friendlyName: 'Authenticator App',
       });
-      if (error) throw error;
+      if (error) {
+        // Provide user-friendly error messages
+        if (error.message?.includes('already enrolled') || error.message?.includes('factor')) {
+          throw new Error('You already have an authenticator set up. Please disable it first before setting up a new one.');
+        }
+        throw error;
+      }
+      
+      if (!data?.totp?.qr_code) {
+        throw new Error('MFA setup is not available. Please ensure MFA is enabled in your Supabase project settings under Authentication > Multi-Factor Authentication.');
+      }
       
       setTotpQrUri(data.totp.qr_code);
       setTotpSecret(data.totp.secret);
@@ -122,7 +139,7 @@ const SecuritySettings = () => {
       setShow2FADialog(true);
     } catch (err: any) {
       console.error('MFA enroll error:', err);
-      toast({ title: "Error", description: err.message || "Failed to start 2FA setup", variant: "destructive" });
+      toast({ title: "2FA Setup Error", description: err.message || "Failed to start 2FA setup. Make sure MFA is enabled in your Supabase project.", variant: "destructive" });
     } finally {
       setTotpLoading(false);
     }
