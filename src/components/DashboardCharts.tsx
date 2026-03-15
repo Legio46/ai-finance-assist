@@ -11,21 +11,17 @@ import {
   Cell,
   BarChart,
   Bar,
-  LineChart,
-  Line,
   AreaChart,
   Area,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
-  Sector,
 } from 'recharts';
 import { 
   PieChart as PieChartIcon, BarChart3, TrendingUp, TrendingDown, Target, X, Calendar, 
-  DollarSign, ArrowUpRight, ArrowDownRight, Wallet, Sparkles 
+  DollarSign, ArrowUpRight, ArrowDownRight, Wallet, Sparkles, Info
 } from 'lucide-react';
 
 const COLORS = [
@@ -58,73 +54,32 @@ interface BudgetData {
   amount: number;
 }
 
-// Custom active shape for pie chart with glow effect
-const renderActiveShape = (props: any) => {
-  const {
-    cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent
-  } = props;
-
-  return (
-    <g>
-      <Sector
-        cx={cx}
-        cy={cy}
-        innerRadius={innerRadius - 2}
-        outerRadius={outerRadius + 10}
-        startAngle={startAngle}
-        endAngle={endAngle}
-        fill={fill}
-        style={{ filter: 'drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15))' }}
-      />
-      <Sector
-        cx={cx}
-        cy={cy}
-        innerRadius={innerRadius - 6}
-        outerRadius={innerRadius - 2}
-        startAngle={startAngle}
-        endAngle={endAngle}
-        fill={fill}
-        opacity={0.4}
-      />
-      <text x={cx} y={cy - 12} textAnchor="middle" fill="hsl(var(--foreground))" fontSize={14} fontWeight={600}>
-        {payload.name}
-      </text>
-      <text x={cx} y={cy + 8} textAnchor="middle" fill="hsl(var(--muted-foreground))" fontSize={22} fontWeight={700}>
-        {`${(percent * 100).toFixed(0)}%`}
-      </text>
-    </g>
-  );
-};
-
-// Premium tooltip
-const CustomTooltip = ({ active, payload, label, formatCurrency }: any) => {
+// Simple tooltip
+const SimpleTooltip = ({ active, payload, label, formatCurrency }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-card/95 backdrop-blur-md border border-border rounded-xl shadow-xl p-4 min-w-[160px]">
-        {label && <p className="font-semibold text-sm mb-2 text-foreground">{label}</p>}
-        <div className="space-y-1.5">
-          {payload.map((entry: any, index: number) => (
-            <div key={index} className="flex items-center justify-between gap-4 text-sm">
-              <div className="flex items-center gap-2">
-                <div className="w-2.5 h-2.5 rounded-full ring-2 ring-offset-1 ring-offset-card" style={{ backgroundColor: entry.color, boxShadow: `0 0 8px ${entry.color}40` }} />
-                <span className="text-muted-foreground">{entry.name}</span>
-              </div>
-              <span className="font-bold tabular-nums">{formatCurrency(entry.value)}</span>
+      <div className="bg-card border border-border rounded-xl shadow-lg p-3 min-w-[140px]">
+        {label && <p className="font-medium text-xs mb-1.5 text-foreground">{label}</p>}
+        {payload.map((entry: any, index: number) => (
+          <div key={index} className="flex items-center justify-between gap-3 text-sm">
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
+              <span className="text-muted-foreground text-xs">{entry.name}</span>
             </div>
-          ))}
-        </div>
+            <span className="font-semibold text-xs">{formatCurrency(entry.value)}</span>
+          </div>
+        ))}
       </div>
     );
   }
   return null;
 };
 
-// Stat card component
+// Stat card
 const StatCard = ({ icon: Icon, label, value, trend, trendValue, color }: { 
   icon: any; label: string; value: string; trend?: 'up' | 'down' | 'neutral'; trendValue?: string; color: string 
 }) => (
-  <div className="relative overflow-hidden rounded-xl border bg-card p-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 group">
-    <div className="absolute top-0 right-0 w-20 h-20 rounded-full opacity-[0.06] -translate-y-1/2 translate-x-1/2 transition-transform group-hover:scale-150" style={{ backgroundColor: color }} />
+  <div className="relative overflow-hidden rounded-xl border bg-card p-4 transition-all duration-300 hover:shadow-md group">
     <div className="flex items-center gap-3">
       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg" style={{ backgroundColor: `${color}18` }}>
         <Icon className="h-5 w-5" style={{ color }} />
@@ -145,6 +100,17 @@ const StatCard = ({ icon: Icon, label, value, trend, trendValue, color }: {
   </div>
 );
 
+// Helper text for empty states
+const EmptyState = ({ icon: Icon, message, hint }: { icon: any; message: string; hint?: string }) => (
+  <div className="h-[200px] flex flex-col items-center justify-center text-muted-foreground gap-2">
+    <div className="h-12 w-12 rounded-2xl bg-muted/50 flex items-center justify-center">
+      <Icon className="h-6 w-6 opacity-40" />
+    </div>
+    <p className="text-sm font-medium">{message}</p>
+    {hint && <p className="text-xs text-muted-foreground/70">{hint}</p>}
+  </div>
+);
+
 const DashboardCharts = () => {
   const { user } = useAuth();
   const { formatCurrency } = useLanguage();
@@ -153,18 +119,11 @@ const DashboardCharts = () => {
   const [budgets, setBudgets] = useState<BudgetData[]>([]);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<TimeRange>('month');
-  const [activePieIndex, setActivePieIndex] = useState<number | undefined>(undefined);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [animationComplete, setAnimationComplete] = useState(false);
 
   useEffect(() => {
     if (user) fetchData();
   }, [user]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setAnimationComplete(true), 100);
-    return () => clearTimeout(timer);
-  }, []);
 
   const fetchData = async () => {
     if (!user) return;
@@ -186,7 +145,6 @@ const DashboardCharts = () => {
 
   const getDateRange = useCallback(() => {
     const now = new Date();
-    const end = new Date(now);
     const start = new Date(now);
     switch (timeRange) {
       case 'week': start.setDate(now.getDate() - 7); break;
@@ -194,183 +152,123 @@ const DashboardCharts = () => {
       case 'quarter': start.setMonth(now.getMonth() - 3); break;
       case 'year': start.setFullYear(now.getFullYear() - 1); break;
     }
-    return { start, end };
+    return { start, end: now };
   }, [timeRange]);
 
   const getFilteredExpenses = useCallback(() => {
     const { start, end } = getDateRange();
     return expenses.filter(exp => {
-      const expDate = new Date(exp.date);
-      const inRange = expDate >= start && expDate <= end;
-      const matchesCategory = selectedCategory ? exp.category === selectedCategory : true;
-      return inRange && matchesCategory;
+      const d = new Date(exp.date);
+      return d >= start && d <= end && (selectedCategory ? exp.category === selectedCategory : true);
     });
   }, [expenses, getDateRange, selectedCategory]);
 
-  // Summary stats
   const stats = useMemo(() => {
-    const filteredExpenses = getFilteredExpenses();
-    const totalExpenses = filteredExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
+    const filtered = getFilteredExpenses();
+    const totalExpenses = filtered.reduce((s, e) => s + Number(e.amount), 0);
     const monthlyIncome = income.reduce((sum, inc) => {
-      const amount = Number(inc.amount);
+      const a = Number(inc.amount);
       switch (inc.frequency) {
-        case 'weekly': return sum + amount * 4.33;
-        case 'bi-weekly': return sum + amount * 2.17;
-        case 'monthly': return sum + amount;
-        case 'yearly': return sum + amount / 12;
-        default: return sum + amount;
+        case 'weekly': return sum + a * 4.33;
+        case 'bi-weekly': return sum + a * 2.17;
+        case 'monthly': return sum + a;
+        case 'yearly': return sum + a / 12;
+        default: return sum + a;
       }
     }, 0);
-    const netCashflow = monthlyIncome - totalExpenses;
-    const savingsRate = monthlyIncome > 0 ? ((netCashflow / monthlyIncome) * 100) : 0;
-    const budgetUtilization = budgets.length > 0 
-      ? budgets.reduce((sum, b) => {
-          const spent = filteredExpenses.filter(e => e.category === b.category).reduce((s, e) => s + Number(e.amount), 0);
-          return sum + Math.min(spent / Number(b.amount), 1);
-        }, 0) / budgets.length * 100
-      : 0;
-
-    return { totalExpenses, monthlyIncome, netCashflow, savingsRate, budgetUtilization };
-  }, [getFilteredExpenses, income, budgets]);
+    const net = monthlyIncome - totalExpenses;
+    const savingsRate = monthlyIncome > 0 ? (net / monthlyIncome) * 100 : 0;
+    return { totalExpenses, monthlyIncome, net, savingsRate };
+  }, [getFilteredExpenses, income]);
 
   const getCategoryBreakdown = useCallback(() => {
-    const filteredExpenses = getFilteredExpenses();
-    const categoryTotals: Record<string, number> = {};
-    filteredExpenses.forEach(exp => {
-      categoryTotals[exp.category] = (categoryTotals[exp.category] || 0) + Number(exp.amount);
-    });
-    return Object.entries(categoryTotals)
-      .map(([name, value]) => ({ name, value }))
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 8);
+    const filtered = getFilteredExpenses();
+    const totals: Record<string, number> = {};
+    filtered.forEach(e => { totals[e.category] = (totals[e.category] || 0) + Number(e.amount); });
+    return Object.entries(totals).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value).slice(0, 8);
   }, [getFilteredExpenses]);
 
   const getIncomeVsExpenses = useCallback(() => {
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const periods: Record<string, { period: string; income: number; expenses: number }> = {};
     const { start, end } = getDateRange();
-    const filteredExpenses = selectedCategory ? expenses.filter(exp => exp.category === selectedCategory) : expenses;
-
+    const filtered = selectedCategory ? expenses.filter(e => e.category === selectedCategory) : expenses;
+    const monthCount = timeRange === 'quarter' ? 3 : timeRange === 'year' ? 12 : timeRange === 'month' ? 1 : 1;
+    
+    const periods: Record<string, { period: string; income: number; expenses: number }> = {};
+    
     if (timeRange === 'week') {
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
       for (let i = 6; i >= 0; i--) {
-        const date = new Date(); date.setDate(date.getDate() - i);
-        const key = date.toISOString().split('T')[0];
-        periods[key] = { period: weekDays[date.getDay()], income: 0, expenses: 0 };
-      }
-    } else if (timeRange === 'month') {
-      for (let i = 29; i >= 0; i -= 5) {
-        const date = new Date(); date.setDate(date.getDate() - i);
-        const key = date.toISOString().split('T')[0];
-        periods[key] = { period: `${date.getDate()}/${date.getMonth() + 1}`, income: 0, expenses: 0 };
+        const d = new Date(); d.setDate(d.getDate() - i);
+        periods[d.toISOString().split('T')[0]] = { period: days[d.getDay()], income: 0, expenses: 0 };
       }
     } else {
-      const monthCount = timeRange === 'quarter' ? 3 : 12;
-      for (let i = monthCount - 1; i >= 0; i--) {
-        const date = new Date(); date.setMonth(date.getMonth() - i);
-        const key = `${date.getFullYear()}-${date.getMonth()}`;
-        periods[key] = { period: monthNames[date.getMonth()], income: 0, expenses: 0 };
+      const count = timeRange === 'month' ? 4 : monthCount;
+      for (let i = count - 1; i >= 0; i--) {
+        const d = new Date();
+        if (timeRange === 'month') {
+          d.setDate(d.getDate() - i * 7);
+          const key = d.toISOString().split('T')[0];
+          periods[key] = { period: `Week ${count - i}`, income: 0, expenses: 0 };
+        } else {
+          d.setMonth(d.getMonth() - i);
+          const key = `${d.getFullYear()}-${d.getMonth()}`;
+          periods[key] = { period: monthNames[d.getMonth()], income: 0, expenses: 0 };
+        }
       }
     }
 
-    filteredExpenses.forEach(exp => {
-      const expDate = new Date(exp.date);
-      if (expDate >= start && expDate <= end) {
-        const key = (timeRange === 'week' || timeRange === 'month') 
-          ? expDate.toISOString().split('T')[0]
-          : `${expDate.getFullYear()}-${expDate.getMonth()}`;
+    filtered.forEach(exp => {
+      const d = new Date(exp.date);
+      if (d >= start && d <= end) {
+        const key = timeRange === 'week' ? d.toISOString().split('T')[0] 
+          : timeRange === 'month' ? (() => { const keys = Object.keys(periods); return keys.reduce((best, k) => Math.abs(new Date(k).getTime() - d.getTime()) < Math.abs(new Date(best).getTime() - d.getTime()) ? k : best, keys[0]); })()
+          : `${d.getFullYear()}-${d.getMonth()}`;
         if (periods[key]) periods[key].expenses += Number(exp.amount);
       }
     });
 
-    const monthlyIncome = income.reduce((sum, inc) => {
-      const amount = Number(inc.amount);
-      switch (inc.frequency) {
-        case 'weekly': return sum + amount * 4.33;
-        case 'bi-weekly': return sum + amount * 2.17;
-        case 'monthly': return sum + amount;
-        case 'yearly': return sum + amount / 12;
-        default: return sum + amount;
-      }
-    }, 0);
-
-    Object.keys(periods).forEach(key => {
-      if (timeRange === 'week') periods[key].income = monthlyIncome / 30;
-      else if (timeRange === 'month') periods[key].income = monthlyIncome / 6;
-      else periods[key].income = monthlyIncome;
+    const monthlyIncome = stats.monthlyIncome;
+    Object.keys(periods).forEach(k => {
+      if (timeRange === 'week') periods[k].income = monthlyIncome / 30;
+      else if (timeRange === 'month') periods[k].income = monthlyIncome / 4;
+      else periods[k].income = monthlyIncome;
     });
 
     return Object.values(periods);
-  }, [expenses, income, getDateRange, timeRange, selectedCategory]);
-
-  const getSpendingTrends = useCallback(() => {
-    const { start, end } = getDateRange();
-    const filteredExpenses = selectedCategory ? expenses.filter(exp => exp.category === selectedCategory) : expenses;
-    const dailyTotals: Record<string, number> = {};
-    
-    filteredExpenses.forEach(exp => {
-      const expDate = new Date(exp.date);
-      if (expDate >= start && expDate <= end) {
-        const key = expDate.toISOString().split('T')[0];
-        dailyTotals[key] = (dailyTotals[key] || 0) + Number(exp.amount);
-      }
-    });
-
-    let cumulative = 0;
-    const result: { day: string; daily: number; cumulative: number }[] = [];
-    const sortedDates = Object.keys(dailyTotals).sort();
-    sortedDates.forEach(date => {
-      cumulative += dailyTotals[date] || 0;
-      const displayDate = new Date(date);
-      result.push({
-        day: `${displayDate.getDate()}/${displayDate.getMonth() + 1}`,
-        daily: dailyTotals[date] || 0,
-        cumulative,
-      });
-    });
-    return result.slice(-15);
-  }, [expenses, getDateRange, selectedCategory]);
+  }, [expenses, stats.monthlyIncome, getDateRange, timeRange, selectedCategory]);
 
   const getBudgetProgress = useCallback(() => {
-    const filteredExpenses = getFilteredExpenses();
-    const categorySpending: Record<string, number> = {};
-    filteredExpenses.forEach(exp => {
-      categorySpending[exp.category] = (categorySpending[exp.category] || 0) + Number(exp.amount);
-    });
-    return budgets.map(budget => ({
-      category: budget.category,
-      budget: Number(budget.amount),
-      spent: categorySpending[budget.category] || 0,
-      percentage: Math.min(Math.round(((categorySpending[budget.category] || 0) / Number(budget.amount)) * 100), 100),
+    const filtered = getFilteredExpenses();
+    const spending: Record<string, number> = {};
+    filtered.forEach(e => { spending[e.category] = (spending[e.category] || 0) + Number(e.amount); });
+    return budgets.map(b => ({
+      category: b.category,
+      budget: Number(b.amount),
+      spent: spending[b.category] || 0,
+      percentage: Math.min(Math.round(((spending[b.category] || 0) / Number(b.amount)) * 100), 100),
     }));
   }, [budgets, getFilteredExpenses]);
 
-  const handlePieClick = (data: any) => {
+  const handleCategoryClick = (data: any) => {
     setSelectedCategory(prev => prev === data.name ? null : data.name);
   };
 
-  const timeRangeOptions: { value: TimeRange; label: string }[] = [
-    { value: 'week', label: '7D' },
-    { value: 'month', label: '1M' },
-    { value: 'quarter', label: '3M' },
-    { value: 'year', label: '1Y' },
+  const timeRangeOptions: { value: TimeRange; label: string; description: string }[] = [
+    { value: 'week', label: '7D', description: 'Last 7 days' },
+    { value: 'month', label: '1M', description: 'Last month' },
+    { value: 'quarter', label: '3M', description: 'Last 3 months' },
+    { value: 'year', label: '1Y', description: 'Last year' },
   ];
 
   if (loading) {
     return (
       <div className="space-y-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-24 rounded-xl bg-muted/50 animate-pulse" />
-          ))}
+          {[...Array(4)].map((_, i) => <div key={i} className="h-24 rounded-xl bg-muted/50 animate-pulse" />)}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {[...Array(4)].map((_, i) => (
-            <Card key={i} className="animate-pulse">
-              <CardHeader className="h-16 bg-muted/30 rounded-t-xl" />
-              <CardContent className="h-64 bg-muted/10" />
-            </Card>
-          ))}
+          {[...Array(4)].map((_, i) => <Card key={i} className="animate-pulse"><CardContent className="h-64" /></Card>)}
         </div>
       </div>
     );
@@ -378,63 +276,29 @@ const DashboardCharts = () => {
 
   const categoryBreakdown = getCategoryBreakdown();
   const incomeVsExpenses = getIncomeVsExpenses();
-  const spendingTrends = getSpendingTrends();
   const budgetProgress = getBudgetProgress();
-  const totalSpending = categoryBreakdown.reduce((sum, cat) => sum + cat.value, 0);
+  const totalSpending = categoryBreakdown.reduce((s, c) => s + c.value, 0);
 
   return (
-    <div className={`space-y-6 transition-all duration-700 ${animationComplete ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-      
-      {/* Summary Stats Row */}
+    <div className="space-y-6">
+      {/* Quick Summary */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard
-          icon={Wallet}
-          label="Total Income"
-          value={formatCurrency(stats.monthlyIncome)}
-          trend="up"
-          trendValue="Monthly"
-          color="hsl(142 76% 36%)"
-        />
-        <StatCard
-          icon={DollarSign}
-          label="Total Spent"
-          value={formatCurrency(stats.totalExpenses)}
-          trend={stats.totalExpenses > stats.monthlyIncome ? 'down' : 'neutral'}
-          trendValue={timeRange.toUpperCase()}
-          color="hsl(351 76% 56%)"
-        />
-        <StatCard
-          icon={stats.netCashflow >= 0 ? TrendingUp : TrendingDown}
-          label="Net Cashflow"
-          value={formatCurrency(Math.abs(stats.netCashflow))}
-          trend={stats.netCashflow >= 0 ? 'up' : 'down'}
-          trendValue={stats.netCashflow >= 0 ? 'Surplus' : 'Deficit'}
-          color={stats.netCashflow >= 0 ? 'hsl(142 76% 36%)' : 'hsl(0 84% 60%)'}
-        />
-        <StatCard
-          icon={Sparkles}
-          label="Savings Rate"
-          value={`${Math.max(0, stats.savingsRate).toFixed(0)}%`}
-          trend={stats.savingsRate >= 20 ? 'up' : stats.savingsRate >= 0 ? 'neutral' : 'down'}
-          trendValue={stats.savingsRate >= 20 ? 'Great' : stats.savingsRate >= 0 ? 'OK' : 'Low'}
-          color="hsl(199 89% 48%)"
-        />
+        <StatCard icon={Wallet} label="Monthly Income" value={formatCurrency(stats.monthlyIncome)} trend="up" trendValue="Monthly" color="hsl(142 76% 36%)" />
+        <StatCard icon={DollarSign} label="Total Spent" value={formatCurrency(stats.totalExpenses)} trend={stats.totalExpenses > stats.monthlyIncome ? 'down' : 'neutral'} trendValue={timeRange.toUpperCase()} color="hsl(351 76% 56%)" />
+        <StatCard icon={stats.net >= 0 ? TrendingUp : TrendingDown} label="Net Cashflow" value={formatCurrency(Math.abs(stats.net))} trend={stats.net >= 0 ? 'up' : 'down'} trendValue={stats.net >= 0 ? 'Surplus' : 'Deficit'} color={stats.net >= 0 ? 'hsl(142 76% 36%)' : 'hsl(0 84% 60%)'} />
+        <StatCard icon={Sparkles} label="Savings Rate" value={`${Math.max(0, stats.savingsRate).toFixed(0)}%`} trend={stats.savingsRate >= 20 ? 'up' : stats.savingsRate >= 0 ? 'neutral' : 'down'} trendValue={stats.savingsRate >= 20 ? 'Great' : stats.savingsRate >= 0 ? 'OK' : 'Low'} color="hsl(199 89% 48%)" />
       </div>
 
-      {/* Time Range & Filter */}
+      {/* Time Range Selector */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
           <Calendar className="h-4 w-4 text-muted-foreground" />
-          <div className="flex gap-1 bg-muted/60 rounded-xl p-1 backdrop-blur-sm">
+          <div className="flex gap-1 bg-muted/60 rounded-xl p-1">
             {timeRangeOptions.map(option => (
-              <Button
-                key={option.value}
-                variant={timeRange === option.value ? 'default' : 'ghost'}
-                size="sm"
+              <Button key={option.value} variant={timeRange === option.value ? 'default' : 'ghost'} size="sm"
                 onClick={() => setTimeRange(option.value)}
-                className={`h-8 px-4 text-xs font-semibold rounded-lg transition-all duration-300 ${
-                  timeRange === option.value ? 'shadow-md' : 'hover:bg-muted'
-                }`}
+                className={`h-8 px-4 text-xs font-semibold rounded-lg ${timeRange === option.value ? 'shadow-md' : ''}`}
+                title={option.description}
               >
                 {option.label}
               </Button>
@@ -444,9 +308,8 @@ const DashboardCharts = () => {
         
         {selectedCategory && (
           <Badge variant="secondary" className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary border-primary/20">
-            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            {selectedCategory}
-            <button onClick={() => setSelectedCategory(null)} className="hover:bg-primary/20 rounded-full p-0.5 transition-colors ml-1">
+            Showing: {selectedCategory}
+            <button onClick={() => setSelectedCategory(null)} className="hover:bg-primary/20 rounded-full p-0.5 ml-1">
               <X className="h-3 w-3" />
             </button>
           </Badge>
@@ -454,87 +317,47 @@ const DashboardCharts = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Expense Breakdown - Donut Chart */}
-        <Card className="transition-all duration-300 hover:shadow-xl border-border/50 overflow-hidden group">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <div>
-              <CardTitle className="text-base font-semibold">Expense Breakdown</CardTitle>
-              <CardDescription className="text-xs">Click a segment to filter all charts</CardDescription>
-            </div>
-            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-              <PieChartIcon className="h-4 w-4 text-primary" />
+        {/* Where Your Money Goes */}
+        <Card className="border-border/50 overflow-hidden">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-base font-semibold">Where Your Money Goes</CardTitle>
+                <CardDescription className="text-xs">Tap a category to filter all charts</CardDescription>
+              </div>
+              <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                <PieChartIcon className="h-4 w-4 text-primary" />
+              </div>
             </div>
           </CardHeader>
           <CardContent>
             {categoryBreakdown.length > 0 ? (
               <div className="flex items-center gap-4">
-                <ResponsiveContainer width="50%" height={220}>
+                <ResponsiveContainer width="45%" height={200}>
                   <PieChart>
-                    <Pie
-                      activeIndex={activePieIndex}
-                      activeShape={renderActiveShape}
-                      data={categoryBreakdown}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={55}
-                      outerRadius={85}
-                      paddingAngle={3}
-                      dataKey="value"
-                      onMouseEnter={(_, index) => setActivePieIndex(index)}
-                      onMouseLeave={() => setActivePieIndex(undefined)}
-                      onClick={handlePieClick}
-                      animationBegin={0}
-                      animationDuration={1000}
-                      animationEasing="ease-out"
-                      style={{ cursor: 'pointer' }}
-                    >
-                      {categoryBreakdown.map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={COLORS[index % COLORS.length]}
-                          stroke="hsl(var(--card))"
-                          strokeWidth={2}
-                          style={{
-                            opacity: selectedCategory && selectedCategory !== entry.name ? 0.3 : 1,
-                            transition: 'opacity 0.4s ease, filter 0.4s ease',
-                            filter: selectedCategory === entry.name ? `drop-shadow(0 0 8px ${COLORS[index % COLORS.length]}60)` : 'none',
-                          }}
-                        />
+                    <Pie data={categoryBreakdown} cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={3} dataKey="value"
+                      onClick={handleCategoryClick} style={{ cursor: 'pointer' }}>
+                      {categoryBreakdown.map((entry, i) => (
+                        <Cell key={i} fill={COLORS[i % COLORS.length]} stroke="hsl(var(--card))" strokeWidth={2}
+                          style={{ opacity: selectedCategory && selectedCategory !== entry.name ? 0.3 : 1 }} />
                       ))}
                     </Pie>
+                    <Tooltip content={<SimpleTooltip formatCurrency={formatCurrency} />} />
                   </PieChart>
                 </ResponsiveContainer>
-                <div className="flex-1 space-y-1.5">
-                  {categoryBreakdown.slice(0, 6).map((cat, index) => {
+                <div className="flex-1 space-y-1">
+                  {categoryBreakdown.slice(0, 6).map((cat, i) => {
                     const pct = totalSpending > 0 ? Math.round((cat.value / totalSpending) * 100) : 0;
                     return (
-                      <button
-                        key={cat.name}
-                        onClick={() => handlePieClick(cat)}
-                        className={`flex items-center justify-between text-sm w-full p-2 rounded-lg transition-all duration-300 hover:bg-muted/80 ${
-                          selectedCategory === cat.name ? 'bg-muted ring-1 ring-primary/50 shadow-sm' : ''
-                        }`}
-                      >
-                        <div className="flex items-center gap-2.5">
-                          <div
-                            className="w-3 h-3 rounded-full ring-2 ring-offset-1 ring-offset-card transition-transform duration-200 hover:scale-150"
-                            style={{ 
-                              backgroundColor: COLORS[index % COLORS.length],
-                            }}
-                          />
-                          <span className="truncate max-w-[90px] text-xs font-medium">{cat.name}</span>
+                      <button key={cat.name} onClick={() => handleCategoryClick(cat)}
+                        className={`flex items-center justify-between w-full p-2 rounded-lg transition-all text-left hover:bg-muted/60 ${selectedCategory === cat.name ? 'bg-muted ring-1 ring-primary/30' : ''}`}>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                          <span className="text-xs font-medium truncate max-w-[80px]">{cat.name}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <div className="w-12 h-1.5 bg-muted rounded-full overflow-hidden">
-                            <div 
-                              className="h-full rounded-full transition-all duration-700"
-                              style={{ 
-                                width: animationComplete ? `${pct}%` : '0%',
-                                backgroundColor: COLORS[index % COLORS.length] 
-                              }}
-                            />
-                          </div>
-                          <span className="font-bold text-xs tabular-nums w-8 text-right">{pct}%</span>
+                          <span className="text-xs text-muted-foreground">{formatCurrency(cat.value)}</span>
+                          <span className="font-semibold text-xs w-8 text-right">{pct}%</span>
                         </div>
                       </button>
                     );
@@ -542,208 +365,154 @@ const DashboardCharts = () => {
                 </div>
               </div>
             ) : (
-              <div className="h-[220px] flex flex-col items-center justify-center text-muted-foreground gap-3">
-                <div className="h-14 w-14 rounded-2xl bg-muted/50 flex items-center justify-center">
-                  <PieChartIcon className="h-7 w-7 opacity-40" />
-                </div>
-                <p className="text-sm">No expense data for this period</p>
-              </div>
+              <EmptyState icon={PieChartIcon} message="No expenses yet" hint="Add expenses to see your spending breakdown" />
             )}
           </CardContent>
         </Card>
 
-        {/* Income vs Expenses - Bar Chart with gradient fills */}
-        <Card className="transition-all duration-300 hover:shadow-xl border-border/50 overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <div>
-              <CardTitle className="text-base font-semibold">Income vs Expenses</CardTitle>
-              <CardDescription className="text-xs">
-                {selectedCategory ? `Filtered: ${selectedCategory}` : 'Revenue and spending comparison'}
-              </CardDescription>
-            </div>
-            <div className="h-8 w-8 rounded-lg bg-success/10 flex items-center justify-center">
-              <BarChart3 className="h-4 w-4 text-success" />
+        {/* Income vs Spending */}
+        <Card className="border-border/50 overflow-hidden">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-base font-semibold">Income vs Spending</CardTitle>
+                <CardDescription className="text-xs">
+                  {selectedCategory ? `Filtered: ${selectedCategory}` : 'Compare what you earn vs spend'}
+                </CardDescription>
+              </div>
+              <div className="h-8 w-8 rounded-lg bg-success/10 flex items-center justify-center">
+                <BarChart3 className="h-4 w-4 text-success" />
+              </div>
             </div>
           </CardHeader>
           <CardContent>
             {incomeVsExpenses.some(d => d.income > 0 || d.expenses > 0) ? (
-              <ResponsiveContainer width="100%" height={220}>
+              <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={incomeVsExpenses} barGap={4}>
                   <defs>
-                    <linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="hsl(142 76% 36%)" stopOpacity={1} />
-                      <stop offset="100%" stopColor="hsl(142 76% 36%)" stopOpacity={0.6} />
+                    <linearGradient id="incG" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="hsl(142 76% 36%)" stopOpacity={0.9} />
+                      <stop offset="100%" stopColor="hsl(142 76% 36%)" stopOpacity={0.5} />
                     </linearGradient>
-                    <linearGradient id="expenseGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="hsl(351 76% 56%)" stopOpacity={1} />
-                      <stop offset="100%" stopColor="hsl(351 76% 56%)" stopOpacity={0.6} />
+                    <linearGradient id="expG" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="hsl(351 76% 56%)" stopOpacity={0.9} />
+                      <stop offset="100%" stopColor="hsl(351 76% 56%)" stopOpacity={0.5} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.4} vertical={false} />
                   <XAxis dataKey="period" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} axisLine={false} tickLine={false} />
-                  <Tooltip content={<CustomTooltip formatCurrency={formatCurrency} />} cursor={{ fill: 'hsl(var(--muted))', opacity: 0.3 }} />
-                  <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }} />
-                  <Bar dataKey="income" name="Income" fill="url(#incomeGradient)" radius={[6, 6, 0, 0]} animationBegin={0} animationDuration={1000} animationEasing="ease-out" />
-                  <Bar dataKey="expenses" name="Expenses" fill="url(#expenseGradient)" radius={[6, 6, 0, 0]} animationBegin={200} animationDuration={1000} animationEasing="ease-out" />
+                  <YAxis tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} axisLine={false} tickLine={false} width={50} />
+                  <Tooltip content={<SimpleTooltip formatCurrency={formatCurrency} />} />
+                  <Bar dataKey="income" name="Income" fill="url(#incG)" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="expenses" name="Expenses" fill="url(#expG)" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[220px] flex flex-col items-center justify-center text-muted-foreground gap-3">
-                <div className="h-14 w-14 rounded-2xl bg-muted/50 flex items-center justify-center">
-                  <BarChart3 className="h-7 w-7 opacity-40" />
-                </div>
-                <p className="text-sm">Add income & expenses to see comparison</p>
-              </div>
+              <EmptyState icon={BarChart3} message="No data yet" hint="Add income and expenses to compare" />
             )}
+            {/* Simple legend */}
+            <div className="flex items-center justify-center gap-6 mt-2">
+              <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-sm" style={{ background: 'hsl(142 76% 36%)' }} /><span className="text-xs text-muted-foreground">Income</span></div>
+              <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-sm" style={{ background: 'hsl(351 76% 56%)' }} /><span className="text-xs text-muted-foreground">Expenses</span></div>
+            </div>
           </CardContent>
         </Card>
 
-        {/* Spending Trends - Area Chart */}
-        <Card className="transition-all duration-300 hover:shadow-xl border-border/50 overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <div>
-              <CardTitle className="text-base font-semibold">Spending Trends</CardTitle>
-              <CardDescription className="text-xs">
-                {selectedCategory ? `${selectedCategory} spending` : 'Daily & cumulative spending'}
-              </CardDescription>
-            </div>
-            <div className="h-8 w-8 rounded-lg bg-info/10 flex items-center justify-center">
-              <TrendingUp className="h-4 w-4 text-info" />
+        {/* Spending Over Time (simplified - just daily spending) */}
+        <Card className="border-border/50 overflow-hidden">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-base font-semibold">Spending Over Time</CardTitle>
+                <CardDescription className="text-xs">
+                  {selectedCategory ? `${selectedCategory} only` : 'Your daily spending pattern'}
+                </CardDescription>
+              </div>
+              <div className="h-8 w-8 rounded-lg bg-info/10 flex items-center justify-center">
+                <TrendingUp className="h-4 w-4 text-info" />
+              </div>
             </div>
           </CardHeader>
           <CardContent>
-            {spendingTrends.length > 0 ? (
-              <ResponsiveContainer width="100%" height={220}>
-                <AreaChart data={spendingTrends}>
-                  <defs>
-                    <linearGradient id="cumulativeGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                      <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                    </linearGradient>
-                    <linearGradient id="dailyGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="hsl(199 89% 48%)" stopOpacity={0.2} />
-                      <stop offset="100%" stopColor="hsl(199 89% 48%)" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
-                  <XAxis dataKey="day" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} axisLine={false} tickLine={false} />
-                  <Tooltip content={<CustomTooltip formatCurrency={formatCurrency} />} />
-                  <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }} />
-                  <Area
-                    type="monotone"
-                    dataKey="cumulative"
-                    name="Cumulative"
-                    stroke="hsl(var(--primary))"
-                    strokeWidth={2.5}
-                    fill="url(#cumulativeGradient)"
-                    dot={{ r: 3, fill: 'hsl(var(--primary))', stroke: 'hsl(var(--card))', strokeWidth: 2 }}
-                    activeDot={{ r: 7, stroke: 'hsl(var(--primary))', strokeWidth: 2, fill: 'hsl(var(--card))' }}
-                    animationBegin={0}
-                    animationDuration={1200}
-                    animationEasing="ease-out"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="daily"
-                    name="Daily"
-                    stroke="hsl(199 89% 48%)"
-                    strokeWidth={2}
-                    fill="url(#dailyGradient)"
-                    dot={{ r: 3, fill: 'hsl(199 89% 48%)', stroke: 'hsl(var(--card))', strokeWidth: 2 }}
-                    activeDot={{ r: 7, stroke: 'hsl(199 89% 48%)', strokeWidth: 2, fill: 'hsl(var(--card))' }}
-                    animationBegin={400}
-                    animationDuration={1200}
-                    animationEasing="ease-out"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-[220px] flex flex-col items-center justify-center text-muted-foreground gap-3">
-                <div className="h-14 w-14 rounded-2xl bg-muted/50 flex items-center justify-center">
-                  <TrendingUp className="h-7 w-7 opacity-40" />
-                </div>
-                <p className="text-sm">No spending data for this period</p>
-              </div>
-            )}
+            {(() => {
+              const { start, end } = getDateRange();
+              const filtered = (selectedCategory ? expenses.filter(e => e.category === selectedCategory) : expenses)
+                .filter(e => { const d = new Date(e.date); return d >= start && d <= end; });
+              const daily: Record<string, number> = {};
+              filtered.forEach(e => {
+                const d = new Date(e.date);
+                const key = `${d.getDate()}/${d.getMonth() + 1}`;
+                daily[key] = (daily[key] || 0) + Number(e.amount);
+              });
+              const data = Object.entries(daily).slice(-12).map(([day, amount]) => ({ day, amount }));
+              
+              return data.length > 0 ? (
+                <ResponsiveContainer width="100%" height={200}>
+                  <AreaChart data={data}>
+                    <defs>
+                      <linearGradient id="spendGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.25} />
+                        <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.4} vertical={false} />
+                    <XAxis dataKey="day" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} axisLine={false} tickLine={false} width={50} />
+                    <Tooltip content={<SimpleTooltip formatCurrency={formatCurrency} />} />
+                    <Area type="monotone" dataKey="amount" name="Spent" stroke="hsl(var(--primary))" strokeWidth={2.5} fill="url(#spendGrad)"
+                      dot={{ r: 3, fill: 'hsl(var(--primary))', stroke: 'hsl(var(--card))', strokeWidth: 2 }} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <EmptyState icon={TrendingUp} message="No spending data" hint="Start tracking expenses to see trends" />
+              );
+            })()}
           </CardContent>
         </Card>
 
-        {/* Budget Progress - Premium bars */}
-        <Card className="transition-all duration-300 hover:shadow-xl border-border/50 overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <div>
-              <CardTitle className="text-base font-semibold">Budget Progress</CardTitle>
-              <CardDescription className="text-xs">Click a budget to filter by category</CardDescription>
-            </div>
-            <div className="h-8 w-8 rounded-lg bg-warning/10 flex items-center justify-center">
-              <Target className="h-4 w-4 text-warning" />
+        {/* Budget Progress (simplified) */}
+        <Card className="border-border/50 overflow-hidden">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-base font-semibold">Budget Progress</CardTitle>
+                <CardDescription className="text-xs">How much of each budget you've used</CardDescription>
+              </div>
+              <div className="h-8 w-8 rounded-lg bg-warning/10 flex items-center justify-center">
+                <Target className="h-4 w-4 text-warning" />
+              </div>
             </div>
           </CardHeader>
           <CardContent>
             {budgetProgress.length > 0 ? (
-              <div className="space-y-3">
-                {budgetProgress.slice(0, 5).map((item, index) => {
-                  const isOverBudget = item.percentage > 90;
+              <div className="space-y-4">
+                {budgetProgress.slice(0, 5).map((item, i) => {
+                  const isOver = item.percentage > 90;
                   const isWarning = item.percentage > 70 && item.percentage <= 90;
-                  const barColor = isOverBudget
-                    ? 'hsl(0 84% 60%)'
-                    : isWarning
-                    ? 'hsl(38 92% 50%)'
-                    : COLORS[index % COLORS.length];
+                  const barColor = isOver ? 'hsl(0 84% 60%)' : isWarning ? 'hsl(38 92% 50%)' : 'hsl(142 76% 36%)';
+                  const statusText = isOver ? 'Over budget!' : isWarning ? 'Almost there' : 'On track';
+                  const statusColor = isOver ? 'text-destructive' : isWarning ? 'text-warning' : 'text-success';
 
                   return (
-                    <button
-                      key={item.category}
-                      onClick={() => handlePieClick({ name: item.category })}
-                      className={`w-full space-y-2 p-3 rounded-xl transition-all duration-300 hover:bg-muted/60 text-left ${
-                        selectedCategory === item.category ? 'bg-muted/80 ring-1 ring-primary/40 shadow-sm' : ''
-                      }`}
-                    >
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: barColor }} />
-                          <span className="font-semibold truncate max-w-[120px] text-xs">{item.category}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-muted-foreground">{formatCurrency(item.spent)}</span>
-                          <span className="text-xs text-muted-foreground">/</span>
-                          <span className="text-xs font-medium">{formatCurrency(item.budget)}</span>
-                        </div>
+                    <button key={item.category} onClick={() => handleCategoryClick({ name: item.category })}
+                      className={`w-full text-left p-3 rounded-xl transition-all hover:bg-muted/50 ${selectedCategory === item.category ? 'bg-muted/70 ring-1 ring-primary/30' : ''}`}>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium">{item.category}</span>
+                        <span className={`text-xs font-medium ${statusColor}`}>{statusText}</span>
                       </div>
-                      <div className="relative h-2.5 w-full bg-muted/80 rounded-full overflow-hidden">
-                        <div
-                          className="absolute left-0 top-0 h-full rounded-full transition-all duration-1000 ease-out"
-                          style={{
-                            width: animationComplete ? `${item.percentage}%` : '0%',
-                            backgroundColor: barColor,
-                            boxShadow: item.percentage > 50 ? `0 0 12px ${barColor}40` : 'none',
-                          }}
-                        />
+                      <div className="h-2.5 w-full bg-muted rounded-full overflow-hidden">
+                        <div className="h-full rounded-full transition-all duration-700" style={{ width: `${item.percentage}%`, backgroundColor: barColor }} />
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-semibold tabular-nums" style={{ color: barColor }}>
-                          {item.percentage}%
-                        </span>
-                        {isOverBudget && (
-                          <span className="text-[10px] text-destructive font-semibold flex items-center gap-1">
-                            <ArrowUpRight className="h-3 w-3" />
-                            Over by {formatCurrency(item.spent - item.budget)}
-                          </span>
-                        )}
+                      <div className="flex justify-between mt-1.5">
+                        <span className="text-xs text-muted-foreground">{formatCurrency(item.spent)} spent</span>
+                        <span className="text-xs text-muted-foreground">of {formatCurrency(item.budget)}</span>
                       </div>
                     </button>
                   );
                 })}
               </div>
             ) : (
-              <div className="h-[220px] flex flex-col items-center justify-center text-muted-foreground gap-3">
-                <div className="h-14 w-14 rounded-2xl bg-muted/50 flex items-center justify-center">
-                  <Target className="h-7 w-7 opacity-40" />
-                </div>
-                <p className="text-sm">Set up budgets in Personal → Income & Budget</p>
-              </div>
+              <EmptyState icon={Target} message="No budgets set" hint="Go to Income & Budget to create one" />
             )}
           </CardContent>
         </Card>
