@@ -1,9 +1,7 @@
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import SkyScene from "@/components/SkyScene";
-import StockTicker from "@/components/StockTicker";
-import { Shield, Users, Globe, Sparkles, ChevronRight, PieChart, CreditCard, BarChart3, Zap, TrendingUp, DollarSign, Star } from "lucide-react";
-import logo from "@/assets/shield-logo.png";
+import { ChevronRight } from "lucide-react";
 
 const Home = () => {
   const { t } = useLanguage();
