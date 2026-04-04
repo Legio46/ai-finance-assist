@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import SkyScene from "@/components/SkyScene";
+import StockTicker from "@/components/StockTicker";
 import { ChevronRight } from "lucide-react";
 
 const Home = () => {
