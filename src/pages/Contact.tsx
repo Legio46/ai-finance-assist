@@ -3,11 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Mail, Send, Clock, MessageSquare } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Badge } from '@/components/ui/badge';
 
 const Contact = () => {
   const { toast } = useToast();
@@ -34,79 +32,86 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
-        <div className="absolute top-10 -left-40 w-80 h-80 bg-accent/10 rounded-full blur-3xl" />
-        <div className="container relative mx-auto px-4 py-20 text-center">
-          <Badge variant="secondary" className="mb-6 px-4 py-1.5 text-sm">
-            <MessageSquare className="w-3.5 h-3.5 mr-1.5 inline" />
+      <section className="relative overflow-hidden py-20 text-center">
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(11,61,140,0.3) 0%, rgba(12,26,53,0.95) 100%)' }} />
+        <div className="container relative mx-auto px-4">
+          <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium mb-6"
+            style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.9)' }}>
+            <MessageSquare className="w-3.5 h-3.5" />
             Get in Touch
-          </Badge>
-          <h1 className="text-4xl lg:text-5xl font-bold mb-4">{t('contactUs')}</h1>
-          <p className="text-lg text-muted-foreground max-w-lg mx-auto">{t('contactHero')}</p>
+          </div>
+          <h1 className="text-4xl lg:text-5xl font-bold mb-4 text-foreground">{t('contactUs')}</h1>
+          <p className="text-sm max-w-lg mx-auto" style={{ color: 'rgba(255,255,255,0.55)' }}>{t('contactHero')}</p>
         </div>
       </section>
 
       <div className="container mx-auto px-4 pb-24 -mt-4">
-        <div className="grid lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div className="grid lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
           {/* Info Cards */}
           <div className="space-y-4">
-            <Card className="border-0 shadow-lg overflow-hidden">
-              <div className="bg-gradient-to-br from-primary/10 via-accent/5 to-transparent p-6">
-                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-4 shadow-md">
-                  <Mail className="w-5 h-5 text-primary-foreground" />
-                </div>
-                <h3 className="font-semibold mb-1">{t('emailUs')}</h3>
-                <p className="text-primary font-medium text-sm">support@legio.com</p>
+            <div className="rounded-2xl p-6 transition-all" style={{
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              backdropFilter: 'blur(12px)',
+            }}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg mb-4"
+                style={{ background: 'rgba(245,201,106,0.1)', border: '1px solid rgba(245,201,106,0.2)' }}>
+                <Mail className="w-5 h-5 text-primary" />
               </div>
-            </Card>
-            <Card className="border-0 shadow-lg overflow-hidden">
-              <div className="bg-gradient-to-br from-accent/10 via-primary/5 to-transparent p-6">
-                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-accent to-primary flex items-center justify-center mb-4 shadow-md">
-                  <Clock className="w-5 h-5 text-primary-foreground" />
-                </div>
-                <h3 className="font-semibold mb-1">Response Time</h3>
-                <p className="text-muted-foreground text-sm">{t('emailResponse')}</p>
+              <h3 className="font-sans font-semibold text-foreground mb-1">{t('emailUs')}</h3>
+              <p className="text-primary text-sm font-medium">support@legio.com</p>
+            </div>
+            <div className="rounded-2xl p-6 transition-all" style={{
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              backdropFilter: 'blur(12px)',
+            }}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg mb-4"
+                style={{ background: 'rgba(245,201,106,0.1)', border: '1px solid rgba(245,201,106,0.2)' }}>
+                <Clock className="w-5 h-5 text-primary" />
               </div>
-            </Card>
+              <h3 className="font-sans font-semibold text-foreground mb-1">Response Time</h3>
+              <p className="text-sm" style={{ color: 'rgba(255,255,255,0.45)' }}>{t('emailResponse')}</p>
+            </div>
           </div>
 
           {/* Form */}
           <div className="lg:col-span-2">
-            <Card className="border-0 shadow-xl">
-              <CardHeader>
-                <CardTitle className="text-xl">{t('sendMessage')}</CardTitle>
-                <CardDescription>{t('formDescription')}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-5">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name" className="text-sm">{t('fullName')} *</Label>
-                      <Input id="name" name="name" type="text" placeholder={t('fullName')} value={formData.name} onChange={handleInputChange} required className="rounded-xl h-11" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email" className="text-sm">{t('emailAddress')} *</Label>
-                      <Input id="email" name="email" type="email" placeholder={t('emailAddress')} value={formData.email} onChange={handleInputChange} required className="rounded-xl h-11" />
-                    </div>
+            <div className="rounded-2xl p-8" style={{
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              backdropFilter: 'blur(28px)',
+            }}>
+              <h2 className="text-xl font-bold text-foreground mb-1">{t('sendMessage')}</h2>
+              <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('formDescription')}</p>
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name" className="text-sm font-sans">{t('fullName')} *</Label>
+                    <Input id="name" name="name" type="text" placeholder={t('fullName')} value={formData.name} onChange={handleInputChange} required className="rounded-xl h-11 bg-background/50 border-border" />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="description" className="text-sm">{t('message')} *</Label>
-                    <Textarea id="description" name="description" placeholder={t('message')} className="min-h-[140px] rounded-xl" value={formData.description} onChange={handleInputChange} required />
+                    <Label htmlFor="email" className="text-sm font-sans">{t('emailAddress')} *</Label>
+                    <Input id="email" name="email" type="email" placeholder={t('emailAddress')} value={formData.email} onChange={handleInputChange} required className="rounded-xl h-11 bg-background/50 border-border" />
                   </div>
-                  <Button type="submit" className="w-full rounded-xl h-11 shadow-md gap-2" disabled={isSubmitting}>
-                    {isSubmitting ? t('sendingMessage') : (
-                      <>
-                        <Send className="w-4 h-4" />
-                        {t('sendMessage')}
-                      </>
-                    )}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="description" className="text-sm font-sans">{t('message')} *</Label>
+                  <Textarea id="description" name="description" placeholder={t('message')} className="min-h-[140px] rounded-xl bg-background/50 border-border" value={formData.description} onChange={handleInputChange} required />
+                </div>
+                <Button type="submit" className="w-full rounded-xl h-11 gap-2 font-sans" disabled={isSubmitting}
+                  style={{ background: '#2563eb', boxShadow: '0 4px 24px rgba(37,99,235,0.4)' }}>
+                  {isSubmitting ? t('sendingMessage') : (
+                    <>
+                      <Send className="w-4 h-4" />
+                      {t('sendMessage')}
+                    </>
+                  )}
+                </Button>
+              </form>
+            </div>
           </div>
         </div>
       </div>
