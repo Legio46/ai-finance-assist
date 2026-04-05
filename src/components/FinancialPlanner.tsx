@@ -15,7 +15,7 @@ import {
 import {
   TrendingUp, Target, Calculator, PiggyBank, AlertTriangle, CheckCircle2,
   Sparkles, Loader2, ShieldAlert, Lightbulb, DollarSign, BarChart3,
-  Clock, ArrowUpCircle, ListChecks, Heart, Flame, CreditCard, Percent,
+  Clock, ListChecks, Heart, Flame, CreditCard, Percent,
   Building2, Shield, Zap, TrendingDown, Award
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
