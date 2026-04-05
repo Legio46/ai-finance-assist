@@ -5,83 +5,76 @@
 @tailwind utilities;
 
 @layer base {
+  /* ===== LIGHT MODE ===== */
   :root {
-    /* Aura deep navy + gold theme */
-    --background: 222 50% 10%;
-    --foreground: 0 0% 100%;
+    --background: 220 20% 97%;
+    --foreground: 222 47% 15%;
 
-    --card: 222 44% 14%;
-    --card-foreground: 0 0% 100%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 15%;
 
-    --popover: 222 44% 14%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 15%;
 
-    /* Primary - Gold #f5c96a */
-    --primary: 40 88% 69%;
-    --primary-foreground: 222 50% 10%;
-    --primary-glow: 40 88% 79%;
+    --primary: 40 88% 52%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 40 88% 62%;
 
-    /* Secondary - Deep Navy */
-    --secondary: 222 44% 18%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 220 16% 93%;
+    --secondary-foreground: 222 47% 15%;
 
-    --muted: 222 30% 18%;
-    --muted-foreground: 220 15% 60%;
+    --muted: 220 14% 92%;
+    --muted-foreground: 220 10% 46%;
 
-    /* Accent - Gold */
-    --accent: 40 88% 69%;
-    --accent-foreground: 222 50% 10%;
-    --accent-glow: 40 88% 79%;
+    --accent: 40 88% 52%;
+    --accent-foreground: 0 0% 100%;
+    --accent-glow: 40 88% 62%;
 
-    --destructive: 0 72% 65%;
+    --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 30% 18%;
-    --input: 220 30% 20%;
-    --ring: 40 88% 69%;
+    --border: 220 14% 88%;
+    --input: 220 14% 88%;
+    --ring: 40 88% 52%;
 
     --radius: 0.75rem;
 
-    /* Financial theme colors */
-    --success: 160 84% 51%;
+    --success: 160 84% 39%;
     --success-foreground: 0 0% 100%;
-    --success-glow: 160 84% 61%;
+    --success-glow: 160 84% 49%;
 
-    --warning: 38 92% 58%;
+    --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
 
-    --info: 217 91% 68%;
+    --info: 217 91% 55%;
     --info-foreground: 0 0% 100%;
 
-    /* Rich gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(40 88% 69%), hsl(40 80% 55%));
-    --gradient-secondary: linear-gradient(135deg, hsl(222 44% 18%), hsl(222 50% 10%));
-    --gradient-success: linear-gradient(135deg, hsl(160 84% 51%), hsl(217 91% 68%));
+    --gradient-primary: linear-gradient(135deg, hsl(40 88% 52%), hsl(40 80% 45%));
+    --gradient-secondary: linear-gradient(135deg, hsl(220 16% 93%), hsl(220 20% 97%));
+    --gradient-success: linear-gradient(135deg, hsl(160 84% 39%), hsl(217 91% 55%));
     --gradient-hero: linear-gradient(180deg, hsl(222 65% 32%) 0%, hsl(202 65% 52%) 30%, hsl(190 55% 72%) 47%, hsl(42 85% 78%) 68%, hsl(24 82% 62%) 85%, hsl(8 75% 48%) 100%);
-    --gradient-card: linear-gradient(135deg, hsla(0 0% 100% / 0.06), hsla(0 0% 100% / 0.02));
+    --gradient-card: linear-gradient(135deg, hsla(0 0% 100% / 0.8), hsla(0 0% 100% / 0.4));
 
-    /* Glows and shadows */
-    --shadow-primary: 0 10px 40px -10px hsl(40 88% 69% / 0.3);
-    --shadow-accent: 0 10px 40px -10px hsl(40 80% 55% / 0.3);
-    --shadow-success: 0 10px 40px -10px hsl(160 84% 51% / 0.3);
-    --glow-primary: 0 0 60px hsl(40 88% 79% / 0.4);
+    --shadow-primary: 0 10px 40px -10px hsl(40 88% 52% / 0.2);
+    --shadow-accent: 0 10px 40px -10px hsl(40 80% 45% / 0.2);
+    --shadow-success: 0 10px 40px -10px hsl(160 84% 39% / 0.2);
+    --glow-primary: 0 0 60px hsl(40 88% 62% / 0.2);
 
-    /* Glass */
-    --glass: hsla(222 44% 14% / 0.62);
-    --glass-border: hsla(0 0% 100% / 0.09);
-    --glass-border-hover: hsla(0 0% 100% / 0.16);
+    --glass: hsla(0, 0%, 100%, 0.72);
+    --glass-border: hsla(220, 14%, 88%, 0.6);
+    --glass-border-hover: hsla(220, 14%, 78%, 0.6);
 
-    --sidebar-background: 222 44% 12%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 40 88% 69%;
-    --sidebar-primary-foreground: 222 50% 10%;
-    --sidebar-accent: 222 30% 18%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 220 30% 18%;
-    --sidebar-ring: 40 88% 69%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 47% 15%;
+    --sidebar-primary: 40 88% 52%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 16% 93%;
+    --sidebar-accent-foreground: 222 47% 15%;
+    --sidebar-border: 220 14% 88%;
+    --sidebar-ring: 40 88% 52%;
   }
 
-  /* Dark mode is the same as default (Aura is always dark-based) */
+  /* ===== DARK MODE ===== */
   .dark {
     --background: 222 50% 10%;
     --foreground: 0 0% 100%;
@@ -134,6 +127,10 @@
     --shadow-success: 0 10px 40px -10px hsl(160 84% 51% / 0.4);
     --glow-primary: 0 0 80px hsl(40 88% 79% / 0.5);
 
+    --glass: hsla(222, 44%, 14%, 0.62);
+    --glass-border: hsla(0, 0%, 100%, 0.09);
+    --glass-border-hover: hsla(0, 0%, 100%, 0.16);
+
     --sidebar-background: 222 44% 12%;
     --sidebar-foreground: 0 0% 100%;
     --sidebar-primary: 40 88% 69%;
@@ -162,24 +159,28 @@
 
 /* Glassmorphism utility */
 .glass {
-  background: hsla(222, 44%, 14%, 0.62);
-  border: 1px solid hsla(0, 0%, 100%, 0.09);
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
   backdrop-filter: blur(28px);
 }
 
 .glass:hover {
-  border-color: hsla(0, 0%, 100%, 0.16);
+  border-color: var(--glass-border-hover);
 }
 
 .glass-light {
   background: hsla(0, 0%, 100%, 0.05);
-  border: 1px solid hsla(0, 0%, 100%, 0.09);
+  border: 1px solid var(--glass-border);
   backdrop-filter: blur(12px);
+}
+
+.dark .glass-light {
+  background: hsla(0, 0%, 100%, 0.05);
 }
 
 /* Gold glow text */
 .text-gold-glow {
-  color: hsl(40 88% 69%);
+  color: hsl(var(--primary));
   text-shadow: 0 0 60px hsla(40, 88%, 69%, 0.55);
 }
 
@@ -221,8 +222,8 @@
   animation: fade-up 0.8s ease both;
 }
 
-/* Noise overlay */
-.noise-overlay::after {
+/* Noise overlay - dark mode only */
+.dark .noise-overlay::after {
   content: '';
   position: fixed;
   inset: 0;
@@ -240,6 +241,6 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: hsla(0, 0%, 100%, 0.12);
+  background: hsla(var(--muted-foreground) / 0.3);
   border-radius: 10px;
 }
