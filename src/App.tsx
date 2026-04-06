@@ -45,6 +45,8 @@ const App = () => (
                 <Route path="/contact" element={<Layout><Contact /></Layout>} />
                 <Route path="/privacy" element={<Layout><PrivacyPolicy /></Layout>} />
                 <Route path="/terms" element={<Layout><TermsOfService /></Layout>} />
+                <Route path="/data-governance" element={<Layout><DataGovernance /></Layout>} />
+                <Route path="/ip-policy" element={<Layout><IPPolicy /></Layout>} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                 <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>} />
