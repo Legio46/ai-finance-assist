@@ -802,7 +802,7 @@ const FinancialPlanner: React.FC = () => {
             {aiLoading && (
               <div className="text-center py-12">
                 <Loader2 className="w-10 h-10 animate-spin text-primary mx-auto mb-4" />
-                <p className="text-muted-foreground">APEX is analyzing your complete financial profile...</p>
+                <p className="text-muted-foreground">Legio is analyzing your complete financial profile...</p>
               </div>
             )}
             {aiSuggestions && !aiLoading && (
