@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import SkyScene from "@/components/SkyScene";
 import StockTicker from "@/components/StockTicker";
