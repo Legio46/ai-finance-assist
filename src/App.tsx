@@ -12,6 +12,8 @@ import Pricing from "./pages/Pricing";
 import Contact from "./pages/Contact";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
+import DataGovernance from "./pages/DataGovernance";
+import IPPolicy from "./pages/IPPolicy";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import AdminDashboard from "./pages/AdminDashboard";
