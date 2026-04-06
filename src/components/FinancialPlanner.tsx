@@ -792,7 +792,7 @@ const FinancialPlanner: React.FC = () => {
             {!aiSuggestions && !aiLoading && (
               <div className="text-center py-12">
                 <Sparkles className="w-16 h-16 mx-auto text-primary/40 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">APEX AI Financial Advisor</h3>
+                <h3 className="text-xl font-semibold mb-2">Legio AI Financial Advisor</h3>
                 <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                   Get personalized savings tips, investment advice, risk alerts, tax strategies, debt elimination plans, and a prioritized monthly action plan.
                 </p>
