@@ -8,52 +8,36 @@ const TermsOfService = () => {
     {
       title: "1. Acceptance of Terms",
       content: (
-        <p>By accessing and using Legio Finance ("the Service", "we", "us", or "our"), you accept and agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our service. These terms apply to all users, including visitors, registered users, and subscribers.</p>
+        <p>These Terms of Use ("Terms") constitute a legally binding agreement between you ("User," "you," or "your") and Legio Finance governing your access to and use of the legiofinance.com website and the associated financial management platform (collectively, the "Service"). By creating an account, clicking "I Agree," or otherwise accessing the Service, you represent that: (a) you have read and understood these Terms; (b) you are at least 18 years of age; (c) you have the legal capacity to enter into binding contracts; and (d) you agree to be bound by these Terms and our Privacy Policy, which is incorporated herein by reference.</p>
       ),
     },
     {
-      title: "2. Description of Service",
+      title: "2. Eligibility",
       content: (
-        <>
-          <p className="mb-3">Legio Finance is a personal and business financial management platform that provides:</p>
-          <ul className="list-disc pl-5 space-y-1.5">
-            <li>Expense tracking and categorization</li>
-            <li>Credit card management and transaction monitoring</li>
-            <li>Income tracking and budget management</li>
-            <li>Recurring payment tracking and reminders</li>
-            <li>Investment portfolio tracking (stocks, crypto, ETFs, real estate)</li>
-            <li>Financial goal setting and progress tracking</li>
-            <li>Financial calendar for bills, paydays, and important dates</li>
-            <li>AI-powered financial advisor chat</li>
-            <li>Currency conversion tools</li>
-            <li>Data export capabilities (CSV/PDF)</li>
-          </ul>
-        </>
+        <ul className="list-disc pl-5 space-y-1.5">
+          <li>You must be at least 18 years of age to use the Service</li>
+          <li>You must not be prohibited from using the Service under any applicable law</li>
+          <li>You must not have had a previous account terminated for violation of these Terms</li>
+          <li>If accessing the Service on behalf of an entity, you represent that you have authority to bind that entity</li>
+        </ul>
       ),
     },
     {
-      title: "3. User Accounts",
+      title: "3. Account Registration and Security",
       content: (
-        <>
-          <p className="mb-3">To use our service, you must:</p>
-          <ul className="list-disc pl-5 space-y-1.5 mb-4">
-            <li>Be at least 18 years of age or the age of majority in your jurisdiction</li>
-            <li>Provide accurate, current, and complete registration information</li>
-            <li>Maintain and promptly update your account information</li>
-            <li>Maintain the confidentiality of your password and account credentials</li>
-            <li>Accept responsibility for all activities that occur under your account</li>
-            <li>Notify us immediately of any unauthorized use of your account</li>
-          </ul>
-          <p>You may not share your account credentials with others or allow multiple people to use your account unless your subscription plan explicitly permits it.</p>
-        </>
+        <p>To access certain features, you must register for an account. You agree to: (a) provide accurate, current, and complete registration information; (b) promptly update your information to maintain its accuracy; (c) maintain the confidentiality of your account credentials; (d) not share account access with any third party; and (e) immediately notify us of any unauthorized use of your account. You are solely responsible for all activity occurring under your account. We reserve the right to suspend or terminate accounts that display signs of unauthorized access or fraudulent activity.</p>
       ),
     },
     {
-      title: "4. Subscription Plans & Payment",
+      title: "4. Description of Services",
       content: (
         <>
-          <p className="mb-3">Our service offers the following subscription tiers:</p>
-          <div className="grid sm:grid-cols-2 gap-3 mb-5">
+          <p className="mb-3">The Service provides personal and business financial management tools including budgeting, expense tracking, financial analytics, report generation, and related features. The Service is provided for informational and personal financial management purposes only.</p>
+          <div className="bg-destructive/5 border border-destructive/15 rounded-xl p-4 mb-5">
+            <p className="font-semibold text-foreground text-sm mb-1">⚠️ Disclaimer</p>
+            <p className="text-xs">The Service does not constitute financial, investment, tax, legal, or other professional advice. Any financial data, projections, or analyses provided through the Service are for informational purposes only. You should consult a qualified professional before making any financial decisions. We are not a registered investment advisor, broker-dealer, or fiduciary.</p>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3">
             <div className="bg-muted/40 rounded-lg p-4 border border-border/50">
               <p className="font-semibold text-foreground text-sm mb-1">Personal Basic</p>
               <p className="text-xl font-bold text-primary mb-1">€5<span className="text-xs font-normal text-muted-foreground">/month</span></p>
@@ -65,11 +49,39 @@ const TermsOfService = () => {
               <p className="text-xs">All Basic + investments, AI advisor, financial calendar, goals</p>
             </div>
           </div>
-          <h4 className="font-semibold text-foreground text-sm mb-2">Payment Terms</h4>
+        </>
+      ),
+    },
+    {
+      title: "5. Acceptable Use Policy",
+      content: (
+        <>
+          <p className="mb-3">You agree to use the Service only for lawful purposes. You expressly agree NOT to:</p>
+          <ul className="list-disc pl-5 space-y-1.5">
+            <li>Use the Service for any fraudulent, deceptive, or illegal purpose, including money laundering or tax evasion</li>
+            <li>Access or attempt to access accounts, systems, or data you are not authorized to access</li>
+            <li>Upload, transmit, or distribute viruses, malware, or other harmful code</li>
+            <li>Attempt to reverse-engineer, decompile, disassemble, or derive the source code of the Service</li>
+            <li>Scrape, crawl, or use automated means to collect data without prior written consent</li>
+            <li>Interfere with or disrupt the integrity or performance of the Service</li>
+            <li>Impersonate any person or entity or misrepresent your affiliation</li>
+            <li>Violate any applicable local, national, or international law or regulation</li>
+          </ul>
+          <p className="mt-3">Violation may result in immediate account suspension or termination, and may be reported to law enforcement.</p>
+        </>
+      ),
+    },
+    {
+      title: "6. Fees, Billing, and Cancellation",
+      content: (
+        <>
+          <p className="mb-3">Certain features require payment. By providing payment information, you authorize us to charge applicable fees.</p>
           <ul className="list-disc pl-5 space-y-1.5">
             <li>All new subscriptions include a <strong className="text-foreground">7-day free trial</strong></li>
-            <li>Subscriptions automatically renew monthly unless cancelled</li>
-            <li>Cancel at any time through account settings — takes effect at end of billing period</li>
+            <li>Subscription fees are billed in advance on a recurring basis</li>
+            <li>All fees are non-refundable except as expressly provided in our Refund Policy or as required by applicable law</li>
+            <li>Refunds may be requested within 14 days of a charge for unused service</li>
+            <li>You may cancel your subscription at any time; cancellation takes effect at the end of the current billing period</li>
             <li>Payments processed securely through Stripe</li>
             <li>Prices in EUR, subject to applicable taxes</li>
           </ul>
@@ -77,135 +89,65 @@ const TermsOfService = () => {
       ),
     },
     {
-      title: "5. Refund Policy",
-      content: (
-        <ul className="list-disc pl-5 space-y-2">
-          <li>Cancel during your 7-day free trial — <strong className="text-foreground">no charge</strong></li>
-          <li>Refunds may be requested within 14 days of a charge for unused service</li>
-          <li>Submit requests to <a href="mailto:support@legiofinance.com" className="text-primary hover:underline font-medium">support@legiofinance.com</a></li>
-          <li>Refunds are issued at our discretion, typically within 5–10 business days</li>
-        </ul>
-      ),
-    },
-    {
-      title: "6. Acceptable Use",
+      title: "7. Limitation of Liability",
       content: (
         <>
-          <p className="mb-3">You agree not to:</p>
-          <ul className="list-disc pl-5 space-y-1.5">
-            <li>Use the service for any illegal or unauthorized purpose</li>
-            <li>Violate any laws in your jurisdiction, including tax laws</li>
-            <li>Input false or misleading financial data with intent to deceive</li>
-            <li>Attempt unauthorized access to our systems or other users' accounts</li>
-            <li>Transmit viruses, malware, or other harmful code</li>
-            <li>Reverse engineer, decompile, or disassemble any part of the service</li>
-            <li>Use automated systems to access the service without permission</li>
-            <li>Resell or redistribute the service without authorization</li>
-          </ul>
-        </>
-      ),
-    },
-    {
-      title: "7. Financial Information Disclaimer",
-      content: (
-        <>
-          <div className="bg-destructive/5 border border-destructive/15 rounded-xl p-4 mb-5">
-            <p className="font-semibold text-foreground text-sm mb-1">⚠️ Important Notice</p>
-            <p className="text-xs">Legio Finance provides financial tracking tools and general educational information. It is <strong>not</strong> professional financial, tax, or investment advice, and should not substitute consultation with qualified professionals.</p>
-          </div>
-          <p className="mb-3">You should:</p>
-          <ul className="list-disc pl-5 space-y-1.5">
-            <li>Consult licensed professionals for specific financial, tax, or investment advice</li>
-            <li>Verify all calculations before making financial decisions</li>
-            <li>Understand that past investment performance does not guarantee future results</li>
-            <li>Make decisions based on your individual circumstances and risk tolerance</li>
-          </ul>
-          <p className="mt-4">The AI financial advisor provides general guidance and should not be relied upon as professional advice.</p>
-        </>
-      ),
-    },
-    {
-      title: "8. Data Accuracy",
-      content: (
-        <>
-          <p className="mb-3">You are responsible for the accuracy of financial data you input. We:</p>
-          <ul className="list-disc pl-5 space-y-1.5">
-            <li>Do not verify the accuracy of user-inputted data</li>
-            <li>Are not responsible for errors resulting from incorrect input</li>
-            <li>May display market data with delays</li>
-            <li>Use third-party exchange rates that may vary from actual rates</li>
-          </ul>
-        </>
-      ),
-    },
-    {
-      title: "9. Limitation of Liability",
-      content: (
-        <>
-          <p className="mb-3">To the maximum extent permitted by law, Legio Finance shall not be liable for:</p>
+          <p className="mb-3 uppercase text-xs font-semibold text-foreground">TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, LEGIO FINANCE SHALL NOT BE LIABLE FOR:</p>
           <ul className="list-disc pl-5 space-y-1.5 mb-4">
             <li>Any indirect, incidental, special, consequential, or punitive damages</li>
-            <li>Loss of profits, revenue, data, or business opportunities</li>
-            <li>Financial decisions made based on information from our service</li>
-            <li>Service interruptions, technical issues, or data loss</li>
-            <li>Unauthorized access due to compromised credentials</li>
-            <li>Errors in third-party data (exchange rates, market prices)</li>
+            <li>Loss of profits, revenue, data, business opportunities, or goodwill</li>
+            <li>Financial losses or investment decisions made in reliance on Service data</li>
+            <li>Unauthorized access to or alteration of your data</li>
+            <li>Any matter beyond our reasonable control</li>
           </ul>
           <div className="bg-muted/40 rounded-lg p-4 border border-border/50">
-            <p className="text-sm"><strong className="text-foreground">Maximum liability:</strong> Our total liability shall not exceed the amount you paid in the 12 months preceding the claim.</p>
+            <p className="text-sm"><strong className="text-foreground">Maximum liability:</strong> Our total aggregate liability shall not exceed the greater of (A) the amounts paid by you in the 12 months immediately preceding the claim, or (B) €100.00.</p>
           </div>
         </>
       ),
     },
     {
-      title: "10. Intellectual Property",
+      title: "8. Disclaimer of Warranties",
+      content: (
+        <p className="uppercase text-xs">THE SERVICE IS PROVIDED ON AN "AS IS" AND "AS AVAILABLE" BASIS WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, OR COURSE OF DEALING. WE DO NOT WARRANT THAT THE SERVICE WILL BE UNINTERRUPTED, ERROR-FREE, SECURE, OR FREE OF VIRUSES. WE MAKE NO WARRANTY REGARDING THE ACCURACY, COMPLETENESS, OR TIMELINESS OF ANY FINANCIAL DATA OR CALCULATIONS PROVIDED THROUGH THE SERVICE.</p>
+      ),
+    },
+    {
+      title: "9. Indemnification",
+      content: (
+        <p>You agree to defend, indemnify, and hold harmless Legio Finance and its officers, directors, employees, agents, and successors from and against any claims, liabilities, damages, losses, and expenses arising out of or connected with: (a) your access to or use of the Service; (b) your violation of these Terms; (c) your violation of any third-party rights, including intellectual property rights; (d) your violation of any applicable law or regulation; or (e) any information you submit through the Service.</p>
+      ),
+    },
+    {
+      title: "10. Governing Law and Jurisdiction",
+      content: (
+        <p>These Terms shall be governed by and construed in accordance with the laws of the European Union and the applicable laws of the Netherlands, without regard to conflict of law principles. Subject to the arbitration clause below, you consent to the exclusive jurisdiction of the courts located in the Netherlands.</p>
+      ),
+    },
+    {
+      title: "11. Dispute Resolution — Binding Arbitration",
       content: (
         <>
-          <p className="mb-3">Legio Finance's design, features, content, and functionality are protected by international copyright, trademark, and other IP laws. You may not:</p>
-          <ul className="list-disc pl-5 space-y-1.5 mb-4">
-            <li>Copy, modify, or distribute our software or content</li>
-            <li>Use our trademarks or branding without permission</li>
-            <li>Create derivative works based on our service</li>
-          </ul>
-          <p>You retain full ownership of all financial data you input into the service.</p>
+          <div className="bg-destructive/5 border border-destructive/15 rounded-xl p-4 mb-4">
+            <p className="font-semibold text-foreground text-sm">⚠️ IMPORTANT: This section affects your legal rights.</p>
+          </div>
+          <p className="mb-3">Any dispute arising out of or relating to these Terms or the Service (except disputes relating to intellectual property rights) shall be resolved exclusively through final and binding arbitration, rather than in court. You agree that you may only bring claims on an individual basis and not as a plaintiff or class member in any purported class or representative action.</p>
+          <p>You may opt out of this arbitration agreement by sending written notice to <a href="mailto:legal@legiofinance.com" className="text-primary hover:underline font-medium">legal@legiofinance.com</a> within 30 days of first accepting these Terms.</p>
         </>
       ),
     },
     {
-      title: "11. Account Termination",
+      title: "12. Modifications to Terms",
       content: (
-        <>
-          <p className="mb-3">We may suspend or terminate your account if you:</p>
-          <ul className="list-disc pl-5 space-y-1.5 mb-4">
-            <li>Violate these Terms of Service</li>
-            <li>Engage in fraudulent or illegal activities</li>
-            <li>Fail to pay subscription fees when due</li>
-            <li>Abuse our service or support resources</li>
-          </ul>
-          <p>Upon termination, you may request a data export within 30 days. After this period, data may be permanently deleted.</p>
-        </>
+        <p>We reserve the right to modify these Terms at any time. We will provide notice of material changes via email or a prominent notice on the Service at least 15 days before the changes take effect. Continued use constitutes acceptance. If you do not agree to the modified Terms, you must cease using the Service.</p>
       ),
     },
     {
-      title: "12. Changes to Terms",
+      title: "13. Termination",
       content: (
         <>
-          <p className="mb-3">We will notify you of material changes by:</p>
-          <ul className="list-disc pl-5 space-y-1.5 mb-4">
-            <li>Posting a notice on our website</li>
-            <li>Sending an email to your registered address</li>
-            <li>Displaying a notification at login</li>
-          </ul>
-          <p>Continued use after changes become effective constitutes acceptance of the revised terms.</p>
-        </>
-      ),
-    },
-    {
-      title: "13. Governing Law & Disputes",
-      content: (
-        <>
-          <p className="mb-3">These Terms shall be governed by and construed in accordance with the laws of the European Union and the applicable laws of the Netherlands, without regard to conflict of law principles.</p>
-          <p>Disputes shall first be resolved through good-faith negotiation. If unresolved, they shall be submitted to the competent courts in the Netherlands.</p>
+          <p className="mb-3">We may suspend or terminate your account for conduct that violates these Terms, is harmful to others, or for any other reason at our discretion.</p>
+          <p>Upon termination, your right to use the Service immediately ceases. All provisions that by their nature should survive termination shall survive, including intellectual property rights, warranty disclaimers, indemnification, and limitation of liability. You may request a data export within 30 days of termination.</p>
         </>
       ),
     },
@@ -230,7 +172,6 @@ const TermsOfService = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero */}
       <section className="relative overflow-hidden border-b border-border/50">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
         <div className="absolute top-10 -left-40 w-80 h-80 bg-accent/8 rounded-full blur-3xl" />
@@ -239,17 +180,20 @@ const TermsOfService = () => {
             <FileText className="w-7 h-7 text-primary-foreground" />
           </div>
           <h1 className="text-4xl lg:text-5xl font-bold mb-3">Terms of Service</h1>
-          <p className="text-muted-foreground">Last updated: January 10, 2026</p>
+          <p className="text-muted-foreground">Last updated: April 6, 2025</p>
           <div className="flex justify-center gap-3 mt-5">
             <Badge variant="outline" className="text-xs">EU Compliant</Badge>
+            <Badge variant="outline" className="text-xs">GDPR</Badge>
             <Badge variant="outline" className="text-xs">Stripe Payments</Badge>
           </div>
         </div>
       </section>
 
-      {/* Content */}
       <div className="container mx-auto px-4 py-16 max-w-3xl">
-        {/* Table of Contents */}
+        <div className="bg-destructive/5 border border-destructive/15 rounded-xl p-4 mb-10">
+          <p className="text-sm"><strong className="text-foreground">PLEASE READ THESE TERMS CAREFULLY.</strong> By accessing or using our Service, you agree to be legally bound by these Terms. If you do not agree, do not access or use the Service.</p>
+        </div>
+
         <nav className="mb-14 p-6 rounded-2xl bg-muted/30 border border-border/50">
           <h3 className="text-sm font-semibold text-foreground mb-3">Table of Contents</h3>
           <div className="grid sm:grid-cols-2 gap-x-6 gap-y-1.5">
@@ -261,7 +205,6 @@ const TermsOfService = () => {
           </div>
         </nav>
 
-        {/* Sections */}
         <div className="space-y-0">
           {sections.map((section, idx) => (
             <div key={idx} id={`terms-${idx}`} className="scroll-mt-24">
@@ -274,11 +217,12 @@ const TermsOfService = () => {
           ))}
         </div>
 
-        {/* Footer nav */}
         <div className="mt-16 p-6 rounded-2xl bg-muted/30 border border-border/50 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground">
-            See also: <Link to="/privacy" className="text-primary hover:underline font-medium">Privacy Policy</Link>
-          </p>
+          <div className="flex gap-4 text-sm text-muted-foreground">
+            <Link to="/privacy" className="text-primary hover:underline font-medium">Privacy Policy</Link>
+            <Link to="/data-governance" className="text-primary hover:underline font-medium">Data Governance</Link>
+            <Link to="/ip-policy" className="text-primary hover:underline font-medium">IP Policy</Link>
+          </div>
           <a href="mailto:legal@legiofinance.com" className="inline-flex items-center gap-2 text-sm text-primary font-medium hover:underline">
             <Mail className="w-4 h-4" />
             legal@legiofinance.com
