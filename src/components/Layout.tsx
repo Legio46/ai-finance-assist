@@ -1,7 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import CurrencyConverterDropdown from "@/components/CurrencyConverterDropdown";
 import logo from "@/assets/shield-logo.png";
 import { useState } from "react";
