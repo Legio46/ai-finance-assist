@@ -25,7 +25,7 @@ import { cn } from '@/lib/utils';
 import ExportDataButton from './ExportDataButton';
 import { useToast } from '@/hooks/use-toast';
 
-// === APEX Financial Formulas ===
+// === Legio Financial Formulas ===
 
 /** Compound Interest: FV = P × (1 + r)^n + PMT × [((1 + r)^n − 1) / r] */
 const calcFutureValue = (principal: number, annualRate: number, years: number, monthlyContribution: number): number => {
@@ -368,7 +368,7 @@ const FinancialPlanner: React.FC = () => {
           <div>
             <CardTitle className="flex items-center gap-2 text-xl">
               <Shield className="w-6 h-6 text-primary" />
-              APEX Financial Planner
+              Legio Financial Planner
             </CardTitle>
             <CardDescription>Professional-grade financial planning with real formulas & AI</CardDescription>
           </div>
@@ -792,7 +792,7 @@ const FinancialPlanner: React.FC = () => {
             {!aiSuggestions && !aiLoading && (
               <div className="text-center py-12">
                 <Sparkles className="w-16 h-16 mx-auto text-primary/40 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">APEX AI Financial Advisor</h3>
+                <h3 className="text-xl font-semibold mb-2">Legio AI Financial Advisor</h3>
                 <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                   Get personalized savings tips, investment advice, risk alerts, tax strategies, debt elimination plans, and a prioritized monthly action plan.
                 </p>
@@ -802,7 +802,7 @@ const FinancialPlanner: React.FC = () => {
             {aiLoading && (
               <div className="text-center py-12">
                 <Loader2 className="w-10 h-10 animate-spin text-primary mx-auto mb-4" />
-                <p className="text-muted-foreground">APEX is analyzing your complete financial profile...</p>
+                <p className="text-muted-foreground">Legio is analyzing your complete financial profile...</p>
               </div>
             )}
             {aiSuggestions && !aiLoading && (

@@ -1,7 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import CurrencyConverterDropdown from "@/components/CurrencyConverterDropdown";
 import logo from "@/assets/shield-logo.png";
 import { useState } from "react";
@@ -57,8 +56,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             </div>
 
             <div className="flex items-center gap-2">
-              <CurrencyConverterDropdown />
-              <ThemeToggle />
               <Button asChild size="sm" className="ml-1 hidden sm:inline-flex rounded-3xl px-5 bg-primary text-primary-foreground hover:bg-primary/90">
                 <Link to="/auth">{t('getStarted')} →</Link>
               </Button>

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import SkyScene from "@/components/SkyScene";
 import StockTicker from "@/components/StockTicker";
@@ -7,6 +8,18 @@ import { ChevronRight } from "lucide-react";
 const Home = () => {
   const { t } = useLanguage();
 
+  // Force dark mode on home page for the Aura design
+  useEffect(() => {
+    const wasDark = document.documentElement.classList.contains("dark");
+    document.documentElement.classList.add("dark");
+    return () => {
+      // Restore user preference when leaving home
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "light" || (!savedTheme && !wasDark)) {
+        document.documentElement.classList.remove("dark");
+      }
+    };
+  }, []);
   const features = [
     { icon: "📊", title: t('expenseTracking'), desc: t('expenseTrackingDesc') },
     { icon: "📈", title: "Smart Budgeting", desc: "Set budgets, track progress, and get AI-powered recommendations to optimize your spending." },
