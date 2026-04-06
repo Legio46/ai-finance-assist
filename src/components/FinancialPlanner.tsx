@@ -368,7 +368,7 @@ const FinancialPlanner: React.FC = () => {
           <div>
             <CardTitle className="flex items-center gap-2 text-xl">
               <Shield className="w-6 h-6 text-primary" />
-              APEX Financial Planner
+              Legio Financial Planner
             </CardTitle>
             <CardDescription>Professional-grade financial planning with real formulas & AI</CardDescription>
           </div>
