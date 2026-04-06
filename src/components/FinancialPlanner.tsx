@@ -25,7 +25,7 @@ import { cn } from '@/lib/utils';
 import ExportDataButton from './ExportDataButton';
 import { useToast } from '@/hooks/use-toast';
 
-// === APEX Financial Formulas ===
+// === Legio Financial Formulas ===
 
 /** Compound Interest: FV = P × (1 + r)^n + PMT × [((1 + r)^n − 1) / r] */
 const calcFutureValue = (principal: number, annualRate: number, years: number, monthlyContribution: number): number => {

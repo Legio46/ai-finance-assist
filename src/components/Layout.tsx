@@ -56,8 +56,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             </div>
 
             <div className="flex items-center gap-2">
-              <CurrencyConverterDropdown />
-              <ThemeToggle />
               <Button asChild size="sm" className="ml-1 hidden sm:inline-flex rounded-3xl px-5 bg-primary text-primary-foreground hover:bg-primary/90">
                 <Link to="/auth">{t('getStarted')} →</Link>
               </Button>
