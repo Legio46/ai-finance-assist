@@ -185,7 +185,7 @@ const Home = () => {
                 <div className="p-5 overflow-hidden">
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <div className="text-lg font-medium text-foreground">Good morning, User ☀️</div>
+                      <div className="text-lg font-medium text-foreground">Good morning, User</div>
                       <div className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.4)' }}>Your portfolio is up +4.2% this month</div>
                     </div>
                     <div className="flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium"
@@ -276,9 +276,9 @@ const Home = () => {
                     <div className="text-[9.5px] uppercase tracking-[2px] mb-3" style={{ color: 'rgba(255,255,255,0.22)' }}>Recent</div>
                     <div className="space-y-2">
                       {[
-                        { icon: "📈", name: "AAPL bought", date: "Today, 09:14", amount: "+$1,840", up: true, bg: "rgba(52,211,153,0.12)" },
-                        { icon: "🏠", name: "Mortgage", date: "Mar 22", amount: "−$2,100", up: false, bg: "rgba(248,113,113,0.12)" },
-                        { icon: "💰", name: "Dividend", date: "Mar 21", amount: "+$340", up: true, bg: "rgba(245,201,106,0.12)" },
+                        { icon: "A", name: "AAPL bought", date: "Today, 09:14", amount: "+$1,840", up: true, bg: "rgba(52,211,153,0.12)" },
+                        { icon: "H", name: "Mortgage", date: "Mar 22", amount: "-$2,100", up: false, bg: "rgba(248,113,113,0.12)" },
+                        { icon: "D", name: "Dividend", date: "Mar 21", amount: "+$340", up: true, bg: "rgba(245,201,106,0.12)" },
                       ].map(tx => (
                         <div key={tx.name} className="flex items-center gap-2 rounded-lg p-2" style={{
                           background: 'rgba(255,255,255,0.04)',
