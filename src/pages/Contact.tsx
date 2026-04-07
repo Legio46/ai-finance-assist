@@ -13,6 +13,18 @@ const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', description: '' });
 
+  // Force dark mode on contact page for Aura design
+  React.useEffect(() => {
+    const wasDark = document.documentElement.classList.contains("dark");
+    document.documentElement.classList.add("dark");
+    return () => {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "light" || (!savedTheme && !wasDark)) {
+        document.documentElement.classList.remove("dark");
+      }
+    };
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
