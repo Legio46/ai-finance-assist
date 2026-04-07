@@ -21,12 +21,12 @@ const Home = () => {
     };
   }, []);
   const features = [
-    { icon: "📊", title: t('expenseTracking'), desc: t('expenseTrackingDesc') },
-    { icon: "📈", title: "Smart Budgeting", desc: "Set budgets, track progress, and get AI-powered recommendations to optimize your spending." },
-    { icon: "💰", title: t('financialAdvisor'), desc: t('financialAdvisorDesc') },
-    { icon: "💳", title: "Credit Card Manager", desc: "Track all your credit cards, monitor balances, APRs, and due dates in one unified dashboard." },
-    { icon: "🔒", title: "Bank-Level Security", desc: "Your data is protected with AES-256 encryption, 2FA authentication, and zero-knowledge architecture." },
-    { icon: "✦", title: "AI-Powered Insights", desc: "Get personalized financial advice and predictions powered by advanced artificial intelligence." },
+    { icon: "chart", title: t('expenseTracking'), desc: t('expenseTrackingDesc') },
+    { icon: "trend", title: "Smart Budgeting", desc: "Set budgets, track progress, and get AI-powered recommendations to optimize your spending." },
+    { icon: "advisor", title: t('financialAdvisor'), desc: t('financialAdvisorDesc') },
+    { icon: "card", title: "Credit Card Manager", desc: "Track all your credit cards, monitor balances, APRs, and due dates in one unified dashboard." },
+    { icon: "shield", title: "Bank-Level Security", desc: "Your data is protected with AES-256 encryption, 2FA authentication, and zero-knowledge architecture." },
+    { icon: "ai", title: "AI-Powered Insights", desc: "Get personalized financial advice and predictions powered by advanced artificial intelligence." },
   ];
 
   const testimonials = [
