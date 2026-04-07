@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import SkyScene from "@/components/SkyScene";
 import StockTicker from "@/components/StockTicker";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, BarChart3, TrendingUp, Wallet, CreditCard, Shield, Sparkles } from "lucide-react";
 
 const Home = () => {
   const { t } = useLanguage();
@@ -328,7 +328,12 @@ const Home = () => {
                   style={{ background: 'linear-gradient(90deg, transparent, rgba(245,201,106,0.35), transparent)' }} />
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg mb-4"
                   style={{ background: 'rgba(245,201,106,0.1)', border: '1px solid rgba(245,201,106,0.2)' }}>
-                  {feat.icon}
+                  {feat.icon === 'chart' && <BarChart3 className="w-5 h-5 text-primary" />}
+                  {feat.icon === 'trend' && <TrendingUp className="w-5 h-5 text-primary" />}
+                  {feat.icon === 'advisor' && <Wallet className="w-5 h-5 text-primary" />}
+                  {feat.icon === 'card' && <CreditCard className="w-5 h-5 text-primary" />}
+                  {feat.icon === 'shield' && <Shield className="w-5 h-5 text-primary" />}
+                  {feat.icon === 'ai' && <Sparkles className="w-5 h-5 text-primary" />}
                 </div>
                 <div className="text-sm font-medium text-foreground mb-1.5">{feat.title}</div>
                 <div className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.42)' }}>{feat.desc}</div>
