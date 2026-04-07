@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, Star, Sparkles } from "lucide-react";
@@ -17,6 +17,18 @@ const Pricing = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isAnnual, setIsAnnual] = useState(false);
+
+  // Force dark mode on pricing page for Aura design
+  React.useEffect(() => {
+    const wasDark = document.documentElement.classList.contains("dark");
+    document.documentElement.classList.add("dark");
+    return () => {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "light" || (!savedTheme && !wasDark)) {
+        document.documentElement.classList.remove("dark");
+      }
+    };
+  }, []);
 
   const basicMonthly = 5;
   const proMonthly = 10;

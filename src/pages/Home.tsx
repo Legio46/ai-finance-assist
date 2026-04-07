@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import SkyScene from "@/components/SkyScene";
 import StockTicker from "@/components/StockTicker";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, BarChart3, TrendingUp, Wallet, CreditCard, Shield, Sparkles } from "lucide-react";
 
 const Home = () => {
   const { t } = useLanguage();
@@ -21,12 +21,12 @@ const Home = () => {
     };
   }, []);
   const features = [
-    { icon: "📊", title: t('expenseTracking'), desc: t('expenseTrackingDesc') },
-    { icon: "📈", title: "Smart Budgeting", desc: "Set budgets, track progress, and get AI-powered recommendations to optimize your spending." },
-    { icon: "💰", title: t('financialAdvisor'), desc: t('financialAdvisorDesc') },
-    { icon: "💳", title: "Credit Card Manager", desc: "Track all your credit cards, monitor balances, APRs, and due dates in one unified dashboard." },
-    { icon: "🔒", title: "Bank-Level Security", desc: "Your data is protected with AES-256 encryption, 2FA authentication, and zero-knowledge architecture." },
-    { icon: "✦", title: "AI-Powered Insights", desc: "Get personalized financial advice and predictions powered by advanced artificial intelligence." },
+    { icon: "chart", title: t('expenseTracking'), desc: t('expenseTrackingDesc') },
+    { icon: "trend", title: "Smart Budgeting", desc: "Set budgets, track progress, and get AI-powered recommendations to optimize your spending." },
+    { icon: "advisor", title: t('financialAdvisor'), desc: t('financialAdvisorDesc') },
+    { icon: "card", title: "Credit Card Manager", desc: "Track all your credit cards, monitor balances, APRs, and due dates in one unified dashboard." },
+    { icon: "shield", title: "Bank-Level Security", desc: "Your data is protected with AES-256 encryption, 2FA authentication, and zero-knowledge architecture." },
+    { icon: "ai", title: "AI-Powered Insights", desc: "Get personalized financial advice and predictions powered by advanced artificial intelligence." },
   ];
 
   const testimonials = [
@@ -77,7 +77,7 @@ const Home = () => {
           {/* CTA buttons */}
           <div className="animate-fade-down flex gap-3.5 items-center mt-8" style={{ animationDelay: '0.3s' }}>
             <Link to="/auth"
-              className="inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-medium text-foreground transition-all hover:-translate-y-0.5"
+              className="inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-medium text-white transition-all hover:-translate-y-0.5"
               style={{
                 background: '#2563eb',
                 boxShadow: '0 4px 24px rgba(37,99,235,0.5), 0 1px 0 rgba(255,255,255,0.15) inset',
@@ -95,6 +95,31 @@ const Home = () => {
               }}>
               View Pricing
             </Link>
+          </div>
+
+          {/* Download buttons */}
+          <div className="animate-fade-down flex gap-3 items-center mt-5" style={{ animationDelay: '0.4s' }}>
+            <a href="#" onClick={(e) => { e.preventDefault(); }} 
+              className="inline-flex items-center gap-2.5 rounded-xl px-5 py-3 text-sm font-medium transition-all hover:-translate-y-0.5"
+              style={{
+                background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+                boxShadow: '0 4px 20px rgba(37,99,235,0.4)',
+                color: '#fff',
+              }}>
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
+              Get for Windows
+            </a>
+            <a href="#" onClick={(e) => { e.preventDefault(); }}
+              className="inline-flex items-center gap-2.5 rounded-xl px-5 py-3 text-sm font-medium transition-all hover:-translate-y-0.5"
+              style={{
+                background: 'rgba(255,255,255,0.1)',
+                border: '1px solid rgba(255,255,255,0.2)',
+                backdropFilter: 'blur(10px)',
+                color: 'rgba(255,255,255,0.9)',
+              }}>
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+              Get for Mac
+            </a>
           </div>
 
           {/* App Window Mockup */}
@@ -160,7 +185,7 @@ const Home = () => {
                 <div className="p-5 overflow-hidden">
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <div className="text-lg font-medium text-foreground">Good morning, User ☀️</div>
+                      <div className="text-lg font-medium text-foreground">Good morning, User</div>
                       <div className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.4)' }}>Your portfolio is up +4.2% this month</div>
                     </div>
                     <div className="flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium"
@@ -251,9 +276,9 @@ const Home = () => {
                     <div className="text-[9.5px] uppercase tracking-[2px] mb-3" style={{ color: 'rgba(255,255,255,0.22)' }}>Recent</div>
                     <div className="space-y-2">
                       {[
-                        { icon: "📈", name: "AAPL bought", date: "Today, 09:14", amount: "+$1,840", up: true, bg: "rgba(52,211,153,0.12)" },
-                        { icon: "🏠", name: "Mortgage", date: "Mar 22", amount: "−$2,100", up: false, bg: "rgba(248,113,113,0.12)" },
-                        { icon: "💰", name: "Dividend", date: "Mar 21", amount: "+$340", up: true, bg: "rgba(245,201,106,0.12)" },
+                        { icon: "A", name: "AAPL bought", date: "Today, 09:14", amount: "+$1,840", up: true, bg: "rgba(52,211,153,0.12)" },
+                        { icon: "H", name: "Mortgage", date: "Mar 22", amount: "-$2,100", up: false, bg: "rgba(248,113,113,0.12)" },
+                        { icon: "D", name: "Dividend", date: "Mar 21", amount: "+$340", up: true, bg: "rgba(245,201,106,0.12)" },
                       ].map(tx => (
                         <div key={tx.name} className="flex items-center gap-2 rounded-lg p-2" style={{
                           background: 'rgba(255,255,255,0.04)',
@@ -303,7 +328,12 @@ const Home = () => {
                   style={{ background: 'linear-gradient(90deg, transparent, rgba(245,201,106,0.35), transparent)' }} />
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg mb-4"
                   style={{ background: 'rgba(245,201,106,0.1)', border: '1px solid rgba(245,201,106,0.2)' }}>
-                  {feat.icon}
+                  {feat.icon === 'chart' && <BarChart3 className="w-5 h-5 text-primary" />}
+                  {feat.icon === 'trend' && <TrendingUp className="w-5 h-5 text-primary" />}
+                  {feat.icon === 'advisor' && <Wallet className="w-5 h-5 text-primary" />}
+                  {feat.icon === 'card' && <CreditCard className="w-5 h-5 text-primary" />}
+                  {feat.icon === 'shield' && <Shield className="w-5 h-5 text-primary" />}
+                  {feat.icon === 'ai' && <Sparkles className="w-5 h-5 text-primary" />}
                 </div>
                 <div className="text-sm font-medium text-foreground mb-1.5">{feat.title}</div>
                 <div className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.42)' }}>{feat.desc}</div>

@@ -30,8 +30,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               }}>
                 <img src={logo} alt="Legio Logo" className="w-full h-full object-cover" />
               </div>
-              <span className="font-serif text-xl font-black tracking-tight text-foreground">
-                Leg<em className="text-primary not-italic">io</em>
+              <span className="font-serif text-xl font-black tracking-tight text-white">
+                Legio
               </span>
             </Link>
 

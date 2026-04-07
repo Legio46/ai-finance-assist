@@ -326,35 +326,35 @@ const PersonalDashboard = () => {
       <button
         onClick={() => handleCategoryClick(category)}
         className={cn(
-          "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all text-sm",
+          "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all text-sm",
           isActive && !category.locked ? "bg-primary text-primary-foreground shadow-sm"
-            : category.locked ? "text-muted-foreground/60 cursor-not-allowed hover:bg-muted/30"
-            : "text-foreground hover:bg-muted"
+            : category.locked ? "text-muted-foreground/50 cursor-not-allowed hover:bg-muted/20"
+            : "text-foreground hover:bg-muted/50"
         )}
       >
         {category.locked ? <Lock className="w-4 h-4 shrink-0" /> : <Icon className="w-4 h-4 shrink-0" />}
         <span className="truncate font-medium">{category.title}</span>
-        {category.locked && <Badge variant="outline" className="ml-auto text-[10px] px-1.5 py-0 h-4 border-muted-foreground/30">Pro</Badge>}
+        {category.locked && <Badge variant="outline" className="ml-auto text-[9px] px-1.5 py-0 h-4 border-muted-foreground/20">Pro</Badge>}
       </button>
     );
   };
 
   return (
     <div className="flex gap-0 min-h-[calc(100vh-200px)]">
-      <aside className={cn("shrink-0 border-r border-border bg-card/50 transition-all duration-300 overflow-hidden", sidebarOpen ? "w-64" : "w-0 border-r-0")}>
+      <aside className={cn("shrink-0 border-r border-border/50 bg-card/30 backdrop-blur-sm transition-all duration-300 overflow-hidden", sidebarOpen ? "w-64" : "w-0 border-r-0")}>
         <ScrollArea className="h-[calc(100vh-200px)]">
           <div className="p-4 space-y-6 w-64">
             <div>
-              <button onClick={() => setActiveView('overview')} className={cn("w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all text-sm", activeView === 'overview' ? "bg-primary text-primary-foreground shadow-sm" : "text-foreground hover:bg-muted")}>
+              <button onClick={() => setActiveView('overview')} className={cn("w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all text-sm", activeView === 'overview' ? "bg-primary text-primary-foreground shadow-sm" : "text-foreground hover:bg-muted/50")}>
                 <LayoutDashboard className="w-4 h-4 shrink-0" /><span className="font-medium">Overview</span>
               </button>
             </div>
             <div className="space-y-1">
-              <div className="px-3 pb-1"><p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Personal Basic</p></div>
+              <div className="px-3 pb-1.5"><p className="text-[10px] font-semibold text-muted-foreground/70 uppercase tracking-widest">Personal Basic</p></div>
               {basicCategories.map((cat) => <SidebarItem key={cat.id} category={cat} isActive={activeView === cat.id} />)}
             </div>
             <div className="space-y-1">
-              <div className="px-3 pb-1"><p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Personal Pro</p></div>
+              <div className="px-3 pb-1.5"><p className="text-[10px] font-semibold text-muted-foreground/70 uppercase tracking-widest">Personal Pro</p></div>
               {proCategories.map((cat) => <SidebarItem key={cat.id} category={cat} isActive={activeView === cat.id} />)}
             </div>
           </div>
@@ -362,18 +362,18 @@ const PersonalDashboard = () => {
       </aside>
       <main className="flex-1 min-w-0 p-6 overflow-auto">
         <div className="mb-4">
-          <Button variant="ghost" size="sm" onClick={() => setSidebarOpen(!sidebarOpen)} className="gap-2 text-muted-foreground hover:text-foreground">
+          <Button variant="ghost" size="sm" onClick={() => setSidebarOpen(!sidebarOpen)} className="gap-2 text-muted-foreground hover:text-foreground rounded-lg">
             {sidebarOpen ? <><PanelLeftClose className="w-4 h-4" /> Hide menu</> : <><PanelLeftOpen className="w-4 h-4" /> Show menu</>}
           </Button>
         </div>
         {activeView === 'overview' ? renderOverview() : (
           <div className="space-y-6">
-            <div className="flex items-center gap-3 pb-2 border-b border-border">
+            <div className="flex items-center gap-3 pb-3 border-b border-border/50">
               {(() => {
                 const allCats = [...basicCategories, ...proCategories];
                 const current = allCats.find(c => c.id === activeView);
                 const Icon = current?.icon || Wallet;
-                return (<><div className="p-2 rounded-lg bg-primary/10"><Icon className="w-5 h-5 text-primary" /></div><div><h1 className="text-xl font-semibold">{current?.title}</h1><p className="text-sm text-muted-foreground">{current?.description}</p></div></>);
+                return (<><div className="p-2 rounded-xl bg-primary/10"><Icon className="w-5 h-5 text-primary" /></div><div><h1 className="text-lg font-semibold text-foreground">{current?.title}</h1><p className="text-xs text-muted-foreground">{current?.description}</p></div></>);
               })()}
             </div>
             {renderActiveView()}
