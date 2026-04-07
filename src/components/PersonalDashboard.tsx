@@ -326,15 +326,15 @@ const PersonalDashboard = () => {
       <button
         onClick={() => handleCategoryClick(category)}
         className={cn(
-          "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all text-sm",
+          "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all text-sm",
           isActive && !category.locked ? "bg-primary text-primary-foreground shadow-sm"
-            : category.locked ? "text-muted-foreground/60 cursor-not-allowed hover:bg-muted/30"
-            : "text-foreground hover:bg-muted"
+            : category.locked ? "text-muted-foreground/50 cursor-not-allowed hover:bg-muted/20"
+            : "text-foreground hover:bg-muted/50"
         )}
       >
         {category.locked ? <Lock className="w-4 h-4 shrink-0" /> : <Icon className="w-4 h-4 shrink-0" />}
         <span className="truncate font-medium">{category.title}</span>
-        {category.locked && <Badge variant="outline" className="ml-auto text-[10px] px-1.5 py-0 h-4 border-muted-foreground/30">Pro</Badge>}
+        {category.locked && <Badge variant="outline" className="ml-auto text-[9px] px-1.5 py-0 h-4 border-muted-foreground/20">Pro</Badge>}
       </button>
     );
   };
