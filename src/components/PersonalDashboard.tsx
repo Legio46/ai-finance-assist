@@ -247,39 +247,33 @@ const PersonalDashboard = () => {
   // Overview content - now includes Financial Calendar under AI Insights
   const renderOverview = () => (
     <div className="space-y-8">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">This Month</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(currentMonthTotal)}</div>
-            <p className="text-xs text-muted-foreground">
-              {monthlyChange > 0 ? <span className="text-destructive">+{monthlyChange.toFixed(1)}%</span> : monthlyChange < 0 ? <span className="text-success">{monthlyChange.toFixed(1)}%</span> : <span>No change</span>} from last month
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Daily Average</CardTitle>
-            <TrendingDown className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(averageDaily)}</div>
-            <p className="text-xs text-muted-foreground">Based on current month</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Top Category</CardTitle>
-            <PieChart className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{topCategories.length > 0 ? topCategories[0][0] : 'None'}</div>
-            <p className="text-xs text-muted-foreground">{topCategories.length > 0 ? formatCurrency(Number(topCategories[0][1])) : 'No expenses yet'}</p>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="glass rounded-2xl p-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-medium uppercase tracking-[1.2px]" style={{ color: 'rgba(255,255,255,0.58)' }}>This Month</span>
+            <TrendingUp className="h-4 w-4" style={{ color: 'rgba(255,255,255,0.58)' }} />
+          </div>
+          <div className="font-serif text-2xl font-black text-white">{formatCurrency(currentMonthTotal)}</div>
+          <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.58)' }}>
+            {monthlyChange > 0 ? <span style={{ color: '#f87171' }}>+{monthlyChange.toFixed(1)}%</span> : monthlyChange < 0 ? <span style={{ color: '#34d399' }}>{monthlyChange.toFixed(1)}%</span> : <span>No change</span>} from last month
+          </p>
+        </div>
+        <div className="glass rounded-2xl p-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-medium uppercase tracking-[1.2px]" style={{ color: 'rgba(255,255,255,0.58)' }}>Daily Average</span>
+            <TrendingDown className="h-4 w-4" style={{ color: 'rgba(255,255,255,0.58)' }} />
+          </div>
+          <div className="font-serif text-2xl font-black text-white">{formatCurrency(averageDaily)}</div>
+          <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.58)' }}>Based on current month</p>
+        </div>
+        <div className="glass rounded-2xl p-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-medium uppercase tracking-[1.2px]" style={{ color: 'rgba(255,255,255,0.58)' }}>Top Category</span>
+            <PieChart className="h-4 w-4" style={{ color: 'rgba(255,255,255,0.58)' }} />
+          </div>
+          <div className="font-serif text-2xl font-black text-white">{topCategories.length > 0 ? topCategories[0][0] : 'None'}</div>
+          <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.58)' }}>{topCategories.length > 0 ? formatCurrency(Number(topCategories[0][1])) : 'No expenses yet'}</p>
+        </div>
       </div>
 
       {/* AI Personal Insights */}
