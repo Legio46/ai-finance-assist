@@ -326,15 +326,16 @@ const PersonalDashboard = () => {
       <button
         onClick={() => handleCategoryClick(category)}
         className={cn(
-          "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all text-sm",
-          isActive && !category.locked ? "bg-primary text-primary-foreground shadow-sm"
-            : category.locked ? "text-muted-foreground/50 cursor-not-allowed hover:bg-muted/20"
-            : "text-foreground hover:bg-muted/50"
+          "w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left transition-all text-[13px] relative border border-transparent",
+          isActive && !category.locked ? "text-[#fde68a]"
+            : category.locked ? "text-white/30 cursor-not-allowed"
+            : "text-white/58 hover:text-white hover:bg-white/[0.07]"
         )}
+        style={isActive && !category.locked ? { background: 'rgba(245,201,106,0.12)', borderColor: 'rgba(245,201,106,0.2)' } : {}}
       >
-        {category.locked ? <Lock className="w-4 h-4 shrink-0" /> : <Icon className="w-4 h-4 shrink-0" />}
+        {category.locked ? <Lock className="w-3.5 h-3.5 shrink-0" /> : <Icon className="w-3.5 h-3.5 shrink-0" />}
         <span className="truncate font-medium">{category.title}</span>
-        {category.locked && <Badge variant="outline" className="ml-auto text-[9px] px-1.5 py-0 h-4 border-muted-foreground/20">Pro</Badge>}
+        {category.locked && <span className="ml-auto text-[9px] font-semibold px-1.5 py-0.5 rounded-full" style={{ background: 'rgba(245,201,106,0.15)', color: '#f5c96a' }}>Pro</span>}
       </button>
     );
   };
