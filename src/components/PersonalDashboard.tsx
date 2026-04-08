@@ -341,39 +341,53 @@ const PersonalDashboard = () => {
 
   return (
     <div className="flex gap-0 min-h-[calc(100vh-200px)]">
-      <aside className={cn("shrink-0 border-r border-border/50 bg-card/30 backdrop-blur-sm transition-all duration-300 overflow-hidden", sidebarOpen ? "w-64" : "w-0 border-r-0")}>
-        <ScrollArea className="h-[calc(100vh-200px)]">
-          <div className="p-4 space-y-6 w-64">
+      <aside className={cn(
+        "shrink-0 transition-all duration-300 overflow-hidden rounded-2xl mr-4",
+        sidebarOpen ? "w-56" : "w-0"
+      )}
+        style={{
+          background: 'rgba(12,20,45,0.62)',
+          border: sidebarOpen ? '1px solid rgba(255,255,255,0.09)' : 'none',
+          backdropFilter: 'blur(28px)',
+        }}
+      >
+        <ScrollArea className="h-[calc(100vh-240px)]">
+          <div className="p-3 space-y-4 w-56">
             <div>
-              <button onClick={() => setActiveView('overview')} className={cn("w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all text-sm", activeView === 'overview' ? "bg-primary text-primary-foreground shadow-sm" : "text-foreground hover:bg-muted/50")}>
-                <LayoutDashboard className="w-4 h-4 shrink-0" /><span className="font-medium">Overview</span>
+              <button onClick={() => setActiveView('overview')} className={cn(
+                "w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left transition-all text-[13px] relative border border-transparent",
+                activeView === 'overview' ? "text-[#fde68a]" : "text-white/58 hover:text-white hover:bg-white/[0.07]"
+              )}
+                style={activeView === 'overview' ? { background: 'rgba(245,201,106,0.12)', borderColor: 'rgba(245,201,106,0.2)' } : {}}
+              >
+                <LayoutDashboard className="w-3.5 h-3.5 shrink-0" /><span className="font-medium">Overview</span>
               </button>
             </div>
-            <div className="space-y-1">
-              <div className="px-3 pb-1.5"><p className="text-[10px] font-semibold text-muted-foreground/70 uppercase tracking-widest">Personal Basic</p></div>
+            <div className="space-y-0.5">
+              <p className="text-[9px] font-semibold uppercase tracking-[2px] px-2.5 pb-1" style={{ color: 'rgba(255,255,255,0.22)' }}>Basic</p>
               {basicCategories.map((cat) => <SidebarItem key={cat.id} category={cat} isActive={activeView === cat.id} />)}
             </div>
-            <div className="space-y-1">
-              <div className="px-3 pb-1.5"><p className="text-[10px] font-semibold text-muted-foreground/70 uppercase tracking-widest">Personal Pro</p></div>
+            <div className="space-y-0.5">
+              <p className="text-[9px] font-semibold uppercase tracking-[2px] px-2.5 pb-1" style={{ color: 'rgba(255,255,255,0.22)' }}>Pro</p>
               {proCategories.map((cat) => <SidebarItem key={cat.id} category={cat} isActive={activeView === cat.id} />)}
             </div>
           </div>
         </ScrollArea>
       </aside>
-      <main className="flex-1 min-w-0 p-6 overflow-auto">
+      <main className="flex-1 min-w-0 overflow-auto">
         <div className="mb-4">
-          <Button variant="ghost" size="sm" onClick={() => setSidebarOpen(!sidebarOpen)} className="gap-2 text-muted-foreground hover:text-foreground rounded-lg">
+          <Button variant="ghost" size="sm" onClick={() => setSidebarOpen(!sidebarOpen)} className="gap-2 text-white/58 hover:text-white hover:bg-white/10 rounded-lg">
             {sidebarOpen ? <><PanelLeftClose className="w-4 h-4" /> Hide menu</> : <><PanelLeftOpen className="w-4 h-4" /> Show menu</>}
           </Button>
         </div>
         {activeView === 'overview' ? renderOverview() : (
           <div className="space-y-6">
-            <div className="flex items-center gap-3 pb-3 border-b border-border/50">
+            <div className="flex items-center gap-3 pb-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.09)' }}>
               {(() => {
                 const allCats = [...basicCategories, ...proCategories];
                 const current = allCats.find(c => c.id === activeView);
                 const Icon = current?.icon || Wallet;
-                return (<><div className="p-2 rounded-xl bg-primary/10"><Icon className="w-5 h-5 text-primary" /></div><div><h1 className="text-lg font-semibold text-foreground">{current?.title}</h1><p className="text-xs text-muted-foreground">{current?.description}</p></div></>);
+                return (<><div className="p-2 rounded-xl" style={{ background: 'rgba(245,201,106,0.12)' }}><Icon className="w-5 h-5" style={{ color: '#f5c96a' }} /></div><div><h1 className="text-lg font-semibold text-white">{current?.title}</h1><p className="text-xs" style={{ color: 'rgba(255,255,255,0.58)' }}>{current?.description}</p></div></>);
               })()}
             </div>
             {renderActiveView()}
