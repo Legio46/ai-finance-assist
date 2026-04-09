@@ -94,7 +94,7 @@ const Pricing = () => {
     "Priority support"
   ];
 
-    { q: t('faqTrialQ'), a: t('faqTrialA') },
+    const faqs = [
     { q: t('faqChangeQ'), a: t('faqChangeA') },
     { q: t('faqCountriesQ'), a: t('faqCountriesA') },
     { q: t('faqSecurityQ'), a: t('faqSecurityA') },
