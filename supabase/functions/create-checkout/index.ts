@@ -34,7 +34,7 @@ Deno.serve(async (req: Request) => {
     try { requestBody = await req.json(); } catch { return new Response(JSON.stringify({ error: "Invalid request body" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }); }
 
     const { plan, billingPeriod = 'monthly' } = requestBody;
-    if (!plan || !['basic', 'pro'].includes(plan)) return new Response(JSON.stringify({ error: "Invalid plan" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    if (!plan || !['basic', 'pro', 'business'].includes(plan)) return new Response(JSON.stringify({ error: "Invalid plan" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
     const stripe = await import("npm:stripe@14.21.0");
     const stripeClient = new stripe.default(stripeSecretKey, { apiVersion: "2023-10-16" });
@@ -44,8 +44,9 @@ Deno.serve(async (req: Request) => {
 
     // Monthly and annual pricing (amounts in cents)
     const prices = {
-      basic: { monthly: 500, annual: 5400, name: "Personal Basic" },   // €5/mo or €54/yr (10% off)
-      pro: { monthly: 1000, annual: 9600, name: "Personal Pro" },      // €10/mo or €96/yr (20% off)
+      basic: { monthly: 500, annual: 5400, name: "Personal Basic" },       // €5/mo or €54/yr (10% off)
+      pro: { monthly: 1000, annual: 9600, name: "Personal Pro" },          // €10/mo or €96/yr (20% off)
+      business: { monthly: 2000, annual: 18000, name: "Business" },        // €20/mo or €180/yr (25% off)
     };
 
     const selectedPlan = prices[plan as keyof typeof prices];

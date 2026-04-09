@@ -82,7 +82,18 @@ const Pricing = () => {
     "Goal tracking with progress bars"
   ];
 
-  const faqs = [
+  const businessFeatures = [
+    "Everything in Pro +",
+    "Multi-entity business management",
+    "Company Money Insights dashboard",
+    "Revenue & expense monitoring per store",
+    "Stripe & bank account integration",
+    "AI-powered business analytics",
+    "Cash flow forecasting",
+    "Tax optimization recommendations",
+    "Priority support"
+  ];
+
     { q: t('faqTrialQ'), a: t('faqTrialA') },
     { q: t('faqChangeQ'), a: t('faqChangeA') },
     { q: t('faqCountriesQ'), a: t('faqCountriesA') },
