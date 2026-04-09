@@ -32,13 +32,17 @@ const Pricing = () => {
 
   const basicMonthly = 5;
   const proMonthly = 10;
+  const businessMonthly = 20;
   const basicAnnualMonthly = basicMonthly * 0.9;
   const proAnnualMonthly = proMonthly * 0.8;
+  const businessAnnualMonthly = businessMonthly * 0.75;
   const basicAnnualTotal = basicAnnualMonthly * 12;
   const proAnnualTotal = proAnnualMonthly * 12;
+  const businessAnnualTotal = businessAnnualMonthly * 12;
 
   const currentBasicPrice = isAnnual ? basicAnnualMonthly : basicMonthly;
   const currentProPrice = isAnnual ? proAnnualMonthly : proMonthly;
+  const currentBusinessPrice = isAnnual ? businessAnnualMonthly : businessMonthly;
 
   const handleCheckout = (plan: string) => {
     if (!user) {
@@ -78,8 +82,19 @@ const Pricing = () => {
     "Goal tracking with progress bars"
   ];
 
-  const faqs = [
-    { q: t('faqTrialQ'), a: t('faqTrialA') },
+  const businessFeatures = [
+    "Everything in Pro +",
+    "Multi-entity business management",
+    "Company Money Insights dashboard",
+    "Revenue & expense monitoring per store",
+    "Stripe & bank account integration",
+    "AI-powered business analytics",
+    "Cash flow forecasting",
+    "Tax optimization recommendations",
+    "Priority support"
+  ];
+
+    const faqs = [
     { q: t('faqChangeQ'), a: t('faqChangeA') },
     { q: t('faqCountriesQ'), a: t('faqCountriesA') },
     { q: t('faqSecurityQ'), a: t('faqSecurityA') },
@@ -185,7 +200,7 @@ const Pricing = () => {
                 background: 'rgba(52,211,153,0.12)',
                 color: '#34d399',
                 border: '1px solid rgba(52,211,153,0.2)',
-              }}>Save up to 20%</span>
+              }}>Save up to 25%</span>
             )}
           </div>
         </div>
@@ -216,39 +231,17 @@ const Pricing = () => {
             annualTotal={proAnnualTotal}
             monthlyBase={proMonthly}
           />
-          <div className="relative rounded-2xl p-7 flex flex-col opacity-70"
-            style={{
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              backdropFilter: 'blur(28px)',
-            }}>
-            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-              <span className="inline-block rounded-full px-4 py-1 text-xs font-medium"
-                style={{ background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)' }}>Coming Soon</span>
-            </div>
-            <div className="text-center pt-4 pb-4">
-              <h3 className="text-lg font-bold text-foreground font-serif">{t('business')}</h3>
-              <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('forEntrepreneurs')}</p>
-              <div className="mt-5">
-                <span className="text-4xl font-bold font-serif" style={{ color: 'rgba(255,255,255,0.4)' }}>TBA</span>
-              </div>
-            </div>
-            <ul className="space-y-3 mb-8 flex-1">
-              {["Multi-entity management", "Advanced planning", "Team collaboration", "Priority support"].map((f, i) => (
-                <li key={i} className="flex items-start gap-2.5">
-                  <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-                    style={{ background: 'rgba(255,255,255,0.06)' }}>
-                    <Check className="w-3 h-3" style={{ color: 'rgba(255,255,255,0.3)' }} />
-                  </div>
-                  <span className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>{f}</span>
-                </li>
-              ))}
-            </ul>
-            <button disabled className="w-full rounded-xl h-11 text-sm font-medium font-sans"
-              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.3)' }}>
-              Notify Me
-            </button>
-          </div>
+          <PricingCard
+            title="Business"
+            desc="For online businesses & entrepreneurs"
+            price={currentBusinessPrice}
+            features={businessFeatures}
+            isPopular={false}
+            onCheckout={() => handleCheckout('business')}
+            annualPrice={businessAnnualMonthly}
+            annualTotal={businessAnnualTotal}
+            monthlyBase={businessMonthly}
+          />
         </div>
       </section>
 
