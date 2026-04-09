@@ -200,7 +200,7 @@ const Pricing = () => {
                 background: 'rgba(52,211,153,0.12)',
                 color: '#34d399',
                 border: '1px solid rgba(52,211,153,0.2)',
-              }}>Save up to 20%</span>
+              }}>Save up to 25%</span>
             )}
           </div>
         </div>

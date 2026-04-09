@@ -53,7 +53,7 @@ Deno.serve(async (req: Request) => {
     const isAnnual = billingPeriod === 'annual';
     const amount = isAnnual ? selectedPlan.annual : selectedPlan.monthly;
     const interval = isAnnual ? 'year' : 'month';
-    const discountLabel = isAnnual ? (plan === 'basic' ? ' (10% off)' : ' (20% off)') : '';
+    const discountLabel = isAnnual ? (plan === 'basic' ? ' (10% off)' : plan === 'pro' ? ' (20% off)' : ' (25% off)') : '';
 
     const origin = req.headers.get("origin") || "https://ehohaixttjnvoylviuda.lovable.app";
 
